@@ -1,0 +1,13 @@
+.navLink {
+  &:hover {
+    color: var(--mantine-color-green-9);
+  }
+
+  &[data-active] {
+    &,
+    &:hover {
+      color: var(--mantine-color-indigo-9);
+      background-color: var(--mantine-color-green-0);
+    }
+  }
+}
