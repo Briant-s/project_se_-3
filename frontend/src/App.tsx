@@ -110,6 +110,7 @@ function App() {
             <Sidebar mainNav={mainNavigation} supNav={supNavigation} />
           </AppShell.Navbar>
           <AppShell.Main>
+            {/* Testing update */}
             <Routes>
               <Route path="/" element={<Dashboard />}></Route>
               <Route
