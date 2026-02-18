@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Children, useState } from "react";
 import {
   AppShell,
   Burger,
@@ -12,7 +12,9 @@ import {
   Text,
 } from "@mantine/core";
 import {
+  HiBriefcase,
   HiChartBar,
+  HiClipboardCheck,
   HiDocument,
   HiHeart,
   HiChartPie,
@@ -35,6 +37,7 @@ import {
   Help,
   Settings,
 } from "./page_components";
+import type { NavItem } from "./types";
 
 function App() {
   const [mobOpened, { toggle: toggleMob }] = useDisclosure();
@@ -50,22 +53,70 @@ function App() {
     },
   });
 
-  const mainNavigation = [
-    { icon: HiChartPie, label: "Dashboard", path: "/" },
+  const navigations: NavItem[] = [
+    { icon: HiChartPie, label: "Overview", path: "/" },
+    {
+      icon: HiBriefcase,
+      label: "Business Profile",
+      path: "/business-profile",
+    },
+    {
+      icon: HiClipboardCheck,
+      label: "Eligibility Check",
+      path: "eligibility-check",
+      children: [
+        {
+          icon: HiChartPie,
+          label: "Eligibility Overview",
+          path: "eligibility-overview",
+        },
+        {
+          icon: HiChartPie,
+          label: "Eligibility Quiz",
+          path: "eligibility-quiz",
+        },
+        {
+          icon: HiDocument,
+          label: "Loan Calculator",
+          path: "loan-calculator",
+        },
+        {
+          icon: HiHeart,
+          label: "Cash Buffer Calculator",
+          path: "cash-buffer-calculator",
+        },
+      ],
+    },
     {
       icon: HiDocument,
-      label: "Financial Readiness",
-      path: "/financial-readiness",
+      label: "Document Prep",
+      path: "document-prep",
+      children: [
+        {
+          icon: HiDocument,
+          label: "Document Overview",
+          path: "document-overview",
+        },
+        {
+          icon: HiDocument,
+          label: "Financial Documents",
+          path: "financial-documents",
+        },
+        {
+          icon: HiDocument,
+          label: "Legal Documents",
+          path: "legal-documents",
+        },
+      ],
     },
-    { icon: HiHeart, label: "Financial Health", path: "/financial-health" },
     {
-      icon: HiChartBar,
-      label: "Financial Advisory",
-      path: "/financial-advisory",
+      icon: HiDocument,
+      label: "Business Proposal",
+      path: "/business-proposal",
     },
   ];
 
-  const supNavigation = [
+  const supNavigation: NavItem[] = [
     { icon: HiCog, label: "Settings", path: "/settings" },
     { icon: HiQuestionMarkCircle, label: "Help", path: "/help" },
   ];
@@ -108,7 +159,7 @@ function App() {
             bdrs="md"
             c="gray.8"
           >
-            <Sidebar mainNav={mainNavigation} supNav={supNavigation} />
+            <Sidebar mainNav={navigations} supNav={supNavigation} />
           </AppShell.Navbar>
           <AppShell.Main className={classes.appMain}>
             <Routes>

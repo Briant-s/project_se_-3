@@ -1,39 +1,27 @@
-import { Avatar, Box, Group, NavLink, Stack } from "@mantine/core";
+import {
+  Avatar,
+  Box,
+  Group,
+  NavLink,
+  ScrollArea,
+  Stack,
+  Text,
+} from "@mantine/core";
 import type { IconType } from "react-icons";
 import classes from "../App.module.css";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import type { NavItem } from "../types";
+import { NavLinkGroup } from "../lib";
 
 interface Props {
-  mainNav: {
-    icon: IconType;
-    label: string;
-    path: string;
-  }[];
-  supNav: {
-    icon: IconType;
-    label: string;
-    path: string;
-  }[];
+  mainNav: NavItem[];
+  supNav: NavItem[];
 }
 
 function Sidebar({ mainNav, supNav }: Props) {
   const navigate = useNavigate();
   const location = useLocation();
-
-  const mainLinks = mainNav.map((nav) => (
-    <NavLink
-      className={classes.navLink}
-      bdrs={5}
-      key={nav.label}
-      active={location.pathname === nav.path}
-      label={nav.label}
-      leftSection={<nav.icon size={16} />}
-      onClick={() => {
-        navigate(nav.path);
-      }}
-    />
-  ));
 
   const supLinks = supNav.map((nav) => (
     <NavLink
@@ -51,11 +39,12 @@ function Sidebar({ mainNav, supNav }: Props) {
 
   return (
     <Stack justify="space-between" h="100%">
-      {/* Nav Links */}
-      <Stack gap="xs">
-        <Box>General</Box>
-        <Box>{mainLinks}</Box>
-      </Stack>
+      <ScrollArea>
+        {mainNav.map((item) => (
+          <NavLinkGroup key={item.label} link={item} />
+        ))}
+      </ScrollArea>
+
       {/* Footer Sections */}
       <Stack>
         {/* Support Links */}

@@ -2,7 +2,9 @@ import {
   Card,
   Container,
   Grid,
+  Group,
   Paper,
+  RingProgress,
   SimpleGrid,
   Stack,
   Text,
@@ -23,8 +25,27 @@ function Dashboard() {
               <Stack gap={"0.5rem"}>
                 <Text>Business' Health</Text>
                 <Card radius="md" bg="green">
-                  <Text>This is where</Text>
-                  <Text> AI SENTIMENT HERE</Text>
+                  <Group justify="space-between">
+                    <Stack gap="0.05rem">
+                      <Text size="md" fw={700}>
+                        This is where
+                      </Text>
+                      <Text size="xl" fw={700} c="white">
+                        AI Sentiment Given Here
+                      </Text>
+                    </Stack>
+                    <RingProgress
+                      size={80}
+                      thickness={6}
+                      rootColor="gray.4"
+                      sections={[{ value: 70, color: "white" }]}
+                      label={
+                        <Text c="white" fw={700} ta="center">
+                          70%
+                        </Text>
+                      }
+                    ></RingProgress>
+                  </Group>
                 </Card>
               </Stack>
             </SimpleGrid>
