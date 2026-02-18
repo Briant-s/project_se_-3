@@ -1,3 +1,9 @@
+.appMain {
+  max-height: 100dvh;
+  overflow: none;
+  max-width: 100vw;
+}
+
 .navLink {
   &:hover {
     color: var(--mantine-color-green-9);

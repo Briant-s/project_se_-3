@@ -9,6 +9,7 @@ import {
   NavLink,
   Stack,
   Avatar,
+  Text,
 } from "@mantine/core";
 import {
   HiChartBar,
@@ -109,8 +110,7 @@ function App() {
           >
             <Sidebar mainNav={mainNavigation} supNav={supNavigation} />
           </AppShell.Navbar>
-          <AppShell.Main>
-            {/* Testing update */}
+          <AppShell.Main className={classes.appMain}>
             <Routes>
               <Route path="/" element={<Dashboard />}></Route>
               <Route
