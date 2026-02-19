@@ -36,6 +36,7 @@ import {
   FinancialReadiness,
   Help,
   Settings,
+  BusinessProfile,
 } from "./page_components";
 import type { NavItem } from "./types";
 
@@ -164,6 +165,7 @@ function App() {
           <AppShell.Main className={classes.appMain}>
             <Routes>
               <Route path="/" element={<Dashboard />}></Route>
+              <Route path="/business-profile" element={<BusinessProfile />} />
               <Route
                 path="/financial-readiness"
                 element={<FinancialReadiness />}
