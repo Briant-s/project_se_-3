@@ -4,6 +4,7 @@ import { MantineProvider } from "@mantine/core";
 import "./index.css";
 import App from "./App.tsx";
 import "@mantine/core/styles.css";
+import "@mantine/charts/styles.css";
 
 createRoot(document.getElementById("root")!).render(
   <MantineProvider>

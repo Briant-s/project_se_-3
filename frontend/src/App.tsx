@@ -38,6 +38,7 @@ import {
   Settings,
   BusinessProfile,
 } from "./page_components";
+import { Elig_Overview } from "./eligibility";
 import type { NavItem } from "./types";
 
 function App() {
@@ -126,6 +127,7 @@ function App() {
     <BrowserRouter>
       <MantineProvider theme={mainTheme}>
         <AppShell
+          style={{ minWidth: 0, minHeight: 0 }}
           padding="sm"
           lts={"0.05em"}
           header={{ height: 60 }}
@@ -166,6 +168,10 @@ function App() {
             <Routes>
               <Route path="/" element={<Dashboard />}></Route>
               <Route path="/business-profile" element={<BusinessProfile />} />
+              <Route
+                path="/eligibility-check/eligibility-overview"
+                element={<Elig_Overview />}
+              />
               <Route
                 path="/financial-readiness"
                 element={<FinancialReadiness />}
