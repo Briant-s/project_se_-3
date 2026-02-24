@@ -12,13 +12,14 @@ function NavLinkGroup({ link, parentPath }: Props) {
   const navigate = useNavigate();
   const location = useLocation();
   const renderNavItem = (item: NavItem, parentPath?: string) => {
-    const fullPath = parentPath ? `${parentPath}/${item.path}` : item.path;
-
+    const fullPath = parentPath
+      ? `${parentPath}/${item.path}`
+      : `/${item.path}`;
     if (item.children) {
       return (
         <NavLink
           className={classes.navLink}
-          active={location.pathname === fullPath}
+          active={location.pathname.startsWith(fullPath)}
           bdrs={5}
           key={item.label}
           label={item.label}
@@ -37,7 +38,10 @@ function NavLinkGroup({ link, parentPath }: Props) {
         active={location.pathname === fullPath}
         label={item.label}
         leftSection={<item.icon size={16} />}
-        onClick={() => navigate(fullPath)}
+        onClick={() => {
+          console.log(fullPath);
+          navigate(fullPath);
+        }}
       />
     );
   };

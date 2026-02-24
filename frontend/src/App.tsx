@@ -38,7 +38,12 @@ import {
   Settings,
   BusinessProfile,
 } from "./page_components";
-import { Elig_Overview } from "./eligibility";
+import {
+  Elig_Overview,
+  LoanCalculatorPage,
+  CashBufferPage,
+  QuizPage,
+} from "./eligibility";
 import type { NavItem } from "./types";
 
 function App() {
@@ -56,11 +61,11 @@ function App() {
   });
 
   const navigations: NavItem[] = [
-    { icon: HiChartPie, label: "Overview", path: "/" },
+    { icon: HiChartPie, label: "Overview", path: "" },
     {
       icon: HiBriefcase,
       label: "Business Profile",
-      path: "/business-profile",
+      path: "business-profile",
     },
     {
       icon: HiClipboardCheck,
@@ -114,7 +119,7 @@ function App() {
     {
       icon: HiDocument,
       label: "Business Proposal",
-      path: "/business-proposal",
+      path: "business-proposal",
     },
   ];
 
@@ -171,6 +176,18 @@ function App() {
               <Route
                 path="/eligibility-check/eligibility-overview"
                 element={<Elig_Overview />}
+              />
+              <Route
+                path="/eligibility-check/eligibility-quiz"
+                element={<QuizPage />}
+              />
+              <Route
+                path="/eligibility-check/loan-calculator"
+                element={<LoanCalculatorPage />}
+              />
+              <Route
+                path="/eligibility-check/cash-buffer-calculator"
+                element={<CashBufferPage />}
               />
               <Route
                 path="/financial-readiness"

@@ -8,9 +8,11 @@ import {
   Text,
 } from "@mantine/core";
 import { HiArrowRight } from "react-icons/hi";
+import { useNavigate } from "react-router-dom";
 import { AreaChart, LineChart } from "@mantine/charts";
 
 function Eligibility_Overview() {
+  const nav = useNavigate();
   const loan_data = [
     {
       month: 1,
@@ -131,6 +133,7 @@ function Eligibility_Overview() {
                     </Text>
                   </Stack>
                   <Button
+                    onClick={() => nav("/eligibility-check/loan-calculator")}
                     justify="space-between"
                     rightSection={<HiArrowRight />}
                   >
@@ -163,6 +166,9 @@ function Eligibility_Overview() {
                     </Group>
                   </Stack>
                   <Button
+                    onClick={() =>
+                      nav("/eligibility-check/cash-buffer-calculator")
+                    }
                     justify="space-between"
                     rightSection={<HiArrowRight />}
                   >
