@@ -1,4 +1,13 @@
-import { Card, Container, Group, SimpleGrid, Stack, Text } from "@mantine/core";
+import {
+  Button,
+  Card,
+  Container,
+  Group,
+  SimpleGrid,
+  Stack,
+  Text,
+} from "@mantine/core";
+import { HiArrowRight } from "react-icons/hi";
 import { AreaChart, LineChart } from "@mantine/charts";
 
 function Eligibility_Overview() {
@@ -82,9 +91,12 @@ function Eligibility_Overview() {
       <Container fluid style={{ minWidth: 0, minHeight: 0 }}>
         <Stack>
           <SimpleGrid cols={2}>
-            <Card bg="gray.2" m={10}>
-              <Stack gap="1.5rem">
-                <Group>
+            <Card bg="gray.4">Halo</Card>
+
+            <SimpleGrid>
+              <Card bg="teal.4" m={10}>
+                <Stack gap="0.5rem">
+                  {/* <Group>
                   <Text>Loan Progress Chart</Text>
                 </Group>
                 <LineChart
@@ -106,15 +118,57 @@ function Eligibility_Overview() {
                   ]}
                   curveType="linear"
                   tickLine="x"
-                ></LineChart>
-              </Stack>
-            </Card>
-            <Card bg="gray.2" m={10}>
-              <Stack gap="1.5rem">
-                <Group>
-                  <Text>Cash Buffer Chart</Text>
-                </Group>
-                <AreaChart
+                ></LineChart> */}
+                  <Text size="md" fw={700}>
+                    Loan Eligibility
+                  </Text>
+                  <Stack gap="0.2rem">
+                    <Text fw={700} c="white">
+                      Loan is payable next month
+                    </Text>
+                    <Text size="xl" fw={700}>
+                      Rp. 1.7000.000,00
+                    </Text>
+                  </Stack>
+                  <Button
+                    justify="space-between"
+                    rightSection={<HiArrowRight />}
+                  >
+                    See Monthly Chart
+                  </Button>
+                </Stack>
+              </Card>
+              <Card bg="orange.4" m={10}>
+                <Stack gap="0.2rem">
+                  <Group>
+                    <Text size="lg" fw={700}>
+                      Cash Buffer
+                    </Text>
+                  </Group>
+                  <Stack gap="0.2rem">
+                    <Text fw={700} c="white">
+                      Buffer cash is running low
+                    </Text>
+                    <Group gap="0.4rem">
+                      <Text size="lg" c="dimmed" fw={700}>
+                        Rp. 500.000,00
+                      </Text>
+                      <Text size="lg" fw={700}>
+                        {" "}
+                        /{" "}
+                      </Text>
+                      <Text size="lg" fw={700}>
+                        Rp. 1.000.000,00
+                      </Text>
+                    </Group>
+                  </Stack>
+                  <Button
+                    justify="space-between"
+                    rightSection={<HiArrowRight />}
+                  >
+                    See Buffer Chart
+                  </Button>
+                  {/* <AreaChart
                   h={300}
                   type="stacked"
                   data={loan_data}
@@ -132,9 +186,10 @@ function Eligibility_Overview() {
                   }}
                   curveType="natural"
                   withDots={false}
-                ></AreaChart>
-              </Stack>
-            </Card>
+                ></AreaChart> */}
+                </Stack>
+              </Card>
+            </SimpleGrid>
           </SimpleGrid>
         </Stack>
       </Container>
