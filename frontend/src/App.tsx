@@ -160,11 +160,13 @@ function App() {
             </Group>
           </AppShell.Header>
           <AppShell.Navbar
+            style={{
+              borderTopRightRadius: "var(--mantine-radius-md)",
+              borderBottomRightRadius: "var(--mantine-radius-md)",
+            }}
             ta="left"
             py="xl"
             px="md"
-            bg="gray.1"
-            bdrs="md"
             c="gray.8"
           >
             <Sidebar mainNav={navigations} supNav={supNavigation} />
