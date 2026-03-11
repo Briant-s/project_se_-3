@@ -1,6 +1,7 @@
 import {
   Avatar,
   Box,
+  Button,
   Group,
   NavLink,
   ScrollArea,
@@ -39,11 +40,14 @@ function Sidebar({ mainNav, supNav }: Props) {
 
   return (
     <Stack justify="space-between" h="100%">
-      <ScrollArea>
-        {mainNav.map((item) => (
-          <NavLinkGroup key={item.label} link={item} />
-        ))}
-      </ScrollArea>
+      <Stack>
+        <Button>Fill Out Business Quiz</Button>
+        <ScrollArea>
+          {mainNav.map((item) => (
+            <NavLinkGroup key={item.label} link={item} />
+          ))}
+        </ScrollArea>
+      </Stack>
 
       {/* Footer Sections */}
       <Stack>

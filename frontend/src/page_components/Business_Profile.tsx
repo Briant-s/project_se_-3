@@ -1,26 +1,48 @@
 import {
+  Avatar,
+  ActionIcon,
+  Box,
   Button,
   Card,
-  Center,
   Container,
-  Grid,
   Group,
-  Paper,
-  Progress,
   SimpleGrid,
+  RingProgress,
   Stack,
   Text,
-  Image,
 } from "@mantine/core";
+import { HiPencil, HiExternalLink, HiOutlineX } from "react-icons/hi";
 import { useState } from "react";
+import { mockBusinessProfile } from "../mock_user";
 
 function BusinessProfile() {
+  const [formReminder, setFormReminder] = useState(true);
   const [firstTimeForm, setFirstTimeForm] = useState(false);
-
+  const { identity, operational, finansial } = mockBusinessProfile;
+  const formProgress = 70;
   return (
     <>
       <Container fluid>
         <Stack gap="lg">
+          {/* Form Reminder */}
+          {formReminder && (
+            <SimpleGrid>
+              <Card bg="red.5" c="red.2" shadow="md">
+                <Group justify="space-between">
+                  <Text>You Haven't Filled The Form Yet</Text>
+                  <Group>
+                    <ActionIcon>
+                      <HiExternalLink />
+                    </ActionIcon>
+                    <ActionIcon onClick={() => setFormReminder(false)}>
+                      <HiOutlineX />
+                    </ActionIcon>
+                  </Group>
+                </Group>
+              </Card>
+            </SimpleGrid>
+          )}
+          {/* Title Text */}
           <Stack gap="0.5rem">
             <Text size="xl" fw={700}>
               Business Profile Overview
@@ -32,119 +54,113 @@ function BusinessProfile() {
               your chances of approval.
             </Text>
           </Stack>
-          <SimpleGrid cols={{ base: 1, sm: 2 }}>
-            <Card withBorder shadow="sm">
-              <Stack>
-                <Text>Business Name Here</Text>
-                <Stack>
-                  <Text>Phone Here</Text>
-                  <Text>Email Here</Text>
-                  <Text>Business Location Here</Text>
-                </Stack>
-              </Stack>
-            </Card>
-            <Grid>
-              <Grid.Col>
-                <Card withBorder>Business Operations</Card>
-              </Grid.Col>
-              <Grid.Col>
-                <Card withBorder>Business Financial</Card>
-              </Grid.Col>
-            </Grid>
-          </SimpleGrid>
-          {firstTimeForm ? (
-            <SimpleGrid
-              cols={{ base: 1, sm: 1, lg: 1 }}
-              spacing={{ base: 10, sm: "xl" }}
-              verticalSpacing={{ base: "md", sm: "xl" }}
-            >
-              <SimpleGrid cols={1}>
-                <Card radius="md" bg="yellow.4">
-                  <Stack gap="0.05rem">
-                    <Text size="xl" fw={700} c="white">
-                      Warning!!!
-                    </Text>
-                    <Text size="md" fw={700}>
-                      Business Profile is incomplete, complete now
-                    </Text>
-                  </Stack>
-                </Card>
-              </SimpleGrid>
-              {/* Business Identity */}
-              <SimpleGrid>
-                <Card bg="violet.3">
-                  <Stack>
-                    <Group>
-                      <Text size="lg" fw={700}>
-                        Business Name Here
-                      </Text>
-                    </Group>
-                    <Group>
-                      <Text>Ownership Type</Text>
-                      <Text>Business Type</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text>Profile :</Text>
-                      <Text>50%</Text>
-                    </Group>
-                    <Progress
-                      value={50}
-                      color="green.5"
-                      size="md"
-                      radius="sm"
-                    />
-                  </Stack>
-                </Card>
-              </SimpleGrid>
-              {/* Business Details */}
-              <SimpleGrid cols={2}>
-                <Card bg="gray">
-                  <Stack>
-                    <Text size="lg" fw={700}>
-                      Business Details
-                    </Text>
-                    <Stack gap="0.5rem">
-                      <Text>Registered: </Text>
-                      <Text>Est.: </Text>
-                      <Text>Scale: </Text>
-                    </Stack>
-                  </Stack>
-                </Card>
-                <Card bg="gray">
-                  <Stack>
-                    <Text size="lg" fw={700}>
-                      Location
-                    </Text>
-                    <Text>
-                      Jl. Raya Kb. Jeruk No.27, RT.1/RW.9, Kemanggisan, Kec.
-                      Palmerah, Kota Jakarta Barat, Daerah Khusus Ibukota
-                      Jakarta 11530
-                    </Text>
-                  </Stack>
-                </Card>
-              </SimpleGrid>
-              {/* Contacts */}
-              <SimpleGrid cols={1}>
-                <Card bg="blue">
-                  <Stack>
-                    <Text size="lg" fw={700}>
-                      Owner & Contacts
-                    </Text>
-                    <Group>
-                      <Text>Owner Name</Text>
-                      <Text>Owner Email</Text>
-                      <Text>Owner Number</Text>
-                    </Group>
-                  </Stack>
-                </Card>
-              </SimpleGrid>
-            </SimpleGrid>
-          ) : (
+          {/* Gradient Background */}
+          <Box
+            bdrs="md"
+            px="md"
+            py="sm"
+            style={{
+              background:
+                "linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(87, 199, 133, 1) 50%, rgba(237, 221, 83, 1) 100%)",
+            }}
+          >
             <SimpleGrid>
-              <Card bg="red.5">You Haven't Filled The Form Yet</Card>
-              <Button>Go To Quiz</Button>
+              <Stack gap="2rem">
+                <Text size="xl" c="white">
+                  Business Profile
+                </Text>
+                <SimpleGrid
+                  cols={{ base: 1, sm: 2 }}
+                  // negative half of card height
+                >
+                  <Card shadow="md" radius="md" bg="white">
+                    <Stack gap="2rem">
+                      <Group justify="space-between">
+                        <Avatar radius="xl" color="blue.5" />
+                        <ActionIcon>
+                          <HiPencil />
+                        </ActionIcon>
+                      </Group>
+                      <Text>{identity.namaBisnis}</Text>
+                      <Stack>
+                        <Text>Phone Here</Text>
+                        <Text>Email Here</Text>
+                        <Text>Business Location Here</Text>
+                      </Stack>
+                    </Stack>
+                  </Card>
+                  <Card shadow="md" radius="md" bg="white">
+                    <Stack gap="2rem">
+                      <Group justify="space-between">
+                        <Avatar radius="xl" color="blue.5" />
+                        <ActionIcon>
+                          <HiPencil />
+                        </ActionIcon>
+                      </Group>
+                      <Text>Business Operations</Text>
+                      <Stack>
+                        <Text>Sector Here</Text>
+                        <Text>Business Type Here</Text>
+                        <Text>Employee Count:</Text>
+                        <Text>Online/Offline/Both</Text>
+                      </Stack>
+                    </Stack>
+                  </Card>
+                </SimpleGrid>
+              </Stack>
             </SimpleGrid>
-          )}
+          </Box>
+          {/* Financial & Quiz Progress Link */}
+          <SimpleGrid cols={2}>
+            {/* Financial */}
+            <Stack>
+              <Stack gap="0.5rem">
+                <Text size="xl" fw={700}>
+                  Financial Overview
+                </Text>
+                <Text>Financial Sample Text</Text>
+                <Card withBorder>
+                  <Stack>
+                    <Text fw={700}>Financial Overview</Text>
+                    <Button rightSection={<HiExternalLink />}>
+                      <Text>Go to Financial Page</Text>
+                    </Button>
+                  </Stack>
+                </Card>
+              </Stack>
+            </Stack>
+            {/* Form Progress */}
+            <Stack>
+              <Stack gap="0.5rem">
+                <Text size="xl" fw={700}>
+                  Form Progress
+                </Text>
+                <Text>Business Profile Form Sample Text</Text>
+                <Card withBorder>
+                  <Group>
+                    <Stack>
+                      <Text fw={700}>Quiz Progress</Text>
+                      <Button rightSection={<HiExternalLink />}>
+                        <Text>Continue Quiz</Text>
+                      </Button>
+                    </Stack>
+                    <RingProgress
+                      label={
+                        <Text
+                          ta="center"
+                          size="xl"
+                          style={{ pointerEvents: "none" }}
+                        >
+                          {formProgress}
+                        </Text>
+                      }
+                      sections={[{ value: formProgress, color: "orange.5" }]}
+                    />
+                  </Group>
+                </Card>
+              </Stack>
+            </Stack>
+          </SimpleGrid>
         </Stack>
       </Container>
     </>

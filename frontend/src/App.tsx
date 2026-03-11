@@ -10,6 +10,7 @@ import {
   Stack,
   Avatar,
   Text,
+  ScrollArea,
 } from "@mantine/core";
 import {
   HiBriefcase,
@@ -134,7 +135,6 @@ function App() {
         <AppShell
           style={{ minWidth: 0, minHeight: 0 }}
           padding="sm"
-          lts={"0.05em"}
           header={{ height: 60 }}
           navbar={{
             width: 300,
@@ -168,6 +168,7 @@ function App() {
             py="xl"
             px="md"
             c="gray.8"
+            // bg="teal.0"
           >
             <Sidebar mainNav={navigations} supNav={supNavigation} />
           </AppShell.Navbar>

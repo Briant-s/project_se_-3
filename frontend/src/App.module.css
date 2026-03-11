@@ -1,6 +1,7 @@
 .appMain {
   max-height: 100dvh;
   overflow: hidden;
+  overflow-y: auto;
   max-width: 100%;
 }
 
@@ -13,7 +14,7 @@
     &,
     &:hover {
       color: var(--mantine-color-gray-9);
-      background-color: var(--mantine-color-teal-3);
+      background-color: var(--mantine-color-teal-2);
     }
   }
 }
