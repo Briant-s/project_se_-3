@@ -10,12 +10,14 @@ import {
   Text,
 } from "@mantine/core";
 import { HiExternalLink } from "react-icons/hi";
+import { BackButton } from "../../components";
 
 function FinancialOverview() {
   return (
     <>
       <Container fluid>
         <Stack>
+          <BackButton />
           <Card withBorder>
             <Group justify="space-between">
               <Group>

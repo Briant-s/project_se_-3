@@ -9,7 +9,7 @@
 /* Bold Font */
 @font-face {
   font-family: "Swansea";
-  src: url("public/fonts/SWANSE_B.TTF");
+  src: url("/fonts/SWANSE_B.TTF");
   font-weight: 700;
   font-style: normal;
 }
