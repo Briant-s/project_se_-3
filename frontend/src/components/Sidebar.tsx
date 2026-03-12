@@ -55,12 +55,6 @@ function Sidebar({ mainNav, supNav }: Props) {
         <Box>{supLinks}</Box>
         <Box px={10} h={2} bg="gray.7"></Box>
         {/* User Account */}
-        <Group>
-          <Avatar color="violet" radius="xl">
-            LS
-          </Avatar>
-          <Box fz={12}>lorem.ipsum@gmail.com</Box>
-        </Group>
       </Stack>
     </Stack>
   );

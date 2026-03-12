@@ -39,6 +39,7 @@ import {
   Settings,
   BusinessProfile,
 } from "./page_components";
+import { FinancialOverview } from "./page_components/MyBusiness";
 import {
   Elig_Overview,
   LoanCalculatorPage,
@@ -65,8 +66,25 @@ function App() {
     { icon: HiChartPie, label: "Overview", path: "" },
     {
       icon: HiBriefcase,
-      label: "Business Profile",
-      path: "business-profile",
+      label: "My Business",
+      path: "my-business",
+      children: [
+        {
+          icon: HiBriefcase,
+          label: "Business Overview",
+          path: "business-profile",
+        },
+        {
+          icon: HiClipboardCheck,
+          label: "Financial Overview",
+          path: "financial-overview",
+        },
+        {
+          icon: HiClipboardCheck,
+          label: "Profile Quiz",
+          path: "profile-quiz",
+        },
+      ],
     },
     {
       icon: HiClipboardCheck,
@@ -143,20 +161,28 @@ function App() {
           }}
         >
           <AppShell.Header bdrs="sm">
-            <Group h="100%" px="md">
-              <Burger
-                opened={mobOpened}
-                onClick={toggleMob}
-                hiddenFrom="sm"
-                size="sm"
-              ></Burger>
-              <Burger
-                opened={deksOpened}
-                onClick={toggleDeks}
-                visibleFrom="sm"
-                size="sm"
-              ></Burger>
-              PoestaKas
+            <Group h="100%" px="md" justify="space-between">
+              <Group>
+                <Burger
+                  opened={mobOpened}
+                  onClick={toggleMob}
+                  hiddenFrom="sm"
+                  size="sm"
+                ></Burger>
+                <Burger
+                  opened={deksOpened}
+                  onClick={toggleDeks}
+                  visibleFrom="sm"
+                  size="sm"
+                ></Burger>
+                PoestaKas
+              </Group>
+              <Group>
+                <Avatar color="violet" radius="xl">
+                  LS
+                </Avatar>
+                <Box fz={12}>lorem.ipsum@gmail.com</Box>
+              </Group>
             </Group>
           </AppShell.Header>
           <AppShell.Navbar
@@ -175,7 +201,14 @@ function App() {
           <AppShell.Main className={classes.appMain}>
             <Routes>
               <Route path="/" element={<Dashboard />}></Route>
-              <Route path="/business-profile" element={<BusinessProfile />} />
+              <Route
+                path="/my-business/business-profile"
+                element={<BusinessProfile />}
+              />
+              <Route
+                path="/my-business/financial-overview"
+                element={<FinancialOverview />}
+              />
               <Route
                 path="/eligibility-check/eligibility-overview"
                 element={<Elig_Overview />}
