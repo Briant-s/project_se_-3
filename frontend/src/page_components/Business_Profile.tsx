@@ -47,7 +47,7 @@ function BusinessProfile() {
             <Text size="xl" fw={700}>
               Business Profile Overview
             </Text>
-            <Text>
+            <Text size="sm">
               Your business profile is a snapshot of your business that lenders
               and financial institutions use to assess your eligibility for
               loans and assistance. Keeping it complete and accurate improves
