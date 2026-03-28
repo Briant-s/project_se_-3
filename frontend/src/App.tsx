@@ -38,6 +38,7 @@ import {
   Help,
   Settings,
   BusinessProfile,
+  ProfileQuiz
 } from "./page_components";
 import { FinancialOverview } from "./page_components/MyBusiness";
 import {
@@ -207,11 +208,16 @@ function App() {
               <Route path="/" element={<Dashboard />}></Route>
               <Route
                 path="/my-business/business-profile"
+                
                 element={<BusinessProfile />}
               />
               <Route
                 path="/my-business/financial-overview"
                 element={<FinancialOverview />}
+              />
+              <Route
+                path="/my-business/profile-quiz"
+                element={<ProfileQuiz/>}
               />
               <Route
                 path="/eligibility-check/eligibility-overview"
