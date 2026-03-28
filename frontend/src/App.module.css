@@ -1,20 +1,18 @@
-/* Pastikan warna hover tidak ungu */
+
 .navLink {
   border-radius: 8px;
-  padding-top: 6px;    /* Dipersempit */
-  padding-bottom: 6px; /* Dipersempit */
+  padding-top: 6px;   
+  padding-bottom: 6px; 
   margin-bottom: 2px;
   transition: all 0.2s ease;
   color: var(--mantine-color-gray-7);
 }
 
-/* Hover: Abu-abu tipis, bukan ungu */
 .navLink:hover {
   background-color: var(--mantine-color-gray-2) !important;
   color: var(--mantine-color-blue-7);
 }
 
-/* Aktif: Putih dengan Shadow (seperti permintaan awal) */
 .navLink[data-active] {
   background-color: #ffffff !important;
   color: var(--mantine-color-blue-7) !important;
@@ -22,7 +20,6 @@
   font-weight: 600;
 }
 
-/* User Profile Button Hover */
 .userButton {
   padding: 6px;
   border-radius: 6px;

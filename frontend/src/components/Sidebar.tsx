@@ -39,25 +39,25 @@ function Sidebar({ mainNav, supNav }: Props) {
   ));
 
   return (
-    <Stack justify="space-between" h="100%">
-      <Stack>
-        <Button>Fill Out Business Quiz</Button>
-        <ScrollArea>
-          {mainNav.map((item) => (
-            <NavLinkGroup key={item.label} link={item} />
-          ))}
+    <Stack justify="space-between" h="calc(100vh - 80px)" gap="md">
+      
+      <Stack gap="sm" style={{ flex: 1, overflow: 'hidden' }}>
+        <Button fullWidth>Fill Out Business Quiz</Button>
+        
+        <ScrollArea scrollbars="y" flex={1}>
+          <Stack gap={4}>
+            {mainNav.map((item) => (
+              <NavLinkGroup key={item.label} link={item} />
+            ))}
+          </Stack>
         </ScrollArea>
       </Stack>
 
-      {/* Footer Sections */}
-      <Stack>
-        {/* Support Links */}
+      <Stack gap="xs" pb="md">
         <Box>{supLinks}</Box>
-        <Box px={10} h={2} bg="gray.7"></Box>
-        {/* User Account */}
+        <Box px={10} h={1} bg="gray.3"></Box>
       </Stack>
     </Stack>
   );
 }
-
 export default Sidebar;

@@ -186,6 +186,7 @@ function App() {
               </Group>
             </Group>
           </AppShell.Header>
+          
           <AppShell.Navbar
             p="xs"
             bg="gray.0"
@@ -195,7 +196,6 @@ function App() {
             <AppShell.Section grow px="xs">
               <Stack gap={4}>
                 {" "}
-                {/* Gap antar menu sangat kecil */}
                 <Sidebar mainNav={navigations} supNav={supNavigation} />
               </Stack>
             </AppShell.Section>
