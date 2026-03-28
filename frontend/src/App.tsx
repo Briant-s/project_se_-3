@@ -1,4 +1,4 @@
-import { Children, useState } from "react";
+// import { Children, useState } from "react";
 import {
   AppShell,
   Burger,
@@ -6,28 +6,28 @@ import {
   createTheme,
   Group,
   MantineProvider,
-  NavLink,
   Stack,
-  Avatar,
-  Text,
-  ScrollArea,
+  Avatar
 } from "@mantine/core";
 import {
   HiBriefcase,
-  HiChartBar,
-  HiClipboardCheck,
-  HiDocument,
-  HiHeart,
+  HiClipboard,
   HiChartPie,
   HiCog,
   HiQuestionMarkCircle,
-} from "react-icons/hi";
+  HiCalculator,
+  HiBanknotes,
+  HiClipboardDocumentCheck,
+  HiDocumentCurrencyDollar,
+  HiDocumentText,
+  HiIdentification,
+  HiClipboardDocumentList,
+  HiDocumentDuplicate
+} from "react-icons/hi2";
 import { useDisclosure } from "@mantine/hooks";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
 import classes from "./App.module.css";
-import { Label } from "recharts";
+// import { Label } from "recharts";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import {
@@ -70,24 +70,24 @@ function App() {
       path: "my-business",
       children: [
         {
-          icon: HiBriefcase,
+          icon: HiIdentification,
           label: "Business Overview",
           path: "business-profile",
         },
         {
-          icon: HiClipboardCheck,
+          icon: HiBanknotes,
           label: "Financial Overview",
           path: "financial-overview",
         },
         {
-          icon: HiClipboardCheck,
+          icon: HiClipboard,
           label: "Profile Quiz",
           path: "profile-quiz",
         },
       ],
     },
     {
-      icon: HiClipboardCheck,
+      icon: HiClipboardDocumentCheck,
       label: "Eligibility Check",
       path: "eligibility-check",
       children: [
@@ -97,46 +97,47 @@ function App() {
           path: "eligibility-overview",
         },
         {
-          icon: HiChartPie,
+          icon: HiClipboard,
           label: "Eligibility Quiz",
           path: "eligibility-quiz",
         },
         {
-          icon: HiDocument,
+          icon: HiCalculator,
           label: "Loan Calculator",
           path: "loan-calculator",
         },
         {
-          icon: HiHeart,
+          icon: HiCalculator,
           label: "Cash Buffer Calculator",
           path: "cash-buffer-calculator",
         },
       ],
     },
     {
-      icon: HiDocument,
+      icon: HiDocumentDuplicate,
       label: "Document Prep",
       path: "document-prep",
       children: [
         {
-          icon: HiDocument,
+          icon: HiDocumentText,
           label: "Document Overview",
           path: "document-overview",
         },
         {
-          icon: HiDocument,
+          icon: HiDocumentCurrencyDollar,
           label: "Financial Documents",
           path: "financial-documents",
         },
         {
-          icon: HiDocument,
+          icon: HiDocumentText
+          ,
           label: "Legal Documents",
           path: "legal-documents",
         },
       ],
     },
     {
-      icon: HiDocument,
+      icon: HiClipboardDocumentList,
       label: "Business Proposal",
       path: "business-proposal",
     },
@@ -186,18 +187,21 @@ function App() {
             </Group>
           </AppShell.Header>
           <AppShell.Navbar
-            style={{
-              borderTopRightRadius: "var(--mantine-radius-md)",
-              borderBottomRightRadius: "var(--mantine-radius-md)",
-            }}
-            ta="left"
-            py="xl"
-            px="md"
-            c="gray.8"
-            // bg="teal.0"
+            p="xs"
+            bg="gray.0"
+            style={{ borderRight: "1px solid #e9ecef" }}
           >
-            <Sidebar mainNav={navigations} supNav={supNavigation} />
+
+            <AppShell.Section grow px="xs">
+              <Stack gap={4}>
+                {" "}
+                {/* Gap antar menu sangat kecil */}
+                <Sidebar mainNav={navigations} supNav={supNavigation} />
+              </Stack>
+            </AppShell.Section>
+
           </AppShell.Navbar>
+
           <AppShell.Main className={classes.appMain}>
             <Routes>
               <Route path="/" element={<Dashboard />}></Route>

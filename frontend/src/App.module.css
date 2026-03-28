@@ -1,20 +1,34 @@
-.appMain {
-  max-height: 100dvh;
-  overflow: hidden;
-  overflow-y: auto;
-  max-width: 100%;
+/* Pastikan warna hover tidak ungu */
+.navLink {
+  border-radius: 8px;
+  padding-top: 6px;    /* Dipersempit */
+  padding-bottom: 6px; /* Dipersempit */
+  margin-bottom: 2px;
+  transition: all 0.2s ease;
+  color: var(--mantine-color-gray-7);
 }
 
-.navLink {
-  &:hover {
-    color: var(--mantine-color-teal-7);
-  }
+/* Hover: Abu-abu tipis, bukan ungu */
+.navLink:hover {
+  background-color: var(--mantine-color-gray-2) !important;
+  color: var(--mantine-color-blue-7);
+}
 
-  &[data-active] {
-    &,
-    &:hover {
-      color: var(--mantine-color-gray-9);
-      background-color: var(--mantine-color-teal-2);
-    }
-  }
+/* Aktif: Putih dengan Shadow (seperti permintaan awal) */
+.navLink[data-active] {
+  background-color: #ffffff !important;
+  color: var(--mantine-color-blue-7) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  font-weight: 600;
+}
+
+/* User Profile Button Hover */
+.userButton {
+  padding: 6px;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.userButton:hover {
+  background-color: var(--mantine-color-gray-1);
 }
