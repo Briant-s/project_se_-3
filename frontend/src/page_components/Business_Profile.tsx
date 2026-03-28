@@ -1,15 +1,13 @@
 import {
-  Avatar,
   ActionIcon,
-  Box,
   Button,
   Card,
   Container,
   Group,
-  SimpleGrid,
   RingProgress,
   Stack,
   Text,
+  Divider,
 } from "@mantine/core";
 import { HiPencil, HiExternalLink, HiOutlineX } from "react-icons/hi";
 import { useState } from "react";
@@ -17,150 +15,188 @@ import { mockBusinessProfile } from "../mock_user";
 
 function BusinessProfile() {
   const [formReminder, setFormReminder] = useState(true);
-  const [firstTimeForm, setFirstTimeForm] = useState(false);
-  const { identity, operational, finansial } = mockBusinessProfile;
+  const { operational } = mockBusinessProfile;
   const formProgress = 70;
+
+  const DataItem = ({
+    label,
+    value,
+  }: {
+    label: string;
+    value: string | number;
+  }) => (
+    <Stack gap={0}>
+      <Text size="xs" c="dimmed">
+        {label}
+      </Text>
+      <Text size="sm" fw={500}>
+        {value}
+      </Text>
+    </Stack>
+  );
+
   return (
     <>
       <Container fluid>
         <Stack gap="lg">
           {/* Form Reminder */}
           {formReminder && (
-            <SimpleGrid>
-              <Card bg="red.5" c="red.2" shadow="md">
-                <Group justify="space-between">
-                  <Text>You Haven't Filled The Form Yet</Text>
-                  <Group>
-                    <ActionIcon>
-                      <HiExternalLink />
-                    </ActionIcon>
-                    <ActionIcon onClick={() => setFormReminder(false)}>
-                      <HiOutlineX />
-                    </ActionIcon>
-                  </Group>
-                </Group>
-              </Card>
-            </SimpleGrid>
-          )}
-          {/* Title Text */}
-          <Stack gap="0.5rem">
-            <Text size="xl" fw={700}>
-              Business Profile Overview
-            </Text>
-            <Text size="sm">
-              Your business profile is a snapshot of your business that lenders
-              and financial institutions use to assess your eligibility for
-              loans and assistance. Keeping it complete and accurate improves
-              your chances of approval.
-            </Text>
-          </Stack>
-          {/* Gradient Background */}
-          <Box
-            bdrs="md"
-            px="md"
-            py="sm"
-            style={{
-              background:
-                "linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(87, 199, 133, 1) 50%, rgba(237, 221, 83, 1) 100%)",
-            }}
-          >
-            <SimpleGrid>
-              <Stack gap="2rem">
-                <Text size="xl" c="white">
-                  Business Profile
-                </Text>
-                <SimpleGrid
-                  cols={{ base: 1, sm: 2 }}
-                  // negative half of card height
-                >
-                  <Card shadow="md" radius="md" bg="white">
-                    <Stack gap="2rem">
-                      <Group justify="space-between">
-                        <Avatar radius="xl" color="blue.5" />
-                        <ActionIcon>
-                          <HiPencil />
-                        </ActionIcon>
-                      </Group>
-                      <Text>{identity.namaBisnis}</Text>
-                      <Stack>
-                        <Text>Phone Here</Text>
-                        <Text>Email Here</Text>
-                        <Text>Business Location Here</Text>
-                      </Stack>
-                    </Stack>
-                  </Card>
-                  <Card shadow="md" radius="md" bg="white">
-                    <Stack gap="2rem">
-                      <Group justify="space-between">
-                        <Avatar radius="xl" color="blue.5" />
-                        <ActionIcon>
-                          <HiPencil />
-                        </ActionIcon>
-                      </Group>
-                      <Text>Business Operations</Text>
-                      <Stack>
-                        <Text>Sector Here</Text>
-                        <Text>Business Type Here</Text>
-                        <Text>Employee Count:</Text>
-                        <Text>Online/Offline/Both</Text>
-                      </Stack>
-                    </Stack>
-                  </Card>
-                </SimpleGrid>
-              </Stack>
-            </SimpleGrid>
-          </Box>
-          {/* Financial & Quiz Progress Link */}
-          <SimpleGrid cols={2}>
-            {/* Financial */}
-            <Stack>
-              <Stack gap="0.5rem">
-                <Text size="xl" fw={700}>
-                  Financial Overview
-                </Text>
-                <Text>Financial Sample Text</Text>
-                <Card withBorder>
-                  <Stack>
-                    <Text fw={700}>Financial Overview</Text>
-                    <Button rightSection={<HiExternalLink />}>
-                      <Text>Go to Financial Page</Text>
-                    </Button>
+            <Card
+              withBorder
+              shadow="sm"
+              radius="md"
+              p="sm"
+              style={{
+                backgroundColor: "var(--mantine-color-red-light)",
+                borderColor: "var(--mantine-color-red-light-hover)",
+                borderLeft: "4px solid var(--mantine-color-red-filled)",
+              }}
+            >
+              <Group justify="space-between" wrap="nowrap">
+                <Group gap="sm">
+                  <Stack gap={0}>
+                    <Text size="sm" fw={600} c="red.9">
+                      Action Required: Profile Incomplete
+                    </Text>
+                    <Text size="xs" c="red.8">
+                      You haven't filled out the business form yet. Complete it
+                      to get a better financial assessment.
+                    </Text>
                   </Stack>
-                </Card>
-              </Stack>
-            </Stack>
-            {/* Form Progress */}
-            <Stack>
-              <Stack gap="0.5rem">
-                <Text size="xl" fw={700}>
-                  Form Progress
+                </Group>
+
+                <Group gap="xs">
+                  <Button
+                    variant="white"
+                    color="red"
+                    size="compact-xs"
+                    radius="xl"
+                    rightSection={<HiExternalLink size={14} />}
+                  >
+                    Fill Now
+                  </Button>
+                  <ActionIcon
+                    variant="subtle"
+                    color="red"
+                    size="sm"
+                    onClick={() => setFormReminder(false)}
+                  >
+                    <HiOutlineX size={16} />
+                  </ActionIcon>
+                </Group>
+              </Group>
+            </Card>
+          )}
+
+          {/* Header Title */}
+          {/* <Stack gap="xs">
+            <Text size="xl" fw={700}>Business Profile Overview</Text>
+            <Text size="sm" c="dimmed">
+              Your business profile is a snapshot used by lenders to assess eligibility. 
+              Keeping it accurate improves your chances of approval.
+            </Text>
+          </Stack> */}
+
+          {/* Section 1: Main Profile & Operations */}
+          <Card shadow="sm" radius="md" withBorder padding="xl">
+            <Stack gap="xl">
+              <Group justify="space-between">
+                <Text fw={700} size="lg">
+                  Warung Maju Jaya
                 </Text>
-                <Text>Business Profile Form Sample Text</Text>
-                <Card withBorder>
-                  <Group>
-                    <Stack>
-                      <Text fw={700}>Quiz Progress</Text>
-                      <Button rightSection={<HiExternalLink />}>
-                        <Text>Continue Quiz</Text>
-                      </Button>
-                    </Stack>
-                    <RingProgress
-                      label={
-                        <Text
-                          ta="center"
-                          size="xl"
-                          style={{ pointerEvents: "none" }}
-                        >
-                          {formProgress}
-                        </Text>
-                      }
-                      sections={[{ value: formProgress, color: "orange.5" }]}
-                    />
-                  </Group>
-                </Card>
+                <ActionIcon variant="subtle" color="gray">
+                  <HiPencil />
+                </ActionIcon>
+              </Group>
+
+              <Stack gap="xs">
+                <Text size="sm" c="dimmed" fw={500}>
+                  Business Contact
+                </Text>
+                <Group justify="space-between" align="flex-start">
+                  <DataItem label="Phone" value="0812-3456-7890" />
+                  <DataItem label="Email" value="maju.jaya@email.com" />
+                  <DataItem label="Location" value="Jakarta, Indonesia" />
+                </Group>
+              </Stack>
+
+              <Divider />
+
+              <Stack gap="xs">
+                <Text size="sm" c="dimmed" fw={500}>
+                  Business Operations
+                </Text>
+                <Group justify="space-between" align="flex-start">
+                  <DataItem label="Sector" value="Food" />
+                  <DataItem label="Business Type" value="UMKM" />
+                  <DataItem
+                    label="Employees"
+                    value={operational.jumlahKaryawan}
+                  />
+                  <DataItem label="Operating" value="Online & Offline" />
+                </Group>
               </Stack>
             </Stack>
-          </SimpleGrid>
+          </Card>
+
+          {/* Section 2: Financial & Readiness*/}
+          <Card shadow="sm" radius="md" withBorder padding="xl">
+            <Stack gap="xl">
+              <Text fw={700} size="lg">
+                Business Readiness
+              </Text>
+
+              {/* Financial Row */}
+              <Group justify="space-between" align="center">
+                <Stack gap={0} style={{ flex: 1 }}>
+                  <Text fw={600} size="sm">
+                    Financial Overview
+                  </Text>
+                  <Text size="xs" c="dimmed">
+                    Review your latest financial statements and health score.
+                  </Text>
+                </Stack>
+                <Button
+                  variant="light"
+                  rightSection={<HiExternalLink />}
+                  size="xs"
+                >
+                  View Financials
+                </Button>
+              </Group>
+
+              <Divider />
+
+              {/* Form Progress Row */}
+              <Group justify="space-between" align="center">
+                <Group gap="lg" style={{ flex: 1 }}>
+                  <RingProgress
+                    size={80}
+                    thickness={8}
+                    roundCaps
+                    label={
+                      <Text ta="center" fw={700} size="xs">
+                        {formProgress}%
+                      </Text>
+                    }
+                    sections={[{ value: formProgress, color: "blue" }]}
+                  />
+                  <Stack gap={0}>
+                    <Text fw={600} size="sm">
+                      Form Completion
+                    </Text>
+                    <Text size="xs" c="dimmed">
+                      Complete your business profile quiz to unlock more
+                      features.
+                    </Text>
+                  </Stack>
+                </Group>
+                <Button rightSection={<HiExternalLink />} size="xs">
+                  Continue Quiz
+                </Button>
+              </Group>
+            </Stack>
+          </Card>
         </Stack>
       </Container>
     </>
