@@ -38,9 +38,9 @@ import {
   Help,
   Settings,
   BusinessProfile,
-  ProfileQuiz
+  ProfileQuiz,
+  FinancialOverview
 } from "./page_components";
-import { FinancialOverview } from "./page_components/MyBusiness";
 import {
   Elig_Overview,
   LoanCalculatorPage,
