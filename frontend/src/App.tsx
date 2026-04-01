@@ -39,7 +39,8 @@ import {
   Settings,
   BusinessProfile,
   ProfileQuiz,
-  FinancialOverview
+  FinancialOverview,
+  LoginPage
 } from "./page_components";
 import {
   Elig_Overview,
@@ -146,7 +147,7 @@ function App() {
 
   const supNavigation: NavItem[] = [
     { icon: HiCog, label: "Settings", path: "/settings" },
-    { icon: HiQuestionMarkCircle, label: "Help", path: "/help" },
+    { icon: HiQuestionMarkCircle, label: "Help", path: "/help" }
   ];
 
   return (
@@ -206,6 +207,13 @@ function App() {
           <AppShell.Main className={classes.appMain}>
             <Routes>
               <Route path="/" element={<Dashboard />}></Route>
+              <Route path="/login" element={<LoginPage />} />
+              
+              <Route path="/" element={<Dashboard />}></Route>
+              <Route
+                path="/my-business/business-profile"
+                element={<BusinessProfile />}
+              />
               <Route
                 path="/my-business/business-profile"
                 
