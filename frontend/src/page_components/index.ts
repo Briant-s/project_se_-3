@@ -7,5 +7,5 @@ export { default as Settings } from "./Settings";
 export { default as BusinessProfile } from "./Business_Profile";
 export { default as ProfileQuiz } from "./MyBusiness/Profile_Quiz";
 export { default as FinancialOverview } from "./MyBusiness/Financial_Overview";
-export { default as LoginPage } from "./LogIn/login";
-
+export { default as LoginPage } from "./Authentication/LogIn/login";
+export { default as RegistrationPage } from "./Authentication/Registration/Registration";

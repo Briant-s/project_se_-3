@@ -15,6 +15,7 @@ import {
   ProfileQuiz,
   FinancialOverview,
   LoginPage,
+  RegistrationPage,
 } from "./page_components";
 import {
   Elig_Overview,
@@ -42,6 +43,7 @@ function App() {
         <Routes>
           {/* Standalone - no shell */}
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/registration" element={<RegistrationPage />} />
 
           {/* Shell-wrapped routes */}
           <Route element={<AppLayout />}>
