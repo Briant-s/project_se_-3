@@ -1,4 +1,12 @@
-import { AppShell, Burger, Box, Group, Stack, Avatar } from "@mantine/core";
+import {
+  AppShell,
+  Burger,
+  Box,
+  Group,
+  Stack,
+  Avatar,
+  Button,
+} from "@mantine/core";
 import {
   HiBriefcase,
   HiClipboard,
@@ -15,12 +23,13 @@ import {
   HiDocumentDuplicate,
 } from "react-icons/hi2";
 import { useDisclosure } from "@mantine/hooks";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 
 import Sidebar from "./components/Sidebar";
 import "./App.css";
 import classes from "./App.module.css";
 import type { NavItem } from "./types";
+import { UserAuth } from "./context/AuthContext";
 
 function AppLayout() {
   const [mobOpened, { toggle: toggleMob }] = useDisclosure();
@@ -110,6 +119,20 @@ function AppLayout() {
     { icon: HiQuestionMarkCircle, label: "Help", path: "/help" },
   ];
 
+  const { session, signOutUser } = UserAuth();
+  const navigate = useNavigate();
+  console.log(session);
+
+  const handleSignOut = async (e) => {
+    e.preventDefault();
+    try {
+      await signOutUser();
+      navigate("/");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <AppShell
       style={{ minWidth: 0, minHeight: 0 }}
@@ -139,10 +162,15 @@ function AppLayout() {
             PoestaKas
           </Group>
           <Group>
-            <Avatar color="violet" radius="xl">
-              LS
-            </Avatar>
-            <Box fz={12}>lorem.ipsum@gmail.com</Box>
+            <Button onClick={(e) => navigate("/registration")}>Sign in</Button>
+            <Button onClick={(e) => navigate("/login")}>Login</Button>
+            <Button onClick={handleSignOut}>Sign Out</Button>
+            <Group>
+              <Avatar color="violet" radius="xl">
+                LS
+              </Avatar>
+              <Box fz={12}>{session?.user?.email}</Box>
+            </Group>
           </Group>
         </Group>
       </AppShell.Header>
