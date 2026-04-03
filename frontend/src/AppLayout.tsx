@@ -166,9 +166,11 @@ function AppLayout() {
             <Button onClick={(e) => navigate("/login")}>Login</Button>
             <Button onClick={handleSignOut}>Sign Out</Button>
             <Group>
-              <Avatar color="violet" radius="xl">
-                LS
-              </Avatar>
+              <Avatar
+                color="initials"
+                radius="xl"
+                name={session?.user?.display}
+              ></Avatar>
               <Box fz={12}>{session?.user?.email}</Box>
             </Group>
           </Group>
