@@ -62,7 +62,7 @@ function AppLayout() {
     {
       icon: HiClipboardDocumentCheck,
       label: "Eligibility Check",
-      path: "eligibility-check",
+      path: "credit",
       children: [
         {
           icon: HiChartPie,
@@ -77,7 +77,7 @@ function AppLayout() {
         {
           icon: HiCalculator,
           label: "Loan Calculator",
-          path: "loan-calculator",
+          path: "amort-calc",
         },
         {
           icon: HiCalculator,

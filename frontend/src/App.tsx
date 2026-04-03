@@ -16,6 +16,7 @@ import {
   FinancialOverview,
   LoginPage,
   RegistrationPage,
+  AmortCalcPage,
 } from "./page_components";
 import {
   Elig_Overview,
@@ -25,6 +26,7 @@ import {
 } from "./eligibility";
 import AppLayout from "./AppLayout";
 import PrivateRouter from "./PrivateRouter";
+import { ModalsProvider } from "@mantine/modals";
 
 function App() {
   const mainTheme = createTheme({
@@ -41,57 +43,53 @@ function App() {
   return (
     <BrowserRouter>
       <MantineProvider theme={mainTheme}>
-        <Routes>
-          {/* Standalone - no shell */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/registration" element={<RegistrationPage />} />
+        <ModalsProvider>
+          <Routes>
+            {/* Standalone - no shell */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/registration" element={<RegistrationPage />} />
 
-          {/* Shell-wrapped routes */}
-          <Route element={<PrivateRouter />}>
-            <Route element={<AppLayout />}>
-              <Route path="/" element={<Dashboard />} />
-              <Route
-                path="/my-business/business-profile"
-                element={<BusinessProfile />}
-              />
-              <Route
-                path="/my-business/financial-overview"
-                element={<FinancialOverview />}
-              />
-              <Route
-                path="/my-business/profile-quiz"
-                element={<ProfileQuiz />}
-              />
-              <Route
-                path="/eligibility-check/eligibility-overview"
-                element={<Elig_Overview />}
-              />
-              <Route
-                path="/eligibility-check/eligibility-quiz"
-                element={<QuizPage />}
-              />
-              <Route
-                path="/eligibility-check/loan-calculator"
-                element={<LoanCalculatorPage />}
-              />
-              <Route
-                path="/eligibility-check/cash-buffer-calculator"
-                element={<CashBufferPage />}
-              />
-              <Route
-                path="/financial-readiness"
-                element={<FinancialReadiness />}
-              />
-              <Route path="/financial-health" element={<FinancialHealth />} />
-              <Route
-                path="/financial-advisory"
-                element={<FinancialAdvisory />}
-              />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/help" element={<Help />} />
+            {/* Shell-wrapped routes */}
+            <Route element={<PrivateRouter />}>
+              <Route element={<AppLayout />}>
+                <Route path="/" element={<Dashboard />} />
+                <Route
+                  path="/my-business/business-profile"
+                  element={<BusinessProfile />}
+                />
+                <Route
+                  path="/my-business/financial-overview"
+                  element={<FinancialOverview />}
+                />
+                <Route
+                  path="/my-business/profile-quiz"
+                  element={<ProfileQuiz />}
+                />
+                <Route
+                  path="/credit/eligibility-overview"
+                  element={<Elig_Overview />}
+                />
+                <Route path="/credit/eligibility-quiz" element={<QuizPage />} />
+                <Route path="/credit/amort-calc" element={<AmortCalcPage />} />
+                <Route
+                  path="/credit/cash-buffer-calculator"
+                  element={<CashBufferPage />}
+                />
+                <Route
+                  path="/financial-readiness"
+                  element={<FinancialReadiness />}
+                />
+                <Route path="/financial-health" element={<FinancialHealth />} />
+                <Route
+                  path="/financial-advisory"
+                  element={<FinancialAdvisory />}
+                />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/help" element={<Help />} />
+              </Route>
             </Route>
-          </Route>
-        </Routes>
+          </Routes>
+        </ModalsProvider>
       </MantineProvider>
     </BrowserRouter>
   );

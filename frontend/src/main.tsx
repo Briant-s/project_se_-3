@@ -5,6 +5,7 @@ import "./index.css";
 import App from "./App.tsx";
 import "@mantine/core/styles.css";
 import "@mantine/charts/styles.css";
+
 import { AuthContextProvider } from "./context/AuthContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
