@@ -1,8 +1,12 @@
 import os
+from dotenv import load_dotenv
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from dotenv import load_dotenv
+
 from supabase import create_client, Client
+
+from models import AmortEntry
 
 # Loading env vars
 load_dotenv()
@@ -24,12 +28,28 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Read Amort List
+@app.get("/amort/amort-calc")
+async def get_all():
+    results = (supabase.table('amort').select('*').execute())
+    return results.data
 
-# testing
-results = (supabase.table('amort').select('*').execute())
-print(results)
+# Create Amort
+@app.post("/amort/amort-calc")
+async def create_amort(entry: AmortEntry):
+    result = supabase.table("amort").insert(entry.model_dump(exclude={"amort_id", "created_at"})).execute()
+    return result.data[0]
+
+# Update Amort
+@app.put("/amort/amort-calc/{amort_id}")
+async def update_amort(amort_id: int, entry: AmortEntry):
+    result = supabase.table("amort").update(entry.model_dump(exclude={"amort_id", "created_at"})).eq("amort_id", amort_id).execute()
+    return result.data[0]
+
+# Delete Amort
+@app.delete("/amort/amort-calc/{amort_id}")
+async def delete_amort(amort_id: int):
+    supabase.table("amort").delete().eq("amort_id", amort_id).execute()
+    return {"message": f"Amort #{amort_id} Successfully Deleted"}
 
 
-# @app.get("/")
-# async def root():
-#     return {"message": "Hello World"}
