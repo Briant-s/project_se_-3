@@ -14,15 +14,79 @@ import {
 } from "@mantine/core";
 import classes from "./Login.module.css";
 import { FcGoogle } from "react-icons/fc";
+import { HiCheckCircle } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
 import { UserAuth } from "../../../context/AuthContext";
 import { useForm } from "@mantine/form";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+
+// Fungsi validasi email yang komprehensif
+const validateEmailFormat = (email: string) => {
+  if (!email) {
+    return { isValid: false, errors: [] };
+  }
+
+  const errors: string[] = [];
+
+  // Check for @
+  if (!email.includes("@")) {
+    errors.push("Email harus mengandung simbol '@'");
+  }
+
+  // Check for .
+  if (!email.includes(".")) {
+    errors.push("Email harus mengandung titik '.'");
+  }
+
+  // Split by @
+  const [localPart, domain] = email.split("@");
+
+  if (email.includes("@") && domain) {
+    // Check if . comes after @
+    if (!domain.includes(".")) {
+      errors.push("Domain harus mengandung titik '.' setelah '@'");
+    }
+
+    // Check domain format
+    if (domain.includes(".")) {
+      const domainParts = domain.split(".");
+      if (domainParts.some((part) => part.length === 0)) {
+        errors.push("Format domain tidak valid");
+      }
+      if (domainParts[domainParts.length - 1].length < 2) {
+        errors.push("Ekstensi domain minimal 2 karakter (contoh: .com, .id)");
+      }
+    }
+  }
+
+  // Check local part (sebelum @)
+  if (email.includes("@") && localPart) {
+    if (localPart.length < 1) {
+      errors.push("Bagian sebelum '@' tidak boleh kosong");
+    }
+    if (localPart.startsWith(".") || localPart.endsWith(".")) {
+      errors.push("Tidak boleh ada titik di awal atau akhir email");
+    }
+  }
+
+  // Check for spaces
+  if (email.includes(" ")) {
+    errors.push("Email tidak boleh mengandung spasi");
+  }
+
+  // Basic regex check
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const isValid = emailRegex.test(email) && errors.length === 0;
+
+  return { isValid, errors };
+};
 
 function LoginPage() {
   const imageLink =
     "https://images.unsplash.com/photo-1774387981914-c5a133e7380b?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -30,7 +94,37 @@ function LoginPage() {
 
   const { session, signInUser } = UserAuth();
 
+  // Hitung validasi email secara real-time
+  const emailValidation = useMemo(() => {
+    return validateEmailFormat(email);
+  }, [email]);
+
+  // Hitung validasi password secara real-time
+  const passwordValidation = useMemo(() => {
+    return {
+      hasNumber: /\d/.test(password),
+      minLength: password.length >= 8,
+    };
+  }, [password]);
+
   const handleSignIn = async (values) => {
+    // Validasi email sebelum submit
+    const emailCheck = validateEmailFormat(values.email);
+    if (!emailCheck.isValid) {
+      setError("Email tidak valid. Mohon perbaiki format email.");
+      return;
+    }
+
+    // Validasi password sebelum submit
+    const passwordCheck = {
+      hasNumber: /\d/.test(values.password),
+      minLength: values.password.length >= 8,
+    };
+    if (!passwordCheck.hasNumber || !passwordCheck.minLength) {
+      setError("Password tidak memenuhi persyaratan.");
+      return;
+    }
+
     setLoading(true);
     console.log(values);
 
@@ -72,18 +166,103 @@ function LoginPage() {
           </Text>
           <form onSubmit={form.onSubmit(handleSignIn)}>
             <Stack>
-              <TextInput
-                {...form.getInputProps("email")}
-                label="Email"
-                placeholder="nama@email.com"
-                required
-              />
+              <Stack gap={4}>
+                <TextInput
+                  {...form.getInputProps("email")}
+                  label="Email"
+                  placeholder="nama@email.com"
+                  required
+                  onChange={(e) => {
+                    setEmail(e.currentTarget.value);
+                    form.setFieldValue("email", e.currentTarget.value);
+                  }}
+                  error={
+                    email && emailValidation.errors.length > 0
+                      ? true
+                      : false
+                  }
+                />
+                {/* Tampilkan validasi pesan */}
+                {email && emailValidation.errors.length > 0 && (
+                  <Stack gap={6}>
+                    {emailValidation.errors.map((err, idx) => (
+                      <Group key={idx} align="flex-start" gap={8}>
+                        <HiCheckCircle
+                          color="red"
+                          size={16}
+                          style={{ marginTop: 2, flexShrink: 0 }}
+                        />
+                        <Text size="xs" c="red">
+                          {err}
+                        </Text>
+                      </Group>
+                    ))}
+                  </Stack>
+                )}
+                {/* Tampilkan pesan sukses jika email valid */}
+                {email && emailValidation.isValid && (
+                  <Group align="center" gap={8}>
+                    <HiCheckCircle color="green" size={16} />
+                    <Text size="xs" c="green">
+                      Email Valid
+                    </Text>
+                  </Group>
+                )}
+              </Stack>
               <PasswordInput
                 {...form.getInputProps("password")}
                 label="Password"
                 placeholder="Masukkan password Anda"
                 required
+                onChange={(e) => {
+                  setPassword(e.currentTarget.value);
+                  form.setFieldValue("password", e.currentTarget.value);
+                }}
               />
+              {password && passwordValidation.hasNumber && passwordValidation.minLength ? (
+                <Group align="center" gap={8}>
+                  <HiCheckCircle color="green" size={16} />
+                  <Text size="xs" c="green">
+                    Password Valid
+                  </Text>
+                </Group>
+              ) : (
+                password && (
+                  <Stack>
+                    <Text c="dimmed" size="xs">
+                      Password must include:
+                    </Text>
+                    <Group align="center">
+                      <HiCheckCircle
+                        color={
+                          password
+                            ? passwordValidation.hasNumber
+                              ? "green"
+                              : "red"
+                            : "black"
+                        }
+                      />
+                      <Text size="xs" c={password && passwordValidation.hasNumber ? "green" : "dimmed"}>
+                        Must contain 1 number
+                      </Text>
+                    </Group>
+                    <Group align="center">
+                      <HiCheckCircle
+                        color={
+                          password
+                            ? passwordValidation.minLength
+                              ? "green"
+                              : "red"
+                            : "black"
+                        }
+                      />
+                      <Text size="xs" c={password && passwordValidation.minLength ? "green" : "dimmed"}>
+                        Min 8 characters
+                      </Text>
+                    </Group>
+                  </Stack>
+                )
+              )}
 
               <Group justify="space-between" mt="xs">
                 <Checkbox label="Ingat saya" />
@@ -91,6 +270,12 @@ function LoginPage() {
                   Lupa password?
                 </Anchor>
               </Group>
+
+              {error && (
+                <Text size="sm" c="red">
+                  {error}
+                </Text>
+              )}
 
               <Button type="submit" fullWidth mt="md" radius="md">
                 Masuk
