@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from supabase import create_client, Client
 
-from models import AmortEntry
+from models import AmortEntry, BusinessProfile
 
 # Loading env vars
 load_dotenv()
@@ -15,8 +15,8 @@ load_dotenv()
 app = FastAPI()
 
 # Supabase setup
-url = os.getenv("SUPABASE_URL")
-anon_key = os.getenv("SUPABASE_KEY")
+url = os.getenv("VITE_SUPABASE_URL")
+anon_key = os.getenv("VITE_SUPABASE_KEY")
 supabase: Client = create_client(url, anon_key)
 
 # Allows communication React <---> FastApi

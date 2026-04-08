@@ -13,7 +13,7 @@ import {
   Image,
 } from "@mantine/core";
 import classes from "./Regis.module.css";
-import { HiCheckCircle } from "react-icons/hi";
+import { HiCake, HiCheckCircle } from "react-icons/hi";
 import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate } from "react-router-dom";
 import { UserAuth } from "../../../context/AuthContext";
@@ -29,6 +29,7 @@ function RegistrationPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isPasswordlen, setIsPassowrdlen] = useState(true);
 
   const navigate = useNavigate();
 
@@ -37,7 +38,7 @@ function RegistrationPage() {
 
   const handleSignUp = async (values) => {
     setLoading(true);
-    console.log(values);
+    // console.log(values);
 
     try {
       const result = await signUpUser(
@@ -101,7 +102,15 @@ function RegistrationPage() {
                     Password must include:
                   </Text>
                   <Group align="center">
-                    <HiCheckCircle />
+                    {isPasswordlen ? (
+                      <>
+                        <HiCheckCircle color="green" />
+                      </>
+                    ) : (
+                      <>
+                        <HiCheckCircle color="red" />
+                      </>
+                    )}
                     <Text size="xs">Must contain 1 number</Text>
                   </Group>
                   <Group align="center">

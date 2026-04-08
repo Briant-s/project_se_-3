@@ -7,3 +7,7 @@ class AmortEntry(BaseModel):
     title: str
     tenor_month: int
     total_installment: float
+    
+    
+class BusinessProfile(BaseModel):
+    businessID: int 
