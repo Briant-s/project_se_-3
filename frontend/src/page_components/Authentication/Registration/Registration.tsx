@@ -108,7 +108,7 @@ function RegistrationPage() {
 
   const navigate = useNavigate();
 
-  const { session, signUpUser } = UserAuth();
+  const { session, signUpUser, signInWithGoogle } = UserAuth();
   console.log(session);
 
   // Hitung validasi email secara real-time
@@ -167,6 +167,26 @@ function RegistrationPage() {
       // Capture error message dari Supabase
       console.error("Sign up error:", err);
       const errorMessage = err instanceof Error ? err.message : "An error occurred during registration";
+      setError(errorMessage);
+      open();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignUp = async () => {
+    console.log("Google sign up initiated...");
+    setLoading(true);
+    try {
+      const result = await signInWithGoogle();
+      console.log("Google sign up result:", result);
+      if (!result.success && result.error) {
+        setError(result.error);
+        open();
+      }
+    } catch (err) {
+      console.error("Google sign up error:", err);
+      const errorMessage = err instanceof Error ? err.message : "An error occurred during Google sign up";
       setError(errorMessage);
       open();
     } finally {
@@ -324,6 +344,8 @@ function RegistrationPage() {
               variant="default"
               bg="white"
               leftSection={<FcGoogle size={14} />}
+              onClick={handleGoogleSignUp}
+              loading={loading}
             >
               Sign Up with Google
             </Button>

@@ -95,7 +95,7 @@ function LoginPage() {
 
   const navigate = useNavigate();
 
-  const { session, signInUser } = UserAuth();
+  const { session, signInUser, signInWithGoogle } = UserAuth();
 
   // Hitung validasi email secara real-time
   const emailValidation = useMemo(() => {
@@ -152,6 +152,26 @@ function LoginPage() {
       // Capture error message dari Supabase
       console.error("Sign in error:", err);
       const errorMessage = err instanceof Error ? err.message : "An error occurred during login";
+      setError(errorMessage);
+      open();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    console.log("Google sign in initiated...");
+    setLoading(true);
+    try {
+      const result = await signInWithGoogle();
+      console.log("Google sign in result:", result);
+      if (!result.success && result.error) {
+        setError(result.error);
+        open();
+      }
+    } catch (err) {
+      console.error("Google sign in error:", err);
+      const errorMessage = err instanceof Error ? err.message : "An error occurred during Google sign in";
       setError(errorMessage);
       open();
     } finally {
@@ -311,6 +331,8 @@ function LoginPage() {
               variant="default"
               bg="white"
               leftSection={<FcGoogle size={14} />}
+              onClick={handleGoogleSignIn}
+              loading={loading}
             >
               Continue with Google
             </Button>

@@ -65,9 +65,29 @@ export const AuthContextProvider = ({ children }) => {
     }
   };
 
+  // Sign In with Google
+  const signInWithGoogle = async () => {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/my-business/business-profile`,
+        },
+      });
+      if (error) {
+        console.error("Google sign in error: ", error);
+        return { success: false, error: error.message };
+      }
+      return { success: true, data };
+    } catch (error) {
+      console.error("Google sign in error:", error);
+      return { success: false, error: error instanceof Error ? error.message : "An error occurred" };
+    }
+  };
+
   return (
     <AuthContext.Provider
-      value={{ session, loading, signUpUser, signInUser, signOutUser }}
+      value={{ session, loading, signUpUser, signInUser, signOutUser, signInWithGoogle }}
     >
       {children}
     </AuthContext.Provider>
