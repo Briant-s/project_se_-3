@@ -142,14 +142,17 @@ function LoginPage() {
       console.log("Sign in result:", result);
       if (result && result.success) {
         navigate("/my-business/business-profile");
-      } else {
-        setError("Invalid login credentials");
+      } else if (result && result.error) {
+        // Extract error message dari Supabase error object
+        const errorMessage = result.error || "Invalid login credentials";
+        setError(errorMessage);
         open();
       }
     } catch (err) {
       // Capture error message dari Supabase
       console.error("Sign in error:", err);
-      setError("Invalid login credentials");
+      const errorMessage = err instanceof Error ? err.message : "An error occurred during login";
+      setError(errorMessage);
       open();
     } finally {
       setLoading(false);

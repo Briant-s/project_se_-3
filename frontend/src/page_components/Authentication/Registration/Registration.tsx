@@ -11,7 +11,9 @@ import {
   Anchor,
   Checkbox,
   Image,
+  Modal,
 } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import classes from "./Regis.module.css";
 import { HiCake, HiCheckCircle } from "react-icons/hi";
 import { FcGoogle } from "react-icons/fc";
@@ -102,6 +104,7 @@ function RegistrationPage() {
   const [loading, setLoading] = useState(false);
   const [isPasswordlen, setIsPassowrdlen] = useState(false);
   const [termsChecked, setTermsChecked] = useState(false);
+  const [opened, { open, close }] = useDisclosure(false);
 
   const navigate = useNavigate();
 
@@ -123,6 +126,7 @@ function RegistrationPage() {
     const emailCheck = validateEmailFormat(values.email);
     if (!emailCheck.isValid) {
       setError("Email tidak valid. Mohon perbaiki format email.");
+      open();
       return;
     }
 
@@ -130,17 +134,19 @@ function RegistrationPage() {
     const passwordCheck = validatePassword(values.password);
     if (!passwordCheck.hasNumber || !passwordCheck.minLength) {
       setError("Password tidak memenuhi persyaratan.");
+      open();
       return;
     }
 
     // Validasi terms and conditions sebelum submit
     if (!termsChecked) {
       setError("Anda harus menyetujui Terms and Conditions.");
+      open();
       return;
     }
 
     setLoading(true);
-    // console.log(values);
+    console.log("Attempting sign up...", values);
 
     try {
       const result = await signUpUser(
@@ -148,11 +154,21 @@ function RegistrationPage() {
         values.email,
         values.password,
       );
-      if (result.success) {
+      console.log("Sign up result:", result);
+      if (result && result.success) {
         navigate("/");
+      } else if (result && result.error) {
+        // Extract error message dari Supabase error object
+        const errorMessage = result.error.message || "Registration failed";
+        setError(errorMessage);
+        open();
       }
     } catch (err) {
-      setError("an error occured");
+      // Capture error message dari Supabase
+      console.error("Sign up error:", err);
+      const errorMessage = err instanceof Error ? err.message : "An error occurred during registration";
+      setError(errorMessage);
+      open();
     } finally {
       setLoading(false);
     }
@@ -289,11 +305,6 @@ function RegistrationPage() {
                   }}
                 />
               </Group>
-              {error && (
-                <Text size="sm" c="red">
-                  {error}
-                </Text>
-              )}
 
               <Button type="submit" fullWidth mt="md" radius="md">
                 Daftar
@@ -320,6 +331,22 @@ function RegistrationPage() {
         </Paper>
       </div>
       <Image className={classes.imagePanel} visibleFrom="md" src={imageLink} />
+
+      {/* Modal untuk error registration */}
+      <Modal.Root opened={opened} onClose={close}>
+        <Modal.Overlay />
+        <Modal.Content>
+          <Modal.Header>
+            <Modal.Title>Registration Error</Modal.Title>
+            <Modal.CloseButton />
+          </Modal.Header>
+          <Modal.Body>
+            <Text size="sm" c="red" fw={500}>
+              {error}
+            </Text>
+          </Modal.Body>
+        </Modal.Content>
+      </Modal.Root>
     </div>
   );
 }
