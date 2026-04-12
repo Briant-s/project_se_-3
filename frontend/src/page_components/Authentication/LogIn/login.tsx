@@ -11,7 +11,9 @@ import {
   Anchor,
   Checkbox,
   Image,
+  Modal,
 } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import classes from "./Login.module.css";
 import { FcGoogle } from "react-icons/fc";
 import { HiCheckCircle } from "react-icons/hi";
@@ -89,6 +91,7 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [opened, { open, close }] = useDisclosure(false);
 
   const navigate = useNavigate();
 
@@ -108,10 +111,14 @@ function LoginPage() {
   }, [password]);
 
   const handleSignIn = async (values) => {
+    console.log("handleSignIn dipanggil dengan values:", values);
+    
     // Validasi email sebelum submit
     const emailCheck = validateEmailFormat(values.email);
+    console.log("Email validation result:", emailCheck);
     if (!emailCheck.isValid) {
       setError("Email tidak valid. Mohon perbaiki format email.");
+      open();
       return;
     }
 
@@ -120,21 +127,30 @@ function LoginPage() {
       hasNumber: /\d/.test(values.password),
       minLength: values.password.length >= 8,
     };
+    console.log("Password validation result:", passwordCheck);
     if (!passwordCheck.hasNumber || !passwordCheck.minLength) {
       setError("Password tidak memenuhi persyaratan.");
+      open();
       return;
     }
 
     setLoading(true);
-    console.log(values);
+    console.log("Attempting sign in...");
 
     try {
       const result = await signInUser(values.email, values.password);
-      if (result.success) {
+      console.log("Sign in result:", result);
+      if (result && result.success) {
         navigate("/my-business/business-profile");
+      } else {
+        setError("Invalid login credentials");
+        open();
       }
     } catch (err) {
-      setError("an error occured");
+      // Capture error message dari Supabase
+      console.error("Sign in error:", err);
+      setError("Invalid login credentials");
+      open();
     } finally {
       setLoading(false);
     }
@@ -147,7 +163,14 @@ function LoginPage() {
       password: "",
     },
     validate: {
-      email: (value) => (value.includes("@") ? null : "Invalid Email"),
+      email: (value) => {
+        if (!value) return "Email tidak boleh kosong";
+        return null;
+      },
+      password: (value) => {
+        if (!value) return "Password tidak boleh kosong";
+        return null;
+      },
     },
   });
 
@@ -164,7 +187,9 @@ function LoginPage() {
               Daftar sekarang
             </Anchor>
           </Text>
-          <form onSubmit={form.onSubmit(handleSignIn)}>
+          <form onSubmit={form.onSubmit(handleSignIn, (errors) => {
+            console.log("Form validation errors:", errors);
+          })}>
             <Stack>
               <Stack gap={4}>
                 <TextInput
@@ -271,12 +296,6 @@ function LoginPage() {
                 </Anchor>
               </Group>
 
-              {error && (
-                <Text size="sm" c="red">
-                  {error}
-                </Text>
-              )}
-
               <Button type="submit" fullWidth mt="md" radius="md">
                 Masuk
               </Button>
@@ -296,6 +315,22 @@ function LoginPage() {
         </Paper>
       </div>
       <Image className={classes.imagePanel} visibleFrom="md" src={imageLink} />
+
+      {/* Modal untuk error login */}
+      <Modal.Root opened={opened} onClose={close}>
+        <Modal.Overlay />
+        <Modal.Content>
+          <Modal.Header>
+            <Modal.Title>Login Error</Modal.Title>
+            <Modal.CloseButton />
+          </Modal.Header>
+          <Modal.Body>
+            <Text size="sm" c="red" fw={500}>
+              {error}
+            </Text>
+          </Modal.Body>
+        </Modal.Content>
+      </Modal.Root>
     </div>
   );
 }
