@@ -1,15 +1,16 @@
 import { useForm } from "@mantine/form";
-import type { AmortEntry } from "../../services/models";
+import type { AmortFormValues, AmortEntry } from "../../services/models";
 import { Stack, TextInput, Group, Button, NumberInput } from "@mantine/core";
 
 interface Props {
-  onSubmit: (values: AmortEntry) => void;
+  onSubmit: (values: AmortEntry, editId: number | null) => void;
   initialValues?: AmortEntry;
+  editId: number | null;
 }
 
-function AmortForm({ onSubmit, initialValues }: Props) {
+function AmortForm({ onSubmit, initialValues, editId }: Props) {
   // Form Fields
-  const form = useForm({
+  const form = useForm<AmortFormValues>({
     initialValues: initialValues ?? {
       title: "",
       tenor_month: 0,
@@ -18,16 +19,16 @@ function AmortForm({ onSubmit, initialValues }: Props) {
     validate: {
       title: (value) =>
         value.length < 2 ? "Title must have at least 2 letters" : null,
-      month: (value) =>
+      tenor_month: (value) =>
         value <= 0 ? "Tenor Length must be greater than 0" : null,
-      installment: (value) =>
+      total_installment: (value) =>
         value <= 0 ? "Installment must be greater than 0" : null,
     },
   });
 
   return (
     <>
-      <form onSubmit={form.onSubmit(onSubmit)}>
+      <form onSubmit={form.onSubmit((values) => onSubmit(values, editId))}>
         <Stack>
           <TextInput
             {...form.getInputProps("title")}

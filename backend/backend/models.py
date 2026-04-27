@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 class AmortEntry(BaseModel):
     amort_id: int | None = None
+    user_id: str | None = None
     created_at: str | None = None
     title: str
     tenor_month: int

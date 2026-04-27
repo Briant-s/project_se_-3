@@ -13,12 +13,12 @@ import {
   VisuallyHidden,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { HiOutlinePlus } from "react-icons/hi";
+import { HiOutlinePlus, HiPencil, HiTrash } from "react-icons/hi";
+import { HiOutlineReply } from "react-icons/hi";
+
 import { modals } from "@mantine/modals";
 
-import { HiPencil, HiTrash } from "react-icons/hi";
-
-import type { AmortEntry } from "../../services/models";
+import type { AmortEntry, AmortFormValues } from "../../services/models";
 import {
   getAmortEntries,
   createAmortEntry,
@@ -48,13 +48,8 @@ function Amort_Calc() {
   }
 
   // Handle Create and/or Update
-  async function handleSubmit(entry: AmortEntry) {
-    const payload = {
-      title: entry.title,
-      month: Number(entry.tenor_month),
-      installment: Number(entry.total_installment),
-    };
-    console.log(entry.amort_id);
+  async function handleSubmit(entry: AmortFormValues, editId: number | null) {
+    console.log("edit_id:", editId);
     if (editId !== null) {
       // Update
       await updateAmortEntry(editId, entry);
@@ -79,11 +74,29 @@ function Amort_Calc() {
   }
 
   const openForm = (entry?: AmortEntry) => {
+    if (entry) {
+      console.log(entry.amort_id);
+      setEditId(entry.amort_id!);
+    } else {
+      setEditId(null);
+    }
     modals.open({
       title: entry ? "Edit Calculation" : "Add New Calculation",
       children: (
         <>
-          <AmortForm onSubmit={handleSubmit} />
+          <AmortForm
+            editId={entry?.amort_id ?? null}
+            onSubmit={handleSubmit}
+            initialValues={
+              entry
+                ? {
+                    title: entry.title,
+                    tenor_month: entry.tenor_month,
+                    total_installment: entry.total_installment,
+                  }
+                : undefined
+            }
+          />
         </>
       ),
     });
@@ -101,6 +114,12 @@ function Amort_Calc() {
           </ActionIcon>
           <ActionIcon>
             <HiTrash onClick={() => handleDelete(entry.amort_id)} />
+          </ActionIcon>
+          <ActionIcon>
+            <HiOutlineReply
+              onClick={() => handleDelete(entry.amort_id)}
+              style={{ transform: "rotate(0deg)" }}
+            />
           </ActionIcon>
         </Group>
       </Table.Td>
