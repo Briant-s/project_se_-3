@@ -121,7 +121,6 @@ function AppLayout() {
 
   const { session, signOutUser } = UserAuth();
   const navigate = useNavigate();
-  console.log(session);
 
   const handleSignOut = async (e) => {
     e.preventDefault();

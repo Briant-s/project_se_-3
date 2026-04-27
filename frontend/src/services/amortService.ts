@@ -1,9 +1,20 @@
 const BASE_URL = "http://localhost:8000";
+import { supabase } from "../SupabaseClient";
 import type { AmortEntry } from "./models";
+
+// get user JWT token
+export async function getAuthHeader() {
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+  if (!token) throw new Error("No active session, please log in again");
+  return { Authorization: `Bearer ${token}` };
+}
 
 // Get all amort
 export async function getAmortEntries(): Promise<AmortEntry[]> {
-  const result = await fetch(`${BASE_URL}/amort/amort-calc`);
+  const result = await fetch(`${BASE_URL}/amort/amort-calc`, {
+    headers: await getAuthHeader(),
+  });
   if (!result.ok) throw new Error("Failed to fecth all entries");
   return result.json();
 }
@@ -14,7 +25,7 @@ export async function createAmortEntry(
 ): Promise<AmortEntry> {
   const result = await fetch(`${BASE_URL}/amort/amort-calc`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...(await getAuthHeader()) },
     body: JSON.stringify(entry),
   });
   if (!result.ok) throw new Error("Failed to create entry");
@@ -28,7 +39,7 @@ export async function updateAmortEntry(
 ): Promise<AmortEntry> {
   const result = await fetch(`${BASE_URL}/amort/amort-calc/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...(await getAuthHeader()) },
     body: JSON.stringify(entry),
   });
   if (!result.ok) throw new Error(`Failed to update entry: #${id}`);
@@ -39,6 +50,7 @@ export async function updateAmortEntry(
 export async function deleteAmortEntry(id: number): Promise<void> {
   const result = await fetch(`${BASE_URL}/amort/amort-calc/${id}`, {
     method: "DELETE",
+    headers: await getAuthHeader(),
   });
   if (!result.ok) throw new Error(`Failed to delete entry: #${id}`);
 }
