@@ -25,12 +25,15 @@ import {
   updateAmortEntry,
   deleteAmortEntry,
 } from "../../services/amortService";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import AmortForm from "./AmortForm";
 
 function Amort_Calc() {
   const [entries, setEntries] = useState<AmortEntry[]>([]);
   const [editId, setEditId] = useState<number | null>(null);
+
+  const navigate = useNavigate();
 
   //   Automatic Fetch Entries
   useEffect(() => {
@@ -104,7 +107,14 @@ function Amort_Calc() {
 
   const AmortRows = entries.map((entry) => (
     <Table.Tr key={entry.amort_id}>
-      <Table.Td>{entry.title}</Table.Td>
+      <Table.Td>
+        <Button
+          variant="filled"
+          onClick={() => navigate(`/credit/amort-calc/${entry.amort_id}`)}
+        >
+          {entry.title}
+        </Button>
+      </Table.Td>
       <Table.Td>{entry.tenor_month} bulan</Table.Td>
       <Table.Td>Rp. {entry.total_installment}</Table.Td>
       <Table.Td>

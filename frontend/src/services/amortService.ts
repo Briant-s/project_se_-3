@@ -19,6 +19,15 @@ export async function getAmortEntries(): Promise<AmortEntry[]> {
   return result.json();
 }
 
+// Get single amort
+export async function getAmortEntry(id: number): Promise<AmortEntry> {
+  const result = await fetch(`${BASE_URL}/amort/amort-calc/${id}`, {
+    headers: await getAuthHeader(),
+  });
+  if (!result.ok) throw new Error("Entry not found");
+  return result.json();
+}
+
 // Create amort
 export async function createAmortEntry(
   entry: Omit<AmortEntry, "amort_id" | "created_at">,

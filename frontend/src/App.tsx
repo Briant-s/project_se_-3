@@ -27,6 +27,7 @@ import {
 import AppLayout from "./AppLayout";
 import PrivateRouter from "./PrivateRouter";
 import { ModalsProvider } from "@mantine/modals";
+import Amort_Details from "./page_components/Credit/Amort_Details";
 
 function App() {
   const mainTheme = createTheme({
@@ -71,6 +72,10 @@ function App() {
                 />
                 <Route path="/credit/eligibility-quiz" element={<QuizPage />} />
                 <Route path="/credit/amort-calc" element={<AmortCalcPage />} />
+                <Route
+                  path="/credit/amort-calc/:id"
+                  element={<Amort_Details />}
+                />
                 <Route
                   path="/credit/cash-buffer-calculator"
                   element={<CashBufferPage />}

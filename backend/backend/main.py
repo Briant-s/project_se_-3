@@ -36,6 +36,19 @@ async def get_all(user_id: str = Depends(get_current_user)):
     results = (supabase.table('amort').select('*').eq("user_id", user_id).execute())
     return results.data
 
+# Get per item
+@app.get("/amort/amort-calc/{amort_id}")
+async def get_amort(amort_id: int, user_id: str = Depends(get_current_user)):
+    try:
+        result = (supabase.table('amort').select('*').eq("user_id", user_id).eq("amort_id", amort_id).execute())
+        if not result.data:
+            raise HTTPException(status_code=404, detail="Entry not found")
+        return result.data[0]
+    except Exception as e:
+        print("GET error:", str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # Create Amort
 @app.post("/amort/amort-calc")
 async def create_amort(entry: AmortEntry, user_id: str = Depends(get_current_user)):
