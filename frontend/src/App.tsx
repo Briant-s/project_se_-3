@@ -77,10 +77,6 @@ function App() {
                   element={<Amort_Details />}
                 />
                 <Route
-                  path="/credit/cash-buffer-calculator"
-                  element={<CashBufferPage />}
-                />
-                <Route
                   path="/financial-readiness"
                   element={<FinancialReadiness />}
                 />

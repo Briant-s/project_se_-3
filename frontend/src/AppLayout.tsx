@@ -79,11 +79,6 @@ function AppLayout() {
           label: "Loan Calculator",
           path: "amort-calc",
         },
-        {
-          icon: HiCalculator,
-          label: "Cash Buffer Calculator",
-          path: "cash-buffer-calculator",
-        },
       ],
     },
     {
