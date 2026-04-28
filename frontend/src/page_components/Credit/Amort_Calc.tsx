@@ -59,6 +59,20 @@ function Amort_Calc() {
     }
   }
 
+  function confirmDelete(amort_id: number, title: string) {
+  modals.openConfirmModal({ 
+    title: <Text fw={700}>Loan Deletion Warning</Text>,
+    children: (
+      <Text size="sm">
+        Are you sure you want to delete <b>{title}</b>? This action can't be reversed.
+      </Text>
+    ),
+    labels: { confirm: "Delete", cancel: "Cancel" },
+    confirmProps: { color: "red" },
+    onConfirm: () => handleDelete(amort_id),
+  });
+}
+
   const openForm = (entry?: AmortEntry) => {
     if (entry) {
       setEditId(entry.amort_id!);
@@ -127,7 +141,7 @@ function Amort_Calc() {
             <ActionIcon variant="filled" radius="md" onClick={() => openForm(entry)}>
               <HiPencil />
             </ActionIcon>
-            <ActionIcon variant="filled" radius="md" onClick={() => handleDelete(entry.amort_id!)}>
+            <ActionIcon variant="filled" radius="md" onClick={() => confirmDelete(entry.amort_id!, entry.title)}>
               <HiTrash />
             </ActionIcon>
             <ActionIcon
