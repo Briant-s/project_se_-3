@@ -1,23 +1,15 @@
 import {
   ActionIcon,
-  Box,
-  Button,
   Container,
   Divider,
   Group,
   Stack,
   Text,
   Paper,
-  TextInput,
-  Table,
-  VisuallyHidden,
 } from "@mantine/core";
-import { useForm } from "@mantine/form";
 import { HiOutlinePlus, HiPencil, HiTrash } from "react-icons/hi";
 import { HiOutlineReply } from "react-icons/hi";
-
 import { modals } from "@mantine/modals";
-
 import type { AmortEntry, AmortFormValues } from "../../services/models";
 import {
   getAmortEntries,
@@ -32,10 +24,8 @@ import AmortForm from "./AmortForm";
 function Amort_Calc() {
   const [entries, setEntries] = useState<AmortEntry[]>([]);
   const [editId, setEditId] = useState<number | null>(null);
-
   const navigate = useNavigate();
 
-  //   Automatic Fetch Entries
   useEffect(() => {
     const loadEntries = async () => {
       const result = await getAmortEntries();
@@ -44,29 +34,22 @@ function Amort_Calc() {
     loadEntries();
   }, []);
 
-  //  Manual Fetch Entries
   async function fetchEntries() {
     const result = await getAmortEntries();
     setEntries(result);
   }
 
-  // Handle Create and/or Update
   async function handleSubmit(entry: AmortFormValues, editId: number | null) {
-    console.log("edit_id:", editId);
     if (editId !== null) {
-      // Update
       await updateAmortEntry(editId, entry);
       setEditId(null);
     } else {
-      // Create
       await createAmortEntry(entry);
     }
-
     modals.closeAll();
     fetchEntries();
   }
 
-  //   Handle Delete
   async function handleDelete(amort_id: number) {
     try {
       await deleteAmortEntry(amort_id);
@@ -78,7 +61,6 @@ function Amort_Calc() {
 
   const openForm = (entry?: AmortEntry) => {
     if (entry) {
-      console.log(entry.amort_id);
       setEditId(entry.amort_id!);
     } else {
       setEditId(null);
@@ -86,85 +68,104 @@ function Amort_Calc() {
     modals.open({
       title: entry ? "Edit Calculation" : "Add New Calculation",
       children: (
-        <>
-          <AmortForm
-            editId={entry?.amort_id ?? null}
-            onSubmit={handleSubmit}
-            initialValues={
-              entry
-                ? {
-                    title: entry.title,
-                    tenor_month: entry.tenor_month,
-                    total_installment: entry.total_installment,
-                  }
-                : undefined
-            }
-          />
-        </>
+        <AmortForm
+          editId={entry?.amort_id ?? null}
+          onSubmit={handleSubmit}
+          initialValues={
+            entry
+              ? {
+                  title: entry.title,
+                  tenor_month: entry.tenor_month,
+                  total_installment: entry.total_installment,
+                }
+              : undefined
+          }
+        />
       ),
     });
   };
 
   const AmortRows = entries.map((entry) => (
-    <Table.Tr key={entry.amort_id}>
-      <Table.Td>
-        <Button
-          variant="filled"
-          onClick={() => navigate(`/credit/amort-calc/${entry.amort_id}`)}
-        >
-          {entry.title}
-        </Button>
-      </Table.Td>
-      <Table.Td>{entry.tenor_month} bulan</Table.Td>
-      <Table.Td>Rp. {entry.total_installment}</Table.Td>
-      <Table.Td>
-        <Group>
-          <ActionIcon>
-            <HiPencil onClick={() => openForm(entry)} />
-          </ActionIcon>
-          <ActionIcon>
-            <HiTrash onClick={() => handleDelete(entry.amort_id)} />
-          </ActionIcon>
-          <ActionIcon>
-            <HiOutlineReply
-              onClick={() => handleDelete(entry.amort_id)}
-              style={{ transform: "rotate(0deg)" }}
-            />
-          </ActionIcon>
+    <Paper
+      key={entry.amort_id}
+      //withBorder
+      shadow="sm"  
+      p="md"
+      radius="md"
+      style={{ borderLeft: "4px solid #228be6" }}
+      
+    >
+      <Group justify="space-between" align="center">
+        {/* Kiri: Info utama */}
+        <Stack gap={2}>
+          <Text fw={700} size="lg" c="blue">
+            {entry.title}
+          </Text>
+          <Group gap="xs">
+            <Text size="sm" c="dimmed">
+              Tipe pinjaman
+            </Text>
+            <Text size="sm" c="dimmed">•</Text>
+            <Text size="sm" c="blue">
+              {entry.tenor_month} bulan
+            </Text>
+          </Group>
+        </Stack>
+
+        {/* Kanan: Angka + Actions */}
+        <Group gap="xl" align="center">
+          <Stack gap={2} align="flex-end">
+            <Text size="sm" c="dimmed">
+              ~Rp {(entry.total_installment / entry.tenor_month).toLocaleString("id-ID")} / bulan
+            </Text>
+            <Text size="xs" c="dimmed">
+              Rp {entry.total_installment.toLocaleString("id-ID")}
+            </Text>
+          </Stack>
+
+          <Group gap="xs">
+            <ActionIcon variant="filled" radius="md" onClick={() => openForm(entry)}>
+              <HiPencil />
+            </ActionIcon>
+            <ActionIcon variant="filled" radius="md" onClick={() => handleDelete(entry.amort_id!)}>
+              <HiTrash />
+            </ActionIcon>
+            <ActionIcon
+              variant="filled"
+              radius="md"
+              onClick={() => navigate(`/credit/amort-calc/${entry.amort_id}`)}
+            >
+              <HiOutlineReply style={{ transform: "scaleX(-1)" }} />
+            </ActionIcon>
+          </Group>
         </Group>
-      </Table.Td>
-    </Table.Tr>
+      </Group>
+    </Paper>
   ));
 
   return (
-    <>
-      <Container fluid>
-        <Stack gap="md" m="xl">
-          {/* List Header */}
-          <Group justify="space-between">
-            <Text>Loan Calculation List</Text>
-            <ActionIcon onClick={() => openForm()}>
-              <HiOutlinePlus />
-            </ActionIcon>
-          </Group>
+    <Container fluid>
+      <Stack gap="md" m="xl">
+        <Group justify="space-between">
+          <Text fw={700} size="lg">Loan Calculation List</Text>
+          <ActionIcon onClick={() => openForm()}>
+            <HiOutlinePlus />
+          </ActionIcon>
+        </Group>
 
-          <Divider />
+        <Divider />
 
-          {/* List */}
-          <Table>
-            <Table.Thead>
-              <Table.Th>Title</Table.Th>
-              <Table.Th>Tenor Months</Table.Th>
-              <Table.Th>Installment</Table.Th>
-              <Table.Th>
-                <VisuallyHidden>Actions</VisuallyHidden>
-              </Table.Th>
-            </Table.Thead>
-            <Table.Tbody>{AmortRows}</Table.Tbody>
-          </Table>
+        <Stack gap="sm">
+          {entries.length === 0 ? (
+            <Text c="dimmed" ta="center" py="xl">
+              Belum ada data. Tambahkan pinjaman baru.
+            </Text>
+          ) : (
+            AmortRows
+          )}
         </Stack>
-      </Container>
-    </>
+      </Stack>
+    </Container>
   );
 }
 
