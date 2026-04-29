@@ -73,6 +73,5 @@ class Assets (BaseModel):
 
 class QuizProgress(BaseModel):
     quizID: int
-    user_id: int
     businessID: int
     lastModified: str | None = None
