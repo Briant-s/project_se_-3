@@ -12,3 +12,21 @@ export interface AmortFormValues {
   tenor_month: number;
   total_installment: number;
 }
+
+export interface BusinessProfile {
+  user_id?: string;
+  businessName?: string;
+  ownerName?: string;
+  businessAge?: string | null;
+  ownerDob?: string;
+  businessLocation?: string;
+  businessBankAcc?: string | null;
+  businessSector?: string | null;
+  businessType?: string | null;
+  totalEmployees?: number | string | null;
+  storeType?: string | null;
+  monthlyAverageIncome?: string | null;
+  monthlyAverageProfitLoss?: string | null;
+  businessAssets?: string;
+  isOtherKredit?: string | null;
+}

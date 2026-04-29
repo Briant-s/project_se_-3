@@ -12,9 +12,10 @@ import {
   Title,
   SimpleGrid,
 } from "@mantine/core";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { HiArrowRight, HiArrowLeft, HiCheck } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
+import { createBusinessProfile, getBusinessProfile, updateBusinessProfile } from "../../services/businessProfileService";
 
 function ProfileQuiz() {
   const [active, setActive] = useState(0);
@@ -28,24 +29,91 @@ function ProfileQuiz() {
     businessAge: null as string | null,
     ownerDob: "",
     businessLocation: "",
-    bankAccount: null as string | null,
-    sector: null as string | null,
+    businessBankAcc: null as string | null,
+    businessSector: null as string | null,
     businessType: null as string | null,
-    employeeCount: "" as number | "",
+    totalEmployees: "" as number | "",
     storeType: null as string | null,
-    revenueRange: null as string | null,
-    profitLossRange: null as string | null,
-    assets: "",
-    existingLoans: null as string | null,
+    monthlyAverageIncome: null as string | null,
+    monthlyAverageProfitLoss: null as string | null,
+    businessAssets: "",
+    isOtherKredit: null as string | null,
   });
 
   // 2. State untuk menyimpan pesan error
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
+  const [profileExists, setProfileExists] = useState(false);
 
   const prevStep = () => setActive((current) => (current > 0 ? current - 1 : current));
 
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const profile = await getBusinessProfile();
+        if (!profile) return;
+
+        setFormData({
+          businessName: profile.businessName || "",
+          ownerName: profile.ownerName || "",
+          businessAge: profile.businessAge || null,
+          ownerDob: profile.ownerDob || "",
+          businessLocation: profile.businessLocation || "",
+          businessBankAcc: profile.businessBankAcc || null,
+          businessSector: profile.businessSector || null,
+          businessType: profile.businessType || null,
+          totalEmployees:
+            typeof profile.totalEmployees === "number"
+              ? profile.totalEmployees
+              : profile.totalEmployees
+              ? Number(profile.totalEmployees)
+              : "",
+          storeType: profile.storeType || null,
+          monthlyAverageIncome: profile.monthlyAverageIncome || null,
+          monthlyAverageProfitLoss: profile.monthlyAverageProfitLoss || null,
+          businessAssets: profile.businessAssets || "",
+          isOtherKredit: profile.isOtherKredit || null,
+        });
+        setProfileExists(true);
+      } catch (error) {
+        console.error("Unable to load profile:", error);
+      } finally {
+        setIsLoadingProfile(false);
+      }
+    };
+
+    loadProfile();
+  }, []);
+
+  const saveProfileToSupabase = async () => {
+    const payload = {
+      businessName: formData.businessName,
+      ownerName: formData.ownerName,
+      businessAge: formData.businessAge,
+      ownerDob: formData.ownerDob,
+      businessLocation: formData.businessLocation,
+      businessBankAcc: formData.businessBankAcc,
+      businessSector: formData.businessSector,
+      businessType: formData.businessType,
+      totalEmployees:
+        typeof formData.totalEmployees === "number"
+          ? formData.totalEmployees
+          : formData.totalEmployees !== ""
+          ? Number(formData.totalEmployees)
+          : null,
+      storeType: formData.storeType,
+      monthlyAverageIncome: formData.monthlyAverageIncome,
+      monthlyAverageProfitLoss: formData.monthlyAverageProfitLoss,
+      businessAssets: formData.businessAssets,
+      isOtherKredit: formData.isOtherKredit,
+    };
+
+    const saveFunction = profileExists ? updateBusinessProfile : createBusinessProfile;
+    return await saveFunction(payload);
+  };
+
   // 3. Fungsi Validasi sebelum pindah step
-  const handleNext = () => {
+  const handleNext = async () => {
     const newErrors: Record<string, string> = {};
 
     // Validasi Step 1
@@ -55,23 +123,23 @@ function ProfileQuiz() {
       if (!formData.businessAge) newErrors.businessAge = "Please select an option";
       if (!formData.ownerDob) newErrors.ownerDob = "Please enter a date";
       if (!formData.businessLocation) newErrors.businessLocation = "This field is required";
-      if (!formData.bankAccount) newErrors.bankAccount = "Please select a bank";
+      if (!formData.businessBankAcc) newErrors.businessBankAcc = "Please select a bank";
     }
 
     // Validasi Step 2
     if (active === 1) {
-      if (!formData.sector) newErrors.sector = "Please select a sector";
+      if (!formData.businessSector) newErrors.businessSector = "Please select a sector";
       if (!formData.businessType) newErrors.businessType = "Please select a type";
-      if (formData.employeeCount === "") newErrors.employeeCount = "This field is required";
+      if (formData.totalEmployees === "") newErrors.totalEmployees = "This field is required";
       if (!formData.storeType) newErrors.storeType = "Please select a store type";
     }
 
     // Validasi Step 3
     if (active === 2) {
-      if (!formData.revenueRange) newErrors.revenueRange = "Please select a range";
-      if (!formData.profitLossRange) newErrors.profitLossRange = "Please select a range";
-      if (!formData.assets) newErrors.assets = "This field is required";
-      if (!formData.existingLoans) newErrors.existingLoans = "Please select an option";
+      if (!formData.monthlyAverageIncome) newErrors.monthlyAverageIncome = "Please select a range";
+      if (!formData.monthlyAverageProfitLoss) newErrors.monthlyAverageProfitLoss = "Please select a range";
+      if (!formData.businessAssets) newErrors.businessAssets = "This field is required";
+      if (!formData.isOtherKredit) newErrors.isOtherKredit = "Please select an option";
     }
 
     // Jika ada error, simpan ke state dan STOP (jangan pindah step)
@@ -82,24 +150,68 @@ function ProfileQuiz() {
 
     // Jika aman, bersihkan error dan lanjut
     setErrors({});
-    setActive((current) => (current < 3 ? current + 1 : current));
+
+    if (active === 2) {
+      setSaving(true);
+      const profileData = {
+        businessName: formData.businessName,
+        ownerName: formData.ownerName,
+        businessAge: formData.businessAge,
+        ownerDob: formData.ownerDob,
+        businessLocation: formData.businessLocation,
+        businessBankAcc: formData.businessBankAcc,
+        businessSector: formData.businessSector,
+        businessType: formData.businessType,
+        totalEmployees:
+          typeof formData.totalEmployees === "number"
+            ? formData.totalEmployees
+            : formData.totalEmployees !== ""
+            ? Number(formData.totalEmployees)
+            : null,
+        storeType: formData.storeType,
+        monthlyAverageIncome: formData.monthlyAverageIncome,
+        monthlyAverageProfitLoss: formData.monthlyAverageProfitLoss,
+        businessAssets: formData.businessAssets,
+        isOtherKredit: formData.isOtherKredit,
+      };
+
+      const saveFunction = profileExists ? updateBusinessProfile : createBusinessProfile;
+
+      saveFunction(profileData)
+        .then(() => setActive((current) => (current < 3 ? current + 1 : current)))
+        .catch((err) => {
+          console.error(err);
+          alert("Failed to save profile to Supabase. Please try again.");
+        })
+        .finally(() => setSaving(false));
+    } else {
+      setActive((current) => (current < 3 ? current + 1 : current));
+    }
   };
 
-  const handleSaveProgress = () => {
+  const handleSaveProgress = async () => {
     setSaving(true);
-    setTimeout(() => {
+    try {
+      await saveProfileToSupabase();
+      alert("Progress saved to Supabase");
+    } catch (error) {
+      console.error("Save error:", error);
+      alert("Unable to save progress. Please try again.");
+    } finally {
       setSaving(false);
-      alert(`Progress for Step ${active + 1} saved successfully!`);
-      // Kamu bisa console.log(formData) di sini untuk melihat data yang tersimpan
-    }, 1000);
+    }
   };
 
   // Fungsi helper untuk update state form
-  const updateForm = (field: string, value: any) => {
+  const updateForm = (field: string, value: string | number | null) => {
     setFormData({ ...formData, [field]: value });
     // Hapus error saat user mulai ngetik/milih
     if (errors[field]) {
-      setErrors({ ...errors, [field]: undefined } as any);
+      setErrors((prev) => {
+        const nextErrors = { ...prev };
+        delete nextErrors[field];
+        return nextErrors;
+      });
     }
   };
 
@@ -111,10 +223,15 @@ function ProfileQuiz() {
           <Text c="dimmed" size="sm">
             Please complete the following details. You can save your progress at any step.
           </Text>
+          {isLoadingProfile && (
+            <Text c="gray" size="sm">
+              Checking for saved profile data...
+            </Text>
+          )}
         </Stack>
 
         <Card withBorder padding="xl" radius="md" shadow="sm">
-          <Stepper active={active} onStepClick={setActive} allowNextStepsSelect={false} breakpoint="sm">
+          <Stepper active={active} onStepClick={setActive} allowNextStepsSelect={false}>
             
             {/* STEP 1: Business Identity */}
             <Stepper.Step label="Identity" description="Basic Info">
@@ -152,8 +269,8 @@ function ProfileQuiz() {
                 <Select 
                   label="Business Bank Account" placeholder="Select Bank" withAsterisk
                   data={['BCA', 'Mandiri', 'BNI', 'BRI', 'Other']} 
-                  value={formData.bankAccount} onChange={(val) => updateForm("bankAccount", val)}
-                  error={errors.bankAccount}
+                  value={formData.businessBankAcc} onChange={(val) => updateForm("businessBankAcc", val)}
+                  error={errors.businessBankAcc}
                 />
               </Stack>
             </Stepper.Step>
@@ -165,8 +282,8 @@ function ProfileQuiz() {
                   <Select 
                     label="Business Sector" placeholder="Select Sector" withAsterisk
                     data={['Retail', 'F&B', 'Services', 'Manufacturing', 'Technology']} 
-                    value={formData.sector} onChange={(val) => updateForm("sector", val)}
-                    error={errors.sector}
+                    value={formData.businessSector} onChange={(val) => updateForm("businessSector", val)}
+                    error={errors.businessSector}
                   />
                   <Select 
                     label="Business Type" placeholder="Select Type" withAsterisk
@@ -177,8 +294,8 @@ function ProfileQuiz() {
                 </SimpleGrid>
                 <NumberInput 
                   label="Employee Count" placeholder="0" min={0} withAsterisk
-                  value={formData.employeeCount} onChange={(val) => updateForm("employeeCount", val)}
-                  error={errors.employeeCount}
+                  value={formData.totalEmployees} onChange={(val) => updateForm("totalEmployees", val)}
+                  error={errors.totalEmployees}
                 />
                 <Select 
                   label="Store Type" placeholder="Select Model" withAsterisk
@@ -195,25 +312,25 @@ function ProfileQuiz() {
                 <Select 
                   label="Monthly Revenue Range" placeholder="Select Range" withAsterisk
                   data={['< 10M', '10-50M', '50-100M', '> 100M']} 
-                  value={formData.revenueRange} onChange={(val) => updateForm("revenueRange", val)}
-                  error={errors.revenueRange}
+                  value={formData.monthlyAverageIncome} onChange={(val) => updateForm("monthlyAverageIncome", val)}
+                  error={errors.monthlyAverageIncome}
                 />
                 <Select 
                   label="Monthly Profit/Loss Range" placeholder="Select Range" withAsterisk
                   data={['Net Loss', '< 5M', '5-20M', '> 20M']} 
-                  value={formData.profitLossRange} onChange={(val) => updateForm("profitLossRange", val)}
-                  error={errors.profitLossRange}
+                  value={formData.monthlyAverageProfitLoss} onChange={(val) => updateForm("monthlyAverageProfitLoss", val)}
+                  error={errors.monthlyAverageProfitLoss}
                 />
                 <TextInput 
                   label="Business Assets" placeholder="e.g. Land, Vehicle, Tools" withAsterisk
-                  value={formData.assets} onChange={(e) => updateForm("assets", e.currentTarget.value)}
-                  error={errors.assets}
+                  value={formData.businessAssets} onChange={(e) => updateForm("businessAssets", e.currentTarget.value)}
+                  error={errors.businessAssets}
                 />
                 <Select 
                   label="Existing Loans?" placeholder="Select Status" withAsterisk
                   data={['None', 'Active', 'Settled']} 
-                  value={formData.existingLoans} onChange={(val) => updateForm("existingLoans", val)}
-                  error={errors.existingLoans}
+                  value={formData.isOtherKredit} onChange={(val) => updateForm("isOtherKredit", val)}
+                  error={errors.isOtherKredit}
                 />
               </Stack>
             </Stepper.Step>

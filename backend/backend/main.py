@@ -83,3 +83,56 @@ async def delete_amort(amort_id: int, user_id: str = Depends(get_current_user)):
     return {"message": f"Amort #{amort_id} Successfully Deleted"}
 
 
+def clean_empty_strings(data: dict) -> dict:
+    return {k: v for k, v in data.items() if not (isinstance(v, str) and v == "")}
+
+# Read Business Profile
+@app.get("/business-profile")
+async def get_business_profile(user_id: str = Depends(get_current_user)):
+    try:
+        result = supabase.table("BusinessProfile").select("*").eq("user_id", user_id).execute()
+        if not result.data:
+            return {}
+        return result.data[0]
+    except Exception as e:
+        print("GET business profile error:", str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Create or update Business Profile
+@app.post("/business-profile")
+async def create_business_profile(entry: BusinessProfile, user_id: str = Depends(get_current_user)):
+    try:
+        data = clean_empty_strings(entry.model_dump(exclude_none=True))
+        data["user_id"] = user_id
+
+        existing = supabase.table("BusinessProfile").select("businessID").eq("user_id", user_id).execute()
+        if existing.data:
+            result = supabase.table("BusinessProfile").update(data).eq("user_id", user_id).execute()
+        else:
+            result = supabase.table("BusinessProfile").insert(data).execute()
+
+        if not result.data:
+            raise HTTPException(status_code=500, detail="Failed to save business profile")
+        return result.data[0]
+    except Exception as e:
+        print("Business profile POST error:", str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Update Business Profile
+@app.put("/business-profile")
+async def update_business_profile(entry: BusinessProfile, user_id: str = Depends(get_current_user)):
+    try:
+        data = clean_empty_strings(entry.model_dump(exclude_none=True))
+
+        existing = supabase.table("BusinessProfile").select("businessID").eq("user_id", user_id).execute()
+        if not existing.data:
+            raise HTTPException(status_code=404, detail="Business profile not found")
+
+        result = supabase.table("BusinessProfile").update(data).eq("user_id", user_id).execute()
+
+        if not result.data:
+            raise HTTPException(status_code=500, detail="Failed to update business profile")
+        return result.data[0]
+    except Exception as e:
+        print("Business profile PUT error:", str(e))
+        raise HTTPException(status_code=500, detail=str(e))
