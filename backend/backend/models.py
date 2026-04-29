@@ -2,18 +2,20 @@
 from pydantic import BaseModel
 
 class AmortEntry(BaseModel):
-    amort_id: int | None = None
-    user_id: str | None = None
-    created_at: str | None = None
+    amortID: int 
+    user_id: str 
+    creditID: int 
+    businessID: int 
+    created_at: str 
     title: str
-    tenor_month: int
-    total_installment: float
-    
+    tenorMonth: int
+    totalInstallment: float
+    principalAmount: float 
     
 class BusinessProfile(BaseModel):
-    businessID: int | None = None
-    created_at: str | None = None
-    user_id: str | None = None
+    businessID: int 
+    user_id: str 
+    created_at: str 
     businessName: str | None = None
     businessAge: str | None = None
     ownerName: str | None = None
@@ -28,3 +30,34 @@ class BusinessProfile(BaseModel):
     monthlyAverageProfitLoss: str | None = None
     businessAssets: str | None = None
     isOtherKredit: str | None = None
+    umkmUnlockLevel: str | None = None
+
+class Credit(BaseModel):
+    creditID: int 
+    creditType: str | None = None
+    minBusinessAge: int | None = None
+    maxLimit: float | None = None
+    interestRate: float | None = None
+    bankURL: str | None = None
+
+class Document(BaseModel):
+    documentID: int 
+    user_id: str 
+    documentName: str | None = None
+    isChecked: bool
+    documentInstruction: str | None = None
+    
+class BusinessProposal(BaseModel):
+    proposalID: int 
+    user_id: str 
+    businessID: int 
+    status: str | None = None
+    dateGenerated: str | None = None
+
+class Profiles(BaseModel):
+    profile_id: int 
+    user_id: str 
+    created_at: str 
+    name: str 
+    avatarURL: str | None = None
+    simpleBio: str | None = None
