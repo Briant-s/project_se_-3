@@ -1,5 +1,6 @@
 # Create models same as in supabase
 from pydantic import BaseModel
+from typing import Literal
 
 class AmortEntry(BaseModel):
     amortID: int 
@@ -13,9 +14,9 @@ class AmortEntry(BaseModel):
     principalAmount: float 
     
 class BusinessProfile(BaseModel):
-    businessID: int | None = None
-    user_id: str | None = None
-    created_at: str | None = None
+    businessID: int 
+    user_id: str 
+    created_at: str 
     businessName: str | None = None
     businessAge: str | None = None
     ownerName: str | None = None
@@ -31,6 +32,8 @@ class BusinessProfile(BaseModel):
     businessAssets: str | None = None
     isOtherKredit: str | None = None
     umkmUnlockLevel: str | None = None
+    businessContactNumber: str | None = None
+    businessEmail: str | None = None
 
 class Credit(BaseModel):
     creditID: int 
@@ -61,3 +64,15 @@ class Profiles(BaseModel):
     name: str 
     avatarURL: str | None = None
     simpleBio: str | None = None
+
+class Assets (BaseModel):
+    assetsID: int
+    businessID: int 
+    assetsName: str | None = None
+    assetsType: Literal["Usaha", "Pribadi"]
+
+class QuizProgress(BaseModel):
+    quizID: int
+    user_id: int
+    businessID: int
+    lastModified: str | None = None
