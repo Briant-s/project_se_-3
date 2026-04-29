@@ -26,6 +26,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { Outlet, useNavigate } from "react-router-dom";
 
 import Sidebar from "./components/Sidebar";
+import { UserProfile } from "./components";
 import "./App.css";
 import classes from "./App.module.css";
 import type { NavItem } from "./types";
@@ -109,10 +110,6 @@ function AppLayout() {
       path: "business-proposal",
     },
   ];
-  const supNavigation: NavItem[] = [
-    { icon: HiCog, label: "Settings", path: "/settings" },
-    { icon: HiQuestionMarkCircle, label: "Help", path: "/help" },
-  ];
 
   const { session, signOutUser } = UserAuth();
   const navigate = useNavigate();
@@ -155,19 +152,11 @@ function AppLayout() {
             />
             PoestaKas
           </Group>
-          <Group>
-            <Button onClick={(e) => navigate("/registration")}>Sign in</Button>
-            <Button onClick={(e) => navigate("/login")}>Login</Button>
-            <Button onClick={handleSignOut}>Sign Out</Button>
-            <Group>
-              <Avatar
-                color="initials"
-                radius="xl"
-                name={session?.user?.display}
-              ></Avatar>
-              <Box fz={12}>{session?.user?.email}</Box>
-            </Group>
-          </Group>
+
+          <UserProfile
+            user_email={session?.user?.email}
+            handleSignOut={handleSignOut}
+          />
         </Group>
       </AppShell.Header>
 
@@ -178,7 +167,7 @@ function AppLayout() {
       >
         <AppShell.Section grow px="xs">
           <Stack gap={4}>
-            <Sidebar mainNav={navigations} supNav={supNavigation} />
+            <Sidebar mainNav={navigations} />
           </Stack>
         </AppShell.Section>
       </AppShell.Navbar>
