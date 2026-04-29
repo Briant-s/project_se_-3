@@ -9,34 +9,29 @@ import {
   Divider,
   Badge,
 } from "@mantine/core";
+import { useEffect, useState } from "react";
 import { HiExternalLink } from "react-icons/hi";
 import { HiOutlineCreditCard, HiOutlineBanknotes } from "react-icons/hi2";
-
+import { getBusinessProfile } from "../../services/businessProfileService";
+import type { BusinessProfile } from "../../services/models";
+import { DataItem } from "./component";
 
 function FinancialOverview() {
-  // Helper component untuk layout data yang konsisten
-  const DataItem = ({
-    label,
-    value,
-  }: {
-    label: string;
-    value: string | React.ReactNode;
-  }) => (
-    <Stack gap={0} style={{ flex: 1 }}>
-      <Text size="xs" c="dimmed">
-        {label}
-      </Text>
-      <Text size="sm" fw={500}>
-        {value}
-      </Text>
-    </Stack>
-  );
+  const [business, setBusiness] = useState<BusinessProfile | null>();
+
+  // Fetch Business
+  useEffect(() => {
+    const fetchBusiness = async () => {
+      const result = await getBusinessProfile();
+      setBusiness(result);
+    };
+    fetchBusiness();
+  }, []);
 
   return (
     <>
       <Container fluid>
         <Stack gap="lg">
-
           {/* Business Header Card - DITAMBAHKAN shadow="sm" */}
           <Card shadow="sm" radius="md" withBorder padding="xl">
             <Group justify="space-between">
@@ -44,17 +39,17 @@ function FinancialOverview() {
                 <Avatar radius="md" size="lg" color="blue" />
                 <Stack gap={0}>
                   <Text fw={700} size="lg">
-                    Business Name
+                    {business?.businessName}
                   </Text>
                   <Group gap="xs">
                     <Text size="sm" c="dimmed">
-                      Sector
+                      {business?.businessSector}
                     </Text>
                     <Text size="sm" c="dimmed">
                       •
                     </Text>
                     <Text size="sm" c="dimmed">
-                      Type
+                      {business?.businessType}
                     </Text>
                   </Group>
                 </Stack>
@@ -80,8 +75,12 @@ function FinancialOverview() {
                   Active KUR Loan
                 </Text>
                 <Group justify="space-between" align="center">
-                  <Text size="sm" fw={500}>Current Status</Text>
-                  <Badge color="gray" variant="light">None</Badge>
+                  <Text size="sm" fw={500}>
+                    Current Status
+                  </Text>
+                  <Badge color="gray" variant="light">
+                    None
+                  </Badge>
                 </Group>
               </Stack>
 
@@ -93,13 +92,21 @@ function FinancialOverview() {
                   Monthly Performance
                 </Text>
                 <Group justify="space-between" align="flex-start" wrap="nowrap">
-                  <DataItem 
-                    label="Revenue" 
-                    value={<Text c="green.7" fw={600}>Rp 2.000.000,00</Text>} 
+                  <DataItem
+                    label="Revenue"
+                    value={
+                      <Text c="green.7" fw={600}>
+                        {business?.monthlyAverageIncome ?? "--"}
+                      </Text>
+                    }
                   />
-                  <DataItem 
-                    label="Profit/Loss" 
-                    value={<Text fw={600}>Rp 500.000,00</Text>} 
+                  <DataItem
+                    label="Profit/Loss"
+                    value={
+                      <Text fw={600}>
+                        {business?.monthlyAverageProfitLoss ?? "--"}
+                      </Text>
+                    }
                   />
                 </Group>
               </Stack>
@@ -112,8 +119,20 @@ function FinancialOverview() {
                   Payment Methods
                 </Text>
                 <Group gap="md">
-                  <Badge leftSection={<HiOutlineBanknotes size={14}/>} variant="outline" color="gray">Cash</Badge>
-                  <Badge leftSection={<HiOutlineCreditCard size={14}/>} variant="outline" color="blue">Transfer Bank</Badge>
+                  <Badge
+                    leftSection={<HiOutlineBanknotes size={14} />}
+                    variant="outline"
+                    color="gray"
+                  >
+                    Cash
+                  </Badge>
+                  <Badge
+                    leftSection={<HiOutlineCreditCard size={14} />}
+                    variant="outline"
+                    color="blue"
+                  >
+                    Transfer Bank
+                  </Badge>
                 </Group>
               </Stack>
             </Stack>
@@ -163,7 +182,6 @@ function FinancialOverview() {
               </Stack>
             </Stack>
           </Card>
-
         </Stack>
       </Container>
     </>

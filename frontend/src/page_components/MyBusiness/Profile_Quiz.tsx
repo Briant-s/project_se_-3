@@ -15,7 +15,11 @@ import {
 import { useState, useEffect } from "react";
 import { HiArrowRight, HiArrowLeft, HiCheck } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
-import { createBusinessProfile, getBusinessProfile, updateBusinessProfile } from "../../services/businessProfileService";
+import {
+  createBusinessProfile,
+  getBusinessProfile,
+  updateBusinessProfile,
+} from "../../services/businessProfileService";
 
 function ProfileQuiz() {
   const [active, setActive] = useState(0);
@@ -45,7 +49,8 @@ function ProfileQuiz() {
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   const [profileExists, setProfileExists] = useState(false);
 
-  const prevStep = () => setActive((current) => (current > 0 ? current - 1 : current));
+  const prevStep = () =>
+    setActive((current) => (current > 0 ? current - 1 : current));
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -66,8 +71,8 @@ function ProfileQuiz() {
             typeof profile.totalEmployees === "number"
               ? profile.totalEmployees
               : profile.totalEmployees
-              ? Number(profile.totalEmployees)
-              : "",
+                ? Number(profile.totalEmployees)
+                : "",
           storeType: profile.storeType || null,
           monthlyAverageIncome: profile.monthlyAverageIncome || null,
           monthlyAverageProfitLoss: profile.monthlyAverageProfitLoss || null,
@@ -99,16 +104,19 @@ function ProfileQuiz() {
         typeof formData.totalEmployees === "number"
           ? formData.totalEmployees
           : formData.totalEmployees !== ""
-          ? Number(formData.totalEmployees)
-          : null,
+            ? Number(formData.totalEmployees)
+            : null,
       storeType: formData.storeType,
       monthlyAverageIncome: formData.monthlyAverageIncome,
       monthlyAverageProfitLoss: formData.monthlyAverageProfitLoss,
       businessAssets: formData.businessAssets,
       isOtherKredit: formData.isOtherKredit,
     };
+    console.log(payload);
 
-    const saveFunction = profileExists ? updateBusinessProfile : createBusinessProfile;
+    const saveFunction = profileExists
+      ? updateBusinessProfile
+      : createBusinessProfile;
     return await saveFunction(payload);
   };
 
@@ -118,28 +126,40 @@ function ProfileQuiz() {
 
     // Validasi Step 1
     if (active === 0) {
-      if (!formData.businessName) newErrors.businessName = "This field is required";
+      if (!formData.businessName)
+        newErrors.businessName = "This field is required";
       if (!formData.ownerName) newErrors.ownerName = "This field is required";
-      if (!formData.businessAge) newErrors.businessAge = "Please select an option";
+      if (!formData.businessAge)
+        newErrors.businessAge = "Please select an option";
       if (!formData.ownerDob) newErrors.ownerDob = "Please enter a date";
-      if (!formData.businessLocation) newErrors.businessLocation = "This field is required";
-      if (!formData.businessBankAcc) newErrors.businessBankAcc = "Please select a bank";
+      if (!formData.businessLocation)
+        newErrors.businessLocation = "This field is required";
+      if (!formData.businessBankAcc)
+        newErrors.businessBankAcc = "Please select a bank";
     }
 
     // Validasi Step 2
     if (active === 1) {
-      if (!formData.businessSector) newErrors.businessSector = "Please select a sector";
-      if (!formData.businessType) newErrors.businessType = "Please select a type";
-      if (formData.totalEmployees === "") newErrors.totalEmployees = "This field is required";
-      if (!formData.storeType) newErrors.storeType = "Please select a store type";
+      if (!formData.businessSector)
+        newErrors.businessSector = "Please select a sector";
+      if (!formData.businessType)
+        newErrors.businessType = "Please select a type";
+      if (formData.totalEmployees === "")
+        newErrors.totalEmployees = "This field is required";
+      if (!formData.storeType)
+        newErrors.storeType = "Please select a store type";
     }
 
     // Validasi Step 3
     if (active === 2) {
-      if (!formData.monthlyAverageIncome) newErrors.monthlyAverageIncome = "Please select a range";
-      if (!formData.monthlyAverageProfitLoss) newErrors.monthlyAverageProfitLoss = "Please select a range";
-      if (!formData.businessAssets) newErrors.businessAssets = "This field is required";
-      if (!formData.isOtherKredit) newErrors.isOtherKredit = "Please select an option";
+      if (!formData.monthlyAverageIncome)
+        newErrors.monthlyAverageIncome = "Please select a range";
+      if (!formData.monthlyAverageProfitLoss)
+        newErrors.monthlyAverageProfitLoss = "Please select a range";
+      if (!formData.businessAssets)
+        newErrors.businessAssets = "This field is required";
+      if (!formData.isOtherKredit)
+        newErrors.isOtherKredit = "Please select an option";
     }
 
     // Jika ada error, simpan ke state dan STOP (jangan pindah step)
@@ -166,8 +186,8 @@ function ProfileQuiz() {
           typeof formData.totalEmployees === "number"
             ? formData.totalEmployees
             : formData.totalEmployees !== ""
-            ? Number(formData.totalEmployees)
-            : null,
+              ? Number(formData.totalEmployees)
+              : null,
         storeType: formData.storeType,
         monthlyAverageIncome: formData.monthlyAverageIncome,
         monthlyAverageProfitLoss: formData.monthlyAverageProfitLoss,
@@ -175,10 +195,14 @@ function ProfileQuiz() {
         isOtherKredit: formData.isOtherKredit,
       };
 
-      const saveFunction = profileExists ? updateBusinessProfile : createBusinessProfile;
+      const saveFunction = profileExists
+        ? updateBusinessProfile
+        : createBusinessProfile;
 
       saveFunction(profileData)
-        .then(() => setActive((current) => (current < 3 ? current + 1 : current)))
+        .then(() =>
+          setActive((current) => (current < 3 ? current + 1 : current)),
+        )
         .catch((err) => {
           console.error(err);
           alert("Failed to save profile to Supabase. Please try again.");
@@ -221,7 +245,8 @@ function ProfileQuiz() {
         <Stack gap={5}>
           <Title order={2}>Business Profile Quiz</Title>
           <Text c="dimmed" size="sm">
-            Please complete the following details. You can save your progress at any step.
+            Please complete the following details. You can save your progress at
+            any step.
           </Text>
           {isLoadingProfile && (
             <Text c="gray" size="sm">
@@ -231,45 +256,74 @@ function ProfileQuiz() {
         </Stack>
 
         <Card withBorder padding="xl" radius="md" shadow="sm">
-          <Stepper active={active} onStepClick={setActive} allowNextStepsSelect={false}>
-            
+          <Stepper
+            active={active}
+            onStepClick={setActive}
+            allowNextStepsSelect={false}
+          >
             {/* STEP 1: Business Identity */}
             <Stepper.Step label="Identity" description="Basic Info">
               <Stack gap="md" mt="xl">
                 <SimpleGrid cols={{ base: 1, sm: 2 }}>
-                  <TextInput 
-                    label="Business Name" placeholder="e.g. Warung Maju Jaya" withAsterisk 
-                    value={formData.businessName} onChange={(e) => updateForm("businessName", e.currentTarget.value)}
+                  <TextInput
+                    label="Business Name"
+                    placeholder="e.g. Warung Maju Jaya"
+                    withAsterisk
+                    value={formData.businessName}
+                    onChange={(e) =>
+                      updateForm("businessName", e.currentTarget.value)
+                    }
                     error={errors.businessName}
                   />
-                  <TextInput 
-                    label="Business Owner Name" placeholder="Your Full Name" withAsterisk 
-                    value={formData.ownerName} onChange={(e) => updateForm("ownerName", e.currentTarget.value)}
+                  <TextInput
+                    label="Business Owner Name"
+                    placeholder="Your Full Name"
+                    withAsterisk
+                    value={formData.ownerName}
+                    onChange={(e) =>
+                      updateForm("ownerName", e.currentTarget.value)
+                    }
                     error={errors.ownerName}
                   />
                 </SimpleGrid>
                 <SimpleGrid cols={{ base: 1, sm: 2 }}>
-                  <Select 
-                    label="Business Age" placeholder="Select duration" withAsterisk
-                    data={['< 1 Year', '1-2 Years', '3-5 Years', '> 5 Years']} 
-                    value={formData.businessAge} onChange={(val) => updateForm("businessAge", val)}
+                  <Select
+                    label="Business Age"
+                    placeholder="Select duration"
+                    withAsterisk
+                    data={["< 1 Year", "1-2 Years", "3-5 Years", "> 5 Years"]}
+                    value={formData.businessAge}
+                    onChange={(val) => updateForm("businessAge", val)}
                     error={errors.businessAge}
                   />
-                  <TextInput 
-                    label="Owner Date of Birth" type="date" withAsterisk
-                    value={formData.ownerDob} onChange={(e) => updateForm("ownerDob", e.currentTarget.value)}
+                  <TextInput
+                    label="Owner Date of Birth"
+                    type="date"
+                    withAsterisk
+                    value={formData.ownerDob}
+                    onChange={(e) =>
+                      updateForm("ownerDob", e.currentTarget.value)
+                    }
                     error={errors.ownerDob}
                   />
                 </SimpleGrid>
-                <TextInput 
-                  label="Business Location" placeholder="City or Full Address" withAsterisk
-                  value={formData.businessLocation} onChange={(e) => updateForm("businessLocation", e.currentTarget.value)}
+                <TextInput
+                  label="Business Location"
+                  placeholder="City or Full Address"
+                  withAsterisk
+                  value={formData.businessLocation}
+                  onChange={(e) =>
+                    updateForm("businessLocation", e.currentTarget.value)
+                  }
                   error={errors.businessLocation}
                 />
-                <Select 
-                  label="Business Bank Account" placeholder="Select Bank" withAsterisk
-                  data={['BCA', 'Mandiri', 'BNI', 'BRI', 'Other']} 
-                  value={formData.businessBankAcc} onChange={(val) => updateForm("businessBankAcc", val)}
+                <Select
+                  label="Business Bank Account"
+                  placeholder="Select Bank"
+                  withAsterisk
+                  data={["BCA", "Mandiri", "BNI", "BRI", "Other"]}
+                  value={formData.businessBankAcc}
+                  onChange={(val) => updateForm("businessBankAcc", val)}
                   error={errors.businessBankAcc}
                 />
               </Stack>
@@ -279,28 +333,47 @@ function ProfileQuiz() {
             <Stepper.Step label="Operational" description="Business Details">
               <Stack gap="md" mt="xl">
                 <SimpleGrid cols={{ base: 1, sm: 2 }}>
-                  <Select 
-                    label="Business Sector" placeholder="Select Sector" withAsterisk
-                    data={['Retail', 'F&B', 'Services', 'Manufacturing', 'Technology']} 
-                    value={formData.businessSector} onChange={(val) => updateForm("businessSector", val)}
+                  <Select
+                    label="Business Sector"
+                    placeholder="Select Sector"
+                    withAsterisk
+                    data={[
+                      "Retail",
+                      "F&B",
+                      "Services",
+                      "Manufacturing",
+                      "Technology",
+                    ]}
+                    value={formData.businessSector}
+                    onChange={(val) => updateForm("businessSector", val)}
                     error={errors.businessSector}
                   />
-                  <Select 
-                    label="Business Type" placeholder="Select Type" withAsterisk
-                    data={['Product', 'Service', 'Both']} 
-                    value={formData.businessType} onChange={(val) => updateForm("businessType", val)}
+                  <Select
+                    label="Business Type"
+                    placeholder="Select Type"
+                    withAsterisk
+                    data={["Product", "Service", "Both"]}
+                    value={formData.businessType}
+                    onChange={(val) => updateForm("businessType", val)}
                     error={errors.businessType}
                   />
                 </SimpleGrid>
-                <NumberInput 
-                  label="Employee Count" placeholder="0" min={0} withAsterisk
-                  value={formData.totalEmployees} onChange={(val) => updateForm("totalEmployees", val)}
+                <NumberInput
+                  label="Employee Count"
+                  placeholder="0"
+                  min={0}
+                  withAsterisk
+                  value={formData.totalEmployees}
+                  onChange={(val) => updateForm("totalEmployees", val)}
                   error={errors.totalEmployees}
                 />
-                <Select 
-                  label="Store Type" placeholder="Select Model" withAsterisk
-                  data={['Online', 'Offline', 'Both (Omnichannel)']} 
-                  value={formData.storeType} onChange={(val) => updateForm("storeType", val)}
+                <Select
+                  label="Store Type"
+                  placeholder="Select Model"
+                  withAsterisk
+                  data={["Online", "Offline", "Both (Omnichannel)"]}
+                  value={formData.storeType}
+                  onChange={(val) => updateForm("storeType", val)}
                   error={errors.storeType}
                 />
               </Stack>
@@ -309,27 +382,43 @@ function ProfileQuiz() {
             {/* STEP 3: Financial */}
             <Stepper.Step label="Financial" description="Financial Health">
               <Stack gap="md" mt="xl">
-                <Select 
-                  label="Monthly Revenue Range" placeholder="Select Range" withAsterisk
-                  data={['< 10M', '10-50M', '50-100M', '> 100M']} 
-                  value={formData.monthlyAverageIncome} onChange={(val) => updateForm("monthlyAverageIncome", val)}
+                <Select
+                  label="Monthly Revenue Range"
+                  placeholder="Select Range"
+                  withAsterisk
+                  data={["< 10M", "10-50M", "50-100M", "> 100M"]}
+                  value={formData.monthlyAverageIncome}
+                  onChange={(val) => updateForm("monthlyAverageIncome", val)}
                   error={errors.monthlyAverageIncome}
                 />
-                <Select 
-                  label="Monthly Profit/Loss Range" placeholder="Select Range" withAsterisk
-                  data={['Net Loss', '< 5M', '5-20M', '> 20M']} 
-                  value={formData.monthlyAverageProfitLoss} onChange={(val) => updateForm("monthlyAverageProfitLoss", val)}
+                <Select
+                  label="Monthly Profit/Loss Range"
+                  placeholder="Select Range"
+                  withAsterisk
+                  data={["Net Loss", "< 5M", "5-20M", "> 20M"]}
+                  value={formData.monthlyAverageProfitLoss}
+                  onChange={(val) =>
+                    updateForm("monthlyAverageProfitLoss", val)
+                  }
                   error={errors.monthlyAverageProfitLoss}
                 />
-                <TextInput 
-                  label="Business Assets" placeholder="e.g. Land, Vehicle, Tools" withAsterisk
-                  value={formData.businessAssets} onChange={(e) => updateForm("businessAssets", e.currentTarget.value)}
+                <TextInput
+                  label="Business Assets"
+                  placeholder="e.g. Land, Vehicle, Tools"
+                  withAsterisk
+                  value={formData.businessAssets}
+                  onChange={(e) =>
+                    updateForm("businessAssets", e.currentTarget.value)
+                  }
                   error={errors.businessAssets}
                 />
-                <Select 
-                  label="Existing Loans?" placeholder="Select Status" withAsterisk
-                  data={['None', 'Active', 'Settled']} 
-                  value={formData.isOtherKredit} onChange={(val) => updateForm("isOtherKredit", val)}
+                <Select
+                  label="Existing Loans?"
+                  placeholder="Select Status"
+                  withAsterisk
+                  data={["None", "Active", "Settled"]}
+                  value={formData.isOtherKredit}
+                  onChange={(val) => updateForm("isOtherKredit", val)}
                   error={errors.isOtherKredit}
                 />
               </Stack>
@@ -337,14 +426,16 @@ function ProfileQuiz() {
 
             <Stepper.Completed>
               <Stack align="center" py="xl" gap="sm">
-                <Text fw={700} size="lg">All set! Data submitted.</Text>
+                <Text fw={700} size="lg">
+                  All set! Data submitted.
+                </Text>
                 <Text c="dimmed" size="sm" ta="center">
                   Thank you for completing your business profile.
                 </Text>
-                <Button 
-                  color="green" 
-                  leftSection={<HiCheck />} 
-                  onClick={() => navigate('/my-business/business-profile')} 
+                <Button
+                  color="green"
+                  leftSection={<HiCheck />}
+                  onClick={() => navigate("/my-business/business-profile")}
                   mt="md"
                 >
                   View My Profile
@@ -357,25 +448,29 @@ function ProfileQuiz() {
             <Group justify="space-between" mt="xl">
               <Group>
                 {active !== 0 && (
-                  <Button variant="default" onClick={prevStep} leftSection={<HiArrowLeft />}>
+                  <Button
+                    variant="default"
+                    onClick={prevStep}
+                    leftSection={<HiArrowLeft />}
+                  >
                     Back
                   </Button>
                 )}
               </Group>
 
               <Group gap="sm">
-                <Button 
-                  variant="light" 
-                  color="blue" 
+                <Button
+                  variant="light"
+                  color="blue"
                   onClick={handleSaveProgress}
                   loading={saving}
                 >
                   Save Progress
                 </Button>
-                
+
                 {/* Ganti onClick menjadi handleNext */}
                 <Button onClick={handleNext} rightSection={<HiArrowRight />}>
-                  {active === 2 ? 'Finish' : 'Next'}
+                  {active === 2 ? "Finish" : "Next"}
                 </Button>
               </Group>
             </Group>

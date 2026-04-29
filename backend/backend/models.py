@@ -13,9 +13,9 @@ class AmortEntry(BaseModel):
     principalAmount: float 
     
 class BusinessProfile(BaseModel):
-    businessID: int 
-    user_id: str 
-    created_at: str 
+    businessID: int | None = None
+    user_id: str | None = None
+    created_at: str | None = None
     businessName: str | None = None
     businessAge: str | None = None
     ownerName: str | None = None

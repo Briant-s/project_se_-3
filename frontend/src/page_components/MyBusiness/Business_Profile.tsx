@@ -10,30 +10,53 @@ import {
   Divider,
 } from "@mantine/core";
 import { HiPencil, HiExternalLink, HiOutlineX } from "react-icons/hi";
-import { useState } from "react";
-import { mockBusinessProfile } from "../mock_user";
-
+import { useState, useEffect } from "react";
+import { mockBusinessProfile } from "../../mock_user";
+import { getBusinessProfile } from "../../services/businessProfileService";
+import type { BusinessProfile } from "../../services/models";
+import { DataItem } from "./component";
 function BusinessProfile() {
   const [formReminder, setFormReminder] = useState(true);
   const { operational } = mockBusinessProfile;
-  const formProgress = 70;
+  // const formProgress = 70;
+  const [formProgress, setFormProgress] = useState(0);
+  const [business, setBusiness] = useState<BusinessProfile | null>();
 
-  const DataItem = ({
-    label,
-    value,
-  }: {
-    label: string;
-    value: string | number;
-  }) => (
-    <Stack gap={0}>
-      <Text size="xs" c="dimmed">
-        {label}
-      </Text>
-      <Text size="sm" fw={500}>
-        {value}
-      </Text>
-    </Stack>
-  );
+  const calculateFormCompletion = (
+    business: BusinessProfile | null | undefined,
+  ): number => {
+    if (!business) return 0;
+    const fields = [
+      business.businessName,
+      business.businessAge,
+      business.ownerName,
+      business.businessLocation,
+      business.businessType,
+      business.businessSector,
+      business.totalEmployees,
+      business.storeType,
+      business.monthlyAverageIncome,
+      business.monthlyAverageProfitLoss,
+      business.businessAssets,
+      business.isOtherKredit,
+    ];
+    const filled = fields.filter(
+      (value) => value !== null && value !== undefined && value !== "",
+    ).length;
+    return Math.round((filled / fields.length) * 100);
+  };
+
+  // Fetch Business
+  useEffect(() => {
+    const fetchBusiness = async () => {
+      const result = await getBusinessProfile();
+      setBusiness(result);
+      const completion = calculateFormCompletion(result);
+      setFormProgress(completion);
+      setFormReminder(completion < 100);
+    };
+    fetchBusiness();
+  }, []);
 
   return (
     <>
@@ -102,7 +125,7 @@ function BusinessProfile() {
             <Stack gap="xl">
               <Group justify="space-between">
                 <Text fw={700} size="lg">
-                  Warung Maju Jaya
+                  {business?.businessName}
                 </Text>
                 <ActionIcon variant="subtle" color="gray">
                   <HiPencil />
@@ -116,7 +139,10 @@ function BusinessProfile() {
                 <Group justify="space-between" align="flex-start">
                   <DataItem label="Phone" value="0812-3456-7890" />
                   <DataItem label="Email" value="maju.jaya@email.com" />
-                  <DataItem label="Location" value="Jakarta, Indonesia" />
+                  <DataItem
+                    label="Location"
+                    value={business?.businessLocation ?? "--"}
+                  />
                 </Group>
               </Stack>
 
@@ -127,13 +153,22 @@ function BusinessProfile() {
                   Business Operations
                 </Text>
                 <Group justify="space-between" align="flex-start">
-                  <DataItem label="Sector" value="Food" />
-                  <DataItem label="Business Type" value="UMKM" />
+                  <DataItem
+                    label="Sector"
+                    value={business?.businessSector ?? "--"}
+                  />
+                  <DataItem
+                    label="Business Type"
+                    value={business?.businessType ?? "--"}
+                  />
                   <DataItem
                     label="Employees"
-                    value={operational.jumlahKaryawan}
+                    value={business?.totalEmployees ?? "--"}
                   />
-                  <DataItem label="Operating" value="Online & Offline" />
+                  <DataItem
+                    label="Operating"
+                    value={business?.storeType ?? "--"}
+                  />
                 </Group>
               </Stack>
             </Stack>

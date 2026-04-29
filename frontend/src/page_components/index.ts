@@ -4,7 +4,7 @@ export { default as FinancialHealth } from "./Financial_Health";
 export { default as FinancialAdvisory } from "./Financial_Advisory";
 export { default as Help } from "./Help";
 export { default as Settings } from "./Settings";
-export { default as BusinessProfile } from "./Business_Profile";
+export { default as BusinessProfile } from "./MyBusiness/Business_Profile";
 export { default as ProfileQuiz } from "./MyBusiness/Profile_Quiz";
 export { default as FinancialOverview } from "./MyBusiness/Financial_Overview";
 export { default as LoginPage } from "./Authentication/LogIn/login";
