@@ -15,6 +15,7 @@ import { HiOutlineCreditCard, HiOutlineBanknotes } from "react-icons/hi2";
 import { getBusinessProfile } from "../../services/businessProfileService";
 import type { BusinessProfile } from "../../services/models";
 import { DataItem } from "./component";
+import { BusinessCard } from "../../components";
 
 function FinancialOverview() {
   const [business, setBusiness] = useState<BusinessProfile | null>();
@@ -32,33 +33,11 @@ function FinancialOverview() {
     <>
       <Container fluid>
         <Stack gap="lg">
-          {/* Business Header Card - DITAMBAHKAN shadow="sm" */}
-          <Card shadow="sm" radius="md" withBorder padding="xl">
-            <Group justify="space-between">
-              <Group gap="md">
-                <Avatar radius="md" size="lg" color="blue" />
-                <Stack gap={0}>
-                  <Text fw={700} size="lg">
-                    {business?.businessName}
-                  </Text>
-                  <Group gap="xs">
-                    <Text size="sm" c="dimmed">
-                      {business?.businessSector}
-                    </Text>
-                    <Text size="sm" c="dimmed">
-                      •
-                    </Text>
-                    <Text size="sm" c="dimmed">
-                      {business?.businessType}
-                    </Text>
-                  </Group>
-                </Stack>
-              </Group>
-              <ActionIcon variant="subtle" color="gray">
-                <HiExternalLink size={20} />
-              </ActionIcon>
-            </Group>
-          </Card>
+          <BusinessCard
+            businessName={business?.businessName}
+            businessSector={business?.businessSector}
+            businessType={business?.businessType}
+          />
 
           {/* Card 1: Performance & Active Loans - DITAMBAHKAN shadow="sm" */}
           <Card shadow="sm" radius="md" withBorder padding="xl">

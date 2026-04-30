@@ -3,200 +3,95 @@ import {
   Card,
   Container,
   Group,
+  ScrollArea,
   SimpleGrid,
   Stack,
   Text,
+  Title,
 } from "@mantine/core";
 import { HiArrowRight } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
 import { AreaChart, LineChart } from "@mantine/charts";
+import { BusinessCard } from "../components";
+import { useState, useEffect } from "react";
+import type { BusinessProfile } from "../page_components";
+import { getBusinessProfile } from "../services/businessProfileService";
 
 function Eligibility_Overview() {
   const nav = useNavigate();
-  const loan_data = [
-    {
-      month: 1,
-      revenue: 15000000,
-      installment: 8884000,
-      netAfterInstallment: 6116000,
-    },
-    {
-      month: 2,
-      revenue: 16000000,
-      installment: 8884000,
-      netAfterInstallment: 7116000,
-    },
-    {
-      month: 3,
-      revenue: 14000000,
-      installment: 8884000,
-      netAfterInstallment: 5116000,
-    },
-    {
-      month: 4,
-      revenue: 12000000,
-      installment: 8884000,
-      netAfterInstallment: 3116000,
-    },
-    {
-      month: 5,
-      revenue: 9500000,
-      installment: 8884000,
-      netAfterInstallment: 616000,
-    },
-    {
-      month: 6,
-      revenue: 7000000,
-      installment: 8884000,
-      netAfterInstallment: -1884000,
-    },
-    {
-      month: 7,
-      revenue: 10500000,
-      installment: 8884000,
-      netAfterInstallment: 1616000,
-    },
-    {
-      month: 8,
-      revenue: 13000000,
-      installment: 8884000,
-      netAfterInstallment: 4116000,
-    },
-    {
-      month: 9,
-      revenue: 18000000,
-      installment: 8884000,
-      netAfterInstallment: 9116000,
-    },
-    {
-      month: 10,
-      revenue: 20000000,
-      installment: 8884000,
-      netAfterInstallment: 11116000,
-    },
-    {
-      month: 11,
-      revenue: 22000000,
-      installment: 8884000,
-      netAfterInstallment: 13116000,
-    },
-    {
-      month: 12,
-      revenue: 25000000,
-      installment: 8884000,
-      netAfterInstallment: 16116000,
-    },
-  ];
+
+  const [formProgress, setFormProgress] = useState(0);
+  const [business, setBusiness] = useState<BusinessProfile | null>();
+
+  // Fetch Business
+  useEffect(() => {
+    const fetchBusiness = async () => {
+      const result = await getBusinessProfile();
+      setBusiness(result);
+    };
+    fetchBusiness();
+  }, []);
 
   return (
     <>
       <Container fluid style={{ minWidth: 0, minHeight: 0 }}>
-        <Stack>
-          <SimpleGrid cols={2}>
-            <Card bg="gray.4">Halo</Card>
-
-            <SimpleGrid>
-              <Card bg="teal.4" m={10}>
-                <Stack gap="0.5rem">
-                  {/* <Group>
-                  <Text>Loan Progress Chart</Text>
-                </Group>
-                <LineChart
-                  // m={10}
-                  p={5}
-                  h={300}
-                  withLegend
-                  legendProps={{
-                    verticalAlign: "bottom",
-                    height: 50,
-                    align: "center",
-                  }}
-                  data={loan_data}
-                  dataKey="month"
-                  series={[
-                    { name: "revenue", color: "blue.5" },
-                    { name: "installment", color: "indigo.5" },
-                    { name: "netAfterInstallment", color: "teal.5" },
-                  ]}
-                  curveType="linear"
-                  tickLine="x"
-                ></LineChart> */}
-                  <Text size="md" fw={700}>
-                    Loan Eligibility
-                  </Text>
-                  <Stack gap="0.2rem">
-                    <Text fw={700} c="white">
-                      Loan is payable next month
-                    </Text>
-                    <Text size="xl" fw={700}>
-                      Rp. 1.7000.000,00
-                    </Text>
+        <Stack gap="md">
+          <BusinessCard
+            businessName={business?.businessName}
+            businessSector={business?.businessSector}
+            businessType={business?.businessType}
+          />
+          <Card withBorder>
+            <Title order={1}>Amortization Overview</Title>
+            <SimpleGrid cols={2}>
+              <Card>
+                <Stack>
+                  <Text>Amort KUR Count</Text>
+                  <Stack>
+                    <Card
+                      withBorder
+                      style={{ borderLeft: "4px solid #228be6" }}
+                    >
+                      KUR Super Mikro
+                    </Card>
+                    <Card
+                      withBorder
+                      style={{ borderLeft: "4px solid #228be6" }}
+                    >
+                      KUR Mikro
+                    </Card>
+                    <Card
+                      withBorder
+                      style={{ borderLeft: "4px solid #228be6" }}
+                    >
+                      KUR Kecil
+                    </Card>
                   </Stack>
-                  <Button
-                    onClick={() => nav("/eligibility-check/loan-calculator")}
-                    justify="space-between"
-                    rightSection={<HiArrowRight />}
-                  >
-                    See Monthly Chart
-                  </Button>
                 </Stack>
               </Card>
-              <Card bg="orange.4" m={10}>
-                <Stack gap="0.2rem">
-                  <Group>
-                    <Text size="lg" fw={700}>
-                      Cash Buffer
-                    </Text>
-                  </Group>
-                  <Stack gap="0.2rem">
-                    <Text fw={700} c="white">
-                      Buffer cash is running low
-                    </Text>
-                    <Group gap="0.4rem">
-                      <Text size="lg" c="dimmed" fw={700}>
-                        Rp. 500.000,00
-                      </Text>
-                      <Text size="lg" fw={700}>
-                        {" "}
-                        /{" "}
-                      </Text>
-                      <Text size="lg" fw={700}>
-                        Rp. 1.000.000,00
-                      </Text>
-                    </Group>
-                  </Stack>
-                  <Button
-                    onClick={() =>
-                      nav("/eligibility-check/cash-buffer-calculator")
-                    }
-                    justify="space-between"
-                    rightSection={<HiArrowRight />}
-                  >
-                    See Buffer Chart
-                  </Button>
-                  {/* <AreaChart
-                  h={300}
-                  type="stacked"
-                  data={loan_data}
-                  dataKey="month"
-                  series={[
-                    { name: "revenue", color: "blue.5" },
-                    { name: "installment", color: "indigo.5" },
-                    { name: "netAfterInstallment", color: "teal.5" },
-                  ]}
-                  withLegend
-                  legendProps={{
-                    verticalAlign: "bottom",
-                    height: 50,
-                    align: "center",
-                  }}
-                  curveType="natural"
-                  withDots={false}
-                ></AreaChart> */}
+              <Card>
+                <Stack>
+                  <Text>Calculation History</Text>
+                  <Card withBorder>
+                    <ScrollArea h={200}>
+                      <Card>Test 1</Card>
+                      <Card>Test 1</Card>
+                      <Card>Test 1</Card>
+                      <Card>Test 1</Card>
+                    </ScrollArea>
+                  </Card>
                 </Stack>
               </Card>
             </SimpleGrid>
-          </SimpleGrid>
+          </Card>
+          <Card withBorder>
+            <Title>KUR Eligibility</Title>
+            <SimpleGrid cols={3}>
+              <Card>KUR Super Mikro</Card>
+              <Card>KUR Mikro</Card>
+              <Card>KUR Kecil</Card>
+            </SimpleGrid>
+          </Card>
         </Stack>
       </Container>
     </>
