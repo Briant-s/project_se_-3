@@ -137,8 +137,14 @@ function BusinessProfile() {
                   Business Contact
                 </Text>
                 <Group justify="space-between" align="flex-start">
-                  <DataItem label="Phone" value="0812-3456-7890" />
-                  <DataItem label="Email" value="maju.jaya@email.com" />
+                  <DataItem
+                    label="Phone"
+                    value={business?.businessContactNumber ?? "--"}
+                  />
+                  <DataItem
+                    label="Email"
+                    value={business?.businessEmail ?? "--"}
+                  />
                   <DataItem
                     label="Location"
                     value={business?.businessLocation ?? "--"}

@@ -33,7 +33,11 @@ export async function createBusinessProfile(
     body: JSON.stringify(profile),
   });
 
-  if (!result.ok) throw new Error("Failed to save business profile");
+  if (!result.ok) {
+    const errorBody = await result.json().catch(() => result.text());
+    console.error("Update error response:", errorBody);
+    throw new Error("Failed to save business profile");
+  }
   return result.json();
 }
 
@@ -46,6 +50,10 @@ export async function updateBusinessProfile(
     body: JSON.stringify(profile),
   });
 
-  if (!result.ok) throw new Error("Failed to update business profile");
+  if (!result.ok) {
+    const errorBody = await result.json().catch(() => result.text());
+    console.error("Update error response:", errorBody);
+    throw new Error("Failed to save business profile");
+  }
   return result.json();
 }

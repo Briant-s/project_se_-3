@@ -123,6 +123,7 @@ async def create_business_profile(entry: BusinessProfile, user_id: str = Depends
 async def update_business_profile(entry: BusinessProfile, user_id: str = Depends(get_current_user)):
     try:
         data = clean_empty_strings(entry.model_dump(exclude_none=True))
+        data["user_id"] = user_id
 
         existing = supabase.table("BusinessProfile").select("businessID").eq("user_id", user_id).execute()
         if not existing.data:

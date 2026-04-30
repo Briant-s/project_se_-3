@@ -42,6 +42,9 @@ function ProfileQuiz() {
     monthlyAverageProfitLoss: null as string | null,
     businessAssets: "",
     isOtherKredit: null as string | null,
+    umkmUnlockLevel: null as string | null,
+    businessContactNumber: "",
+    businessEmail: "",
   });
 
   // 2. State untuk menyimpan pesan error
@@ -78,6 +81,9 @@ function ProfileQuiz() {
           monthlyAverageProfitLoss: profile.monthlyAverageProfitLoss || null,
           businessAssets: profile.businessAssets || "",
           isOtherKredit: profile.isOtherKredit || null,
+          umkmUnlockLevel: profile.umkmUnlockLevel || null,
+          businessContactNumber: profile.businessContactNumber || "",
+          businessEmail: profile.businessEmail || "",
         });
         setProfileExists(true);
       } catch (error) {
@@ -111,6 +117,9 @@ function ProfileQuiz() {
       monthlyAverageProfitLoss: formData.monthlyAverageProfitLoss,
       businessAssets: formData.businessAssets,
       isOtherKredit: formData.isOtherKredit,
+      umkmUnlockLevel: formData.umkmUnlockLevel,
+      businessContactNumber: formData.businessContactNumber,
+      businessEmail: formData.businessEmail,
     };
     console.log(payload);
 
@@ -128,6 +137,10 @@ function ProfileQuiz() {
     if (active === 0) {
       if (!formData.businessName)
         newErrors.businessName = "This field is required";
+      if (!formData.businessEmail)
+        newErrors.businessEmail = "This field is required";
+      if (!formData.businessContactNumber)
+        newErrors.businessContactNumber = "This field is required";
       if (!formData.ownerName) newErrors.ownerName = "This field is required";
       if (!formData.businessAge)
         newErrors.businessAge = "Please select an option";
@@ -193,6 +206,9 @@ function ProfileQuiz() {
         monthlyAverageProfitLoss: formData.monthlyAverageProfitLoss,
         businessAssets: formData.businessAssets,
         isOtherKredit: formData.isOtherKredit,
+        umkmUnlockLevel: formData.umkmUnlockLevel,
+        businessContactNumber: formData.businessContactNumber,
+        businessEmail: formData.businessEmail,
       };
 
       const saveFunction = profileExists
@@ -284,6 +300,28 @@ function ProfileQuiz() {
                       updateForm("ownerName", e.currentTarget.value)
                     }
                     error={errors.ownerName}
+                  />
+                </SimpleGrid>
+                <SimpleGrid cols={{ base: 1, sm: 2 }}>
+                  <TextInput
+                    label="Business Email"
+                    placeholder="test@gmail.com"
+                    withAsterisk
+                    value={formData.businessEmail}
+                    onChange={(e) =>
+                      updateForm("businessEmail", e.currentTarget.value)
+                    }
+                    error={errors.businessEmail}
+                  />
+                  <TextInput
+                    label="Business Contact"
+                    placeholder="Phone Number"
+                    withAsterisk
+                    value={formData.businessContactNumber}
+                    onChange={(e) =>
+                      updateForm("businessContactNumber", e.currentTarget.value)
+                    }
+                    error={errors.businessContactNumber}
                   />
                 </SimpleGrid>
                 <SimpleGrid cols={{ base: 1, sm: 2 }}>

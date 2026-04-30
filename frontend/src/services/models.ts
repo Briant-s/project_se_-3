@@ -29,4 +29,7 @@ export interface BusinessProfile {
   monthlyAverageProfitLoss?: string | null;
   businessAssets?: string;
   isOtherKredit?: string | null;
+  umkmUnlockLevel?: string | null;
+  businessContactNumber?: string | null;
+  businessEmail?: string | null;
 }
