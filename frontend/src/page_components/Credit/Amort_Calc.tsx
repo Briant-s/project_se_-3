@@ -26,6 +26,12 @@ function Amort_Calc() {
   const [editId, setEditId] = useState<number | null>(null);
   const navigate = useNavigate();
 
+  const CREDIT_TYPE: Record<number, string> = {
+    1: "KUR Super Mikro",
+    2: "KUR Mikro",
+    3: "KUR Kecil",
+  };
+
   useEffect(() => {
     const loadEntries = async () => {
       const result = await getAmortEntries();
@@ -60,22 +66,23 @@ function Amort_Calc() {
   }
 
   function confirmDelete(amort_id: number, title: string) {
-  modals.openConfirmModal({ 
-    title: <Text fw={700}>Loan Deletion Warning</Text>,
-    children: (
-      <Text size="sm">
-        Are you sure you want to delete <b>{title}</b>? This action can't be reversed.
-      </Text>
-    ),
-    labels: { confirm: "Delete", cancel: "Cancel" },
-    confirmProps: { color: "red" },
-    onConfirm: () => handleDelete(amort_id),
-  });
-}
+    modals.openConfirmModal({
+      title: <Text fw={700}>Loan Deletion Warning</Text>,
+      children: (
+        <Text size="sm">
+          Are you sure you want to delete <b>{title}</b>? This action can't be
+          reversed.
+        </Text>
+      ),
+      labels: { confirm: "Delete", cancel: "Cancel" },
+      confirmProps: { color: "red" },
+      onConfirm: () => handleDelete(amort_id),
+    });
+  }
 
   const openForm = (entry?: AmortEntry) => {
     if (entry) {
-      setEditId(entry.amort_id!);
+      setEditId(entry.amortID!);
     } else {
       setEditId(null);
     }
@@ -83,14 +90,15 @@ function Amort_Calc() {
       title: entry ? "Edit Calculation" : "Add New Calculation",
       children: (
         <AmortForm
-          editId={entry?.amort_id ?? null}
+          editId={entry?.amortID ?? null}
           onSubmit={handleSubmit}
           initialValues={
             entry
               ? {
                   title: entry.title,
-                  tenor_month: entry.tenor_month,
-                  total_installment: entry.total_installment,
+                  tenorMonth: entry.tenorMonth,
+                  totalInstallment: entry.totalInstallment,
+                  principalAmount: entry.principalAmount,
                 }
               : undefined
           }
@@ -101,13 +109,12 @@ function Amort_Calc() {
 
   const AmortRows = entries.map((entry) => (
     <Paper
-      key={entry.amort_id}
+      key={entry.amortID}
       //withBorder
-      shadow="sm"  
+      shadow="sm"
       p="md"
       radius="md"
       style={{ borderLeft: "4px solid #228be6" }}
-      
     >
       <Group justify="space-between" align="center">
         {/* Kiri: Info utama */}
@@ -117,11 +124,13 @@ function Amort_Calc() {
           </Text>
           <Group gap="xs">
             <Text size="sm" c="dimmed">
-              Tipe pinjaman
+              {CREDIT_TYPE[entry.creditID ?? 0]}
             </Text>
-            <Text size="sm" c="dimmed">•</Text>
+            <Text size="sm" c="dimmed">
+              •
+            </Text>
             <Text size="sm" c="blue">
-              {entry.tenor_month} bulan
+              {entry.tenorMonth} bulan
             </Text>
           </Group>
         </Stack>
@@ -130,24 +139,36 @@ function Amort_Calc() {
         <Group gap="xl" align="center">
           <Stack gap={2} align="flex-end">
             <Text size="sm" c="dimmed">
-              ~Rp {(entry.total_installment / entry.tenor_month).toLocaleString("id-ID")} / bulan
+              ~Rp{" "}
+              {(entry.totalInstallment / entry.tenorMonth).toLocaleString(
+                "id-ID",
+              )}{" "}
+              / bulan
             </Text>
             <Text size="xs" c="dimmed">
-              Rp {entry.total_installment.toLocaleString("id-ID")}
+              Rp {entry.totalInstallment.toLocaleString("id-ID")}
             </Text>
           </Stack>
 
           <Group gap="xs">
-            <ActionIcon variant="filled" radius="md" onClick={() => openForm(entry)}>
+            <ActionIcon
+              variant="filled"
+              radius="md"
+              onClick={() => openForm(entry)}
+            >
               <HiPencil />
             </ActionIcon>
-            <ActionIcon variant="filled" radius="md" onClick={() => confirmDelete(entry.amort_id!, entry.title)}>
+            <ActionIcon
+              variant="filled"
+              radius="md"
+              onClick={() => confirmDelete(entry.amortID!, entry.title)}
+            >
               <HiTrash />
             </ActionIcon>
             <ActionIcon
               variant="filled"
               radius="md"
-              onClick={() => navigate(`/credit/amort-calc/${entry.amort_id}`)}
+              onClick={() => navigate(`/credit/amort-calc/${entry.amortID}`)}
             >
               <HiOutlineReply style={{ transform: "scaleX(-1)" }} />
             </ActionIcon>
@@ -161,7 +182,9 @@ function Amort_Calc() {
     <Container fluid>
       <Stack gap="md" m="xl">
         <Group justify="space-between">
-          <Text fw={700} size="lg">Loan Calculation List</Text>
+          <Text fw={700} size="lg">
+            Loan Calculation List
+          </Text>
           <ActionIcon onClick={() => openForm()}>
             <HiOutlinePlus />
           </ActionIcon>

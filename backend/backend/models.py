@@ -3,15 +3,15 @@ from pydantic import BaseModel
 from typing import Literal
 
 class AmortEntry(BaseModel):
-    amortID: int 
-    user_id: str 
-    creditID: int 
-    businessID: int 
-    created_at: str 
-    title: str
-    tenorMonth: int
-    totalInstallment: float
-    principalAmount: float 
+    amortID: int | None = None
+    user_id: str | None = None
+    creditID: int | None = None
+    businessID: int | None = None
+    created_at: str | None = None
+    title: str | None = None
+    tenorMonth: int | None = None
+    totalInstallment: float | None = None
+    principalAmount: float | None = None
     
 class BusinessProfile(BaseModel):
     businessID: int | None = None

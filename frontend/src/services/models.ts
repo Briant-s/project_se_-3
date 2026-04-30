@@ -1,16 +1,21 @@
 export interface AmortEntry {
-  amort_id?: number;
+  amortID?: number;
+  user_id?: number;
+  creditID?: number;
+  businessID?: number;
   created_at?: string;
-  user_id?: string;
-  title: string;
-  tenor_month: number;
-  total_installment: number;
+  title?: string;
+  tenorMonth?: number;
+  totalInstallment?: number;
+  principalAmount?: number;
 }
 
 export interface AmortFormValues {
   title: string;
-  tenor_month: number;
-  total_installment: number;
+  tenorMonth: number;
+  totalInstallment: number;
+  principalAmount: number;
+  loanType: "KUR_SUPER_MIKRO" | "KUR_MIKRO" | "KUR_KECIL";
 }
 
 export interface BusinessProfile {

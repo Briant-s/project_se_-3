@@ -33,14 +33,14 @@ app.add_middleware(
 # Read Amort List
 @app.get("/amort/amort-calc")
 async def get_all(user_id: str = Depends(get_current_user)):
-    results = (supabase.table('amort').select('*').eq("user_id", user_id).execute())
+    results = (supabase.table('Amort').select('*').eq("user_id", user_id).execute())
     return results.data
 
 # Get per item
-@app.get("/amort/amort-calc/{amort_id}")
-async def get_amort(amort_id: int, user_id: str = Depends(get_current_user)):
+@app.get("/amort/amort-calc/{amortID}")
+async def get_amort(amortID: int, user_id: str = Depends(get_current_user)):
     try:
-        result = (supabase.table('amort').select('*').eq("user_id", user_id).eq("amort_id", amort_id).execute())
+        result = (supabase.table('Amort').select('*').eq("user_id", user_id).eq("amortID", amortID).execute())
         if not result.data:
             raise HTTPException(status_code=404, detail="Entry not found")
         return result.data[0]
@@ -53,20 +53,28 @@ async def get_amort(amort_id: int, user_id: str = Depends(get_current_user)):
 @app.post("/amort/amort-calc")
 async def create_amort(entry: AmortEntry, user_id: str = Depends(get_current_user)):
     try:
-        data = entry.model_dump(exclude={"amort_id", "created_at"})
+        data = entry.model_dump(exclude={"amortID", "created_at", "user_id", "businessID"})
         data["user_id"] = user_id
-        result = supabase.table("amort").insert(data).execute()
+        
+        # Fetch businessID from BusinessProfile
+        business = supabase.table("BusinessProfile").select("businessID").eq("user_id", user_id).execute()
+        if not business.data:
+            raise HTTPException(status_code=404, detail="Business Profile not found")
+        data["businessID"] = business.data[0]["businessID"]
+        
+        
+        result = supabase.table("Amort").insert(data).execute()
         return result.data[0]
     except Exception as e:
         print("POST error:", str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
 # Update Amort
-@app.put("/amort/amort-calc/{amort_id}")
-async def update_amort(amort_id: int, entry: AmortEntry, user_id: str = Depends(get_current_user)) :
+@app.put("/amort/amort-calc/{amortID}")
+async def update_amort(amortID: int, entry: AmortEntry, user_id: str = Depends(get_current_user)) :
     try:
-        data = entry.model_dump(exclude={"amort_id", "created_at", "user_id"})
-        result = supabase.table("amort").update(data).eq("amort_id", amort_id).eq("user_id", user_id).execute()
+        data = entry.model_dump(exclude={"amortID", "created_at", "user_id", "businessID", "creditID"})
+        result = supabase.table("Amort").update(data).eq("amortID", amortID).eq("user_id", user_id).execute()
         if not result.data:
             raise HTTPException(status_code=404, detail="Entry not found or unauthorized")
         
@@ -77,10 +85,10 @@ async def update_amort(amort_id: int, entry: AmortEntry, user_id: str = Depends(
 
 
 # Delete Amort
-@app.delete("/amort/amort-calc/{amort_id}")
-async def delete_amort(amort_id: int, user_id: str = Depends(get_current_user)):
-    supabase.table("amort").delete().eq("amort_id", amort_id).eq("user_id", user_id).execute()
-    return {"message": f"Amort #{amort_id} Successfully Deleted"}
+@app.delete("/amort/amort-calc/{amortID}")
+async def delete_amort(amortID: int, user_id: str = Depends(get_current_user)):
+    supabase.table("Amort").delete().eq("amortID", amortID).eq("user_id", user_id).execute()
+    return {"message": f"Amort #{amortID} Successfully Deleted"}
 
 
 def clean_empty_strings(data: dict) -> dict:
