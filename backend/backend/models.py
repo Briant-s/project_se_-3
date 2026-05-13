@@ -36,12 +36,16 @@ class BusinessProfile(BaseModel):
     businessEmail: str | None = None
 
 class Credit(BaseModel):
-    creditID: int 
+    creditID: int
     creditType: str | None = None
+    creditPurpose: str | None = None
+    interestRatePerYear: float | None = None
     minBusinessAge: int | None = None
+    minLimit: float | None = None
     maxLimit: float | None = None
-    interestRate: float | None = None
-    bankURL: str | None = None
+    minTenorMonth: int | None = None
+    maxTenorMonth: int | None = None
+    needsCollateral: bool | None = None
 
 class Document(BaseModel):
     documentID: int 
