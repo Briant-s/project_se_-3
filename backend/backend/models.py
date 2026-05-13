@@ -38,7 +38,6 @@ class BusinessProfile(BaseModel):
 class Credit(BaseModel):
     creditID: int
     creditType: str | None = None
-    creditPurpose: str | None = None
     interestRatePerYear: float | None = None
     minBusinessAge: int | None = None
     minLimit: float | None = None
