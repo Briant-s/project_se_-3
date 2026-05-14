@@ -10,6 +10,8 @@ from models import AmortEntry, BusinessProfile
 
 from auth import get_current_user
 
+from datetime import datetime, timedelta
+
 # Loading env vars
 load_dotenv()
 
@@ -145,3 +147,25 @@ async def update_business_profile(entry: BusinessProfile, user_id: str = Depends
     except Exception as e:
         print("Business profile PUT error:", str(e))
         raise HTTPException(status_code=500, detail=str(e))
+    
+    
+    
+# Query Amort based On Cutoff
+@app.get("/credit/eligibility-overview")
+async def get_all_cutoff(
+    c_days: int,
+    user_id: str = Depends(get_current_user)
+):
+    now = datetime.now()
+    cutoff = ( now - timedelta(days=c_days)).isoformat()
+    
+    result = (
+        supabase
+        .table("Amort")
+        .select("")
+        .eq("user_id", user_id)
+        .gte("created_at", cutoff)
+        .order("created_at", desc=True)
+        .execute()
+    )
+    return result.data
