@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Container,
   Stack,
@@ -82,6 +83,8 @@ function SectionTitle({ title }: { title: string }) {
 function BusinessProposal() {
   const [form, setForm] = useState<FormData>(initialForm);
   const [submitted, setSubmitted] = useState(false);
+  const navigate = useNavigate();
+
 
   const set = (field: keyof FormData, value: unknown) =>
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -108,10 +111,9 @@ function BusinessProposal() {
   const removeMenu = (index: number) =>
     set("menuProduk", form.menuProduk.filter((_, i) => i !== index));
 
-  const handleSubmit = () => {
-    console.log("Proposal submitted:", form);
-    setSubmitted(true);
-  };
+const handleSubmit = () => {
+  navigate("/business-proposal/list");
+};
 
   if (submitted) {
     return (
@@ -421,7 +423,7 @@ function BusinessProposal() {
         {/* Submit */}
         <Group justify="flex-end" pb="xl">
           <Button color="blue" size="md" onClick={handleSubmit}>
-            Submit Proposal
+            Save Draft
           </Button>
         </Group>
 

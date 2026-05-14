@@ -22,6 +22,9 @@ import {
   HiClipboardDocumentList,
   HiDocumentDuplicate,
 } from "react-icons/hi2";
+
+import { dummyProposals } from "./page_components/Business_Proposal_List";
+
 import { useDisclosure } from "@mantine/hooks";
 import { Outlet, useNavigate } from "react-router-dom";
 
@@ -107,7 +110,7 @@ function AppLayout() {
     {
       icon: HiClipboardDocumentList,
       label: "Business Proposal",
-      path: "business-proposal",
+       path: dummyProposals.length > 0 ? "business-proposal/list" : "business-proposal",
     },
   ];
 

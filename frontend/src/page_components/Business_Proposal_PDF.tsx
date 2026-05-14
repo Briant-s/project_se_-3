@@ -1,0 +1,231 @@
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+} from "@react-pdf/renderer";
+
+const styles = StyleSheet.create({
+  page: {
+    padding: 40,
+    fontSize: 11,
+    fontFamily: "Helvetica",
+    color: "#1a1a1a",
+  },
+  coverTitle: {
+    fontSize: 24,
+    fontFamily: "Helvetica-Bold",
+    marginBottom: 8,
+  },
+  coverSubtitle: {
+    fontSize: 13,
+    color: "#555",
+    marginBottom: 4,
+  },
+  coverDate: {
+    fontSize: 10,
+    color: "#888",
+    marginTop: 8,
+  },
+  divider: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#e0e0e0",
+    marginVertical: 12,
+  },
+  sectionHeader: {
+    fontSize: 13,
+    fontFamily: "Helvetica-Bold",
+    marginBottom: 6,
+    marginTop: 4,
+    color: "#1971c2",
+  },
+  label: {
+    fontSize: 10,
+    fontFamily: "Helvetica-Bold",
+    marginBottom: 2,
+    color: "#444",
+  },
+  value: {
+    fontSize: 10,
+    marginBottom: 8,
+    lineHeight: 1.5,
+    color: "#1a1a1a",
+  },
+  row: {
+    flexDirection: "row",
+    gap: 16,
+    marginBottom: 4,
+  },
+  col: {
+    flex: 1,
+  },
+  card: {
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
+    borderRadius: 4,
+    padding: 10,
+    marginBottom: 8,
+  },
+  cardTitle: {
+    fontSize: 10,
+    fontFamily: "Helvetica-Bold",
+    marginBottom: 4,
+    color: "#333",
+  },
+});
+
+interface MenuItem {
+  name: string;
+  description: string;
+  price: string;
+}
+
+interface Competitor {
+  name: string;
+  strength: string;
+  weakness: string;
+}
+
+interface ProposalData {
+  businessName: string;
+  businessDescription: string;
+  visi: string;
+  misi: string;
+  targetPasar: string;
+  psikografi: string;
+  trenPasar: string;
+  competitors: Competitor[];
+  strategiPemasaran: string;
+  pelayananPelanggan: string;
+  menuProduk: MenuItem[];
+  jamOperasional: string;
+  jumlahStaff: string;
+  supplier: string;
+  prosesOperasional: string;
+  modalAwal: string;
+  targetPendapatan: string;
+  analisa: string;
+  kesimpulan: string;
+}
+
+function Field({ label, value }: { label: string; value: string }) {
+  return (
+    <View>
+      <Text style={styles.label}>{label}</Text>
+      <Text style={styles.value}>{value || "-"}</Text>
+    </View>
+  );
+}
+
+function BusinessProposalPDF({ data }: { data: ProposalData }) {
+  return (
+    <Document>
+      {/* Cover Page */}
+      <Page size="A4" style={styles.page}>
+        <View style={{ marginTop: 60, marginBottom: 40 }}>
+          <Text style={styles.coverTitle}>{data.businessName || "Business Proposal"}</Text>
+          <Text style={styles.coverSubtitle}>Business Proposal Document</Text>
+          <Text style={styles.coverDate}>
+            Dibuat pada: {new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
+          </Text>
+        </View>
+        <View style={styles.divider} />
+        <Field label="Deskripsi Bisnis" value={data.businessDescription} />
+        <View style={styles.row}>
+          <View style={styles.col}>
+            <Field label="Visi" value={data.visi} />
+          </View>
+          <View style={styles.col}>
+            <Field label="Misi" value={data.misi} />
+          </View>
+        </View>
+      </Page>
+
+      {/* Analisis Pasar */}
+      <Page size="A4" style={styles.page}>
+        <Text style={styles.sectionHeader}>Analisis Pasar</Text>
+        <View style={styles.divider} />
+        <Field label="Target Pasar" value={data.targetPasar} />
+        <Field label="Psikografi" value={data.psikografi} />
+        <Field label="Tren Pasar" value={data.trenPasar} />
+
+        <Text style={[styles.label, { marginTop: 8 }]}>Kompetitor</Text>
+        {data.competitors.map((comp, i) => (
+          <View key={i} style={styles.card}>
+            <Text style={styles.cardTitle}>{comp.name || `Kompetitor ${i + 1}`}</Text>
+            <View style={styles.row}>
+              <View style={styles.col}>
+                <Text style={styles.label}>Kelebihan</Text>
+                <Text style={styles.value}>{comp.strength || "-"}</Text>
+              </View>
+              <View style={styles.col}>
+                <Text style={styles.label}>Kelemahan</Text>
+                <Text style={styles.value}>{comp.weakness || "-"}</Text>
+              </View>
+            </View>
+          </View>
+        ))}
+      </Page>
+
+      {/* Strategi & Produk */}
+      <Page size="A4" style={styles.page}>
+        <Text style={styles.sectionHeader}>Strategi & Produk</Text>
+        <View style={styles.divider} />
+        <Field label="Strategi Pemasaran" value={data.strategiPemasaran} />
+        <Field label="Pelayanan Pelanggan" value={data.pelayananPelanggan} />
+
+        <Text style={[styles.label, { marginTop: 8 }]}>Menu / Produk</Text>
+        {data.menuProduk.map((item, i) => (
+          <View key={i} style={styles.card}>
+            <View style={styles.row}>
+              <View style={styles.col}>
+                <Text style={styles.cardTitle}>{item.name || `Produk ${i + 1}`}</Text>
+                <Text style={styles.value}>{item.description || "-"}</Text>
+              </View>
+              <View>
+                <Text style={styles.label}>Harga</Text>
+                <Text style={styles.value}>Rp {item.price || "-"}</Text>
+              </View>
+            </View>
+          </View>
+        ))}
+      </Page>
+
+      {/* Operasional & Keuangan */}
+      <Page size="A4" style={styles.page}>
+        <Text style={styles.sectionHeader}>Rencana Operasional</Text>
+        <View style={styles.divider} />
+        <View style={styles.row}>
+          <View style={styles.col}>
+            <Field label="Jam Operasional" value={data.jamOperasional} />
+          </View>
+          <View style={styles.col}>
+            <Field label="Jumlah Staff" value={data.jumlahStaff} />
+          </View>
+        </View>
+        <Field label="Supplier" value={data.supplier} />
+        <Field label="Proses Operasional" value={data.prosesOperasional} />
+
+        <Text style={[styles.sectionHeader, { marginTop: 12 }]}>Rencana Keuangan</Text>
+        <View style={styles.divider} />
+        <View style={styles.row}>
+          <View style={styles.col}>
+            <Field label="Modal Awal" value={`Rp ${Number(data.modalAwal || 0).toLocaleString("id-ID")}`} />
+          </View>
+          <View style={styles.col}>
+            <Field label="Target Pendapatan / Bulan" value={`Rp ${Number(data.targetPendapatan || 0).toLocaleString("id-ID")}`} />
+          </View>
+        </View>
+        <Field label="Analisa Keuangan" value={data.analisa} />
+
+        <Text style={[styles.sectionHeader, { marginTop: 12 }]}>Kesimpulan</Text>
+        <View style={styles.divider} />
+        <Text style={styles.value}>{data.kesimpulan || "-"}</Text>
+      </Page>
+    </Document>
+  );
+}
+
+export default BusinessProposalPDF;
+export type { ProposalData };
