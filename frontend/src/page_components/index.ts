@@ -10,3 +10,4 @@ export { default as FinancialOverview } from "./MyBusiness/Financial_Overview";
 export { default as LoginPage } from "./Authentication/LogIn/login";
 export { default as RegistrationPage } from "./Authentication/Registration/Registration";
 export { default as AmortCalcPage } from "./Credit/Amort_Calc";
+export { default as BusinessProposal } from "./Business_Proposal";

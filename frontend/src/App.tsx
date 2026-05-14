@@ -17,6 +17,7 @@ import {
   LoginPage,
   RegistrationPage,
   AmortCalcPage,
+  BusinessProposal
 } from "./page_components";
 import {
   Elig_Overview,
@@ -87,6 +88,7 @@ function App() {
                 />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/help" element={<Help />} />
+                <Route path="/business-proposal" element={<BusinessProposal />} />
               </Route>
             </Route>
           </Routes>
