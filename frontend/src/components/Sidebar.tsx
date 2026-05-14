@@ -1,13 +1,4 @@
-import {
-  Avatar,
-  Box,
-  Button,
-  Group,
-  NavLink,
-  ScrollArea,
-  Stack,
-  Text,
-} from "@mantine/core";
+import { Button, ScrollArea, Stack } from "@mantine/core";
 import type { NavItem } from "../types";
 import { NavLinkGroup } from "../lib";
 

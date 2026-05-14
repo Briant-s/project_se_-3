@@ -1,4 +1,4 @@
-import { Button, Box } from "@mantine/core";
+import { Button } from "@mantine/core";
 import { HiMiniArrowUturnLeft } from "react-icons/hi2";
 
 function BackButton() {

@@ -110,7 +110,10 @@ function AppLayout() {
     {
       icon: HiClipboardDocumentList,
       label: "Business Proposal",
-       path: dummyProposals.length > 0 ? "business-proposal/list" : "business-proposal",
+      path:
+        dummyProposals.length > 0
+          ? "business-proposal/list"
+          : "business-proposal",
     },
   ];
 
@@ -138,7 +141,20 @@ function AppLayout() {
         collapsed: { mobile: !mobOpened, desktop: !deksOpened },
       }}
     >
-      <AppShell.Header bdrs="sm">
+      <AppShell.Header
+        bdrs="sm"
+        // bg="#D2E5E8"
+        style={{
+          background: "rgba(210, 229, 232, 0.4)",
+          borderRadius: "16px",
+          boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+          border: "1px solid rgba(210, 214, 218, 0.13)",
+          // position: "relative",
+          zIndex: 1,
+        }}
+      >
         <Group h="100%" px="md" justify="space-between">
           <Group>
             <Burger
@@ -165,7 +181,7 @@ function AppLayout() {
 
       <AppShell.Navbar
         p="xs"
-        bg="gray.0"
+        bg="#f4f5f6"
         style={{ borderRight: "1px solid #e9ecef" }}
       >
         <AppShell.Section grow px="xs">
@@ -175,7 +191,7 @@ function AppLayout() {
         </AppShell.Section>
       </AppShell.Navbar>
 
-      <AppShell.Main className={classes.appMain}>
+      <AppShell.Main className={classes.appMain} bg="#f5f5f5">
         <Outlet />
       </AppShell.Main>
     </AppShell>

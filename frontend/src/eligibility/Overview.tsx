@@ -13,7 +13,7 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-import { HiArrowRight } from "react-icons/hi";
+import { HiArrowRight, HiOutlineReply, HiPlus } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
 import { AreaChart, LineChart } from "@mantine/charts";
 import { BusinessCard } from "../components";
@@ -23,6 +23,7 @@ import { getBusinessProfile } from "../services/businessProfileService";
 import { gradients, cardColors } from "../gradients";
 import { getAmortsCutoff } from "../services/creditService";
 import type { AmortEntry } from "../services/models";
+import { KURBadge, KURCard } from "./component";
 
 function Eligibility_Overview() {
   const nav = useNavigate();
@@ -62,10 +63,17 @@ function Eligibility_Overview() {
     });
   };
 
+  // KUR User Stats
+  const KUR_stats = [
+    { label: "KUR Super Mikro", value: 20, gradient: cardColors.super_mikro },
+    { label: "KUR Mikro", value: 12, gradient: cardColors.mikro },
+    { label: "KUR Kecil", value: 8, gradient: cardColors.kecil },
+  ];
+
   // Dashboard Texts
   const dashboardCopy = {
     hero: {
-      title: "Welcome to Your Amortization Simulator Dashboard",
+      title: "Amortization Simulator Dashboard",
       description:
         "This dashboard provides a complete overview of your simulated loan scenarios, helping you assess financial feasibility and track your recent planning activity.",
       label: "Simulation Dashboard",
@@ -127,15 +135,18 @@ function Eligibility_Overview() {
     <Paper
       key={entry.amortID}
       p="md"
-      pl={0}
       radius={0}
+      bg="transparent"
       style={{
         borderBottom: "1px solid gray",
       }}
     >
       <Group justify="space-between">
         <Stack gap="0.05rem">
-          <Text size="md">{entry.title}</Text>
+          <Group>
+            <Text size="md">{entry.title}</Text>
+            <KURBadge type={entry.creditID ?? 0} />
+          </Group>
           <Text size="xs" c="dimmed">
             {formatDate(entry.created_at)}
           </Text>
@@ -158,7 +169,9 @@ function Eligibility_Overview() {
             Tenor Months
           </Text>
         </Stack>
-        <ActionIcon></ActionIcon>
+        <ActionIcon>
+          <HiOutlineReply style={{ transform: "scaleX(-1)" }} />
+        </ActionIcon>
       </Group>
     </Paper>
   ));
@@ -170,8 +183,8 @@ function Eligibility_Overview() {
           <SimpleGrid cols={2} autoFlow="auto-fill">
             <Card>
               <Stack>
-                <Title>{dashboardCopy.hero.title}</Title>
-                <Text c="dimmed">{dashboardCopy.hero.description}</Text>
+                <Text size="67px">{dashboardCopy.hero.title}</Text>
+                {/* <Text c="dimmed">{dashboardCopy.hero.description}</Text> */}
               </Stack>
             </Card>
             <BusinessCard
@@ -193,51 +206,9 @@ function Eligibility_Overview() {
                       <Text c="dimmed">{dashboardCopy.kurCount.tooltip}</Text>
                     </Stack>
                     <SimpleGrid cols={{ base: 3, sm: 3 }} autoFlow="auto-fill">
-                      <Card
-                        withBorder
-                        style={{
-                          background: cardColors.super_mikro,
-                        }}
-                      >
-                        <Stack gap="xs">
-                          <Text size="md" c="white">
-                            KUR Super Mikro
-                          </Text>
-                          <Text size="2rem" c="white">
-                            20
-                          </Text>
-                        </Stack>
-                      </Card>
-                      <Card
-                        withBorder
-                        style={{
-                          background: cardColors.mikro,
-                        }}
-                      >
-                        <Stack gap="xs">
-                          <Text size="md" c="white">
-                            KUR Mikro
-                          </Text>
-                          <Text size="2rem" c="white">
-                            12
-                          </Text>
-                        </Stack>
-                      </Card>
-                      <Card
-                        withBorder
-                        style={{
-                          background: cardColors.kecil,
-                        }}
-                      >
-                        <Stack gap="xs">
-                          <Text size="md" c="white">
-                            KUR Kecil
-                          </Text>
-                          <Text size="2rem" c="white">
-                            8
-                          </Text>
-                        </Stack>
-                      </Card>
+                      {KUR_stats.map((s, i) => (
+                        <KURCard key={i} {...s} />
+                      ))}
                     </SimpleGrid>
                   </Stack>
                   {/* HEALTHY LOAN COUNT */}
@@ -251,46 +222,32 @@ function Eligibility_Overview() {
                       </Text>
                     </Stack>
                     <SimpleGrid cols={{ base: 3, sm: 3 }} autoFlow="auto-fill">
-                      {health_stats.map((item, i) => (
-                        <Card withBorder>
+                      {health_stats.map((item) => (
+                        <Card
+                          withBorder
+                          style={{
+                            borderLeft: `8px solid ${item.color}`,
+                          }}
+                        >
                           <Stack gap="sm">
-                            <Text c={item.color}>{item.label}</Text>
+                            <Group justify="space-between">
+                              <Text c={item.color}>{item.label}</Text>
+                              <ActionIcon
+                                bg="white"
+                                variant="outline"
+                                color="black"
+                              >
+                                <HiOutlineReply
+                                  color="black"
+                                  style={{ transform: "scaleX(-1)" }}
+                                />
+                              </ActionIcon>
+                            </Group>
                             <Text size="2rem" c={item.color}>
                               {item.value}
                             </Text>
                           </Stack>
                         </Card>
-                        // <Box
-                        //   key={i}
-                        //   p={4}
-                        //   style={{
-                        //     background: item.color,
-                        //     borderRadius: "10px",
-                        //     padding: "2px",
-                        //   }}
-                        // >
-                        //   <Box
-                        //     p={12}
-                        //     style={{
-                        //       background: "white",
-                        //       borderRadius: "10px",
-                        //       height: "100%",
-                        //     }}
-                        //   >
-                        //     <Stack gap="xs">
-                        //       <Text size="md" c="black">
-                        //         {item.label}
-                        //       </Text>
-                        //       <Text
-                        //         size="2rem"
-                        //         variant="gradient"
-                        //         gradient={item.from}
-                        //       >
-                        //         {item.value}
-                        //       </Text>
-                        //     </Stack>
-                        //   </Box>
-                        // </Box>
                       ))}
                     </SimpleGrid>
                   </Stack>
@@ -298,12 +255,12 @@ function Eligibility_Overview() {
               </Card>
               <Card>
                 <Stack>
-                  <Group justify="space-between" align="center">
+                  <Group justify="space-between" align="flex-end">
                     <Stack gap="0.2rem">
                       <Text size="xl">{dashboardCopy.history.title}</Text>
                       <Text c="dimmed">{dashboardCopy.history.tooltip}</Text>
                     </Stack>
-                    <Group>
+                    <Group align="flex-end">
                       <Select
                         label="Sort by Date Created"
                         placeholder="Pick Day Range"
@@ -314,7 +271,9 @@ function Eligibility_Overview() {
                           { value: "7", label: "Last 7 Day" },
                         ]}
                       />
-                      <Button>Add New Calculation</Button>
+                      <Button bg="#1D4F58" leftSection={<HiPlus />}>
+                        New Calculation
+                      </Button>
                     </Group>
                   </Group>
                   <Card withBorder>

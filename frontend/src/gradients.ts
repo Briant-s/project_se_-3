@@ -39,7 +39,7 @@ export const cardColors = {
   healthy: "#008552",
   warning: "#ff9912",
   not_healthy: "rgba(237, 33, 58, 1)",
-  super_mikro: "#03a89e",
-  mikro: "#3d59ab",
-  kecil: "#8f2d56",
+  super_mikro: "#54c0cc",
+  mikro: "#1d4f58",
+  kecil: "#1e3700",
 };
