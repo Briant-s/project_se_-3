@@ -29,6 +29,8 @@ import {
   updateAmortEntry,
   deleteAmortEntry,
 } from "../../services/amortService";
+import { AmortList } from "./components";
+
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import AmortForm from "./AmortForm";
@@ -128,6 +130,8 @@ function Amort_Calc() {
     { name: "Kecil", value: 2, color: "green" },
   ];
 
+  const KURBar = [{ name: "KUR Count", SuperMikro: 20, Mikro: 10, Kecil: 2 }];
+
   const AmortRows = entries.map((entry) => (
     <Paper
       key={entry.amortID}
@@ -215,7 +219,7 @@ function Amort_Calc() {
           <Card h="auto">
             <Stack>
               <Text>KUR Preference Distribution</Text>
-              <SimpleGrid cols={2} autoFlow="auto-fill">
+              <SimpleGrid cols={{ base: 2 }} autoFlow="auto-fill">
                 <Card withBorder>
                   <Stack>
                     {KURAmount.map((item) => (
@@ -233,12 +237,23 @@ function Amort_Calc() {
                 </Card>
                 <Card p="xs">
                   <Flex justify="center" align="center" h="100%">
-                    <DonutChart
+                    {/* <DonutChart
                       data={KURAmount}
                       thickness={20}
                       strokeWidth={5}
                       size={100}
                       withTooltip={false}
+                    /> */}
+                    <BarChart
+                      h={180}
+                      w={180}
+                      data={KURBar}
+                      dataKey="name"
+                      series={[
+                        { name: "SuperMikro", color: "red" },
+                        { name: "Mikro", color: "blue" },
+                        { name: "Kecil", color: "green" },
+                      ]}
                     />
                   </Flex>
                 </Card>
@@ -320,13 +335,18 @@ function Amort_Calc() {
         <Divider />
 
         <Stack gap="sm">
-          {entries.length === 0 ? (
+          {/* {entries.length === 0 ? (
             <Text c="dimmed" ta="center" py="xl">
               Belum ada data. Tambahkan pinjaman baru.
             </Text>
           ) : (
             AmortRows
-          )}
+          )} */}
+          <AmortList
+            entries={entries}
+            openForm={openForm}
+            confirmDelete={confirmDelete}
+          ></AmortList>
         </Stack>
       </Stack>
     </Container>
