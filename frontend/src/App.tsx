@@ -91,6 +91,7 @@ function App() {
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/help" element={<Help />} />
                 <Route path="/business-proposal" element={<BusinessProposal />} />
+                <Route path="/business-proposal/edit/:proposalID" element={<BusinessProposal />} />
                 <Route path="/business-proposal/list" element={<BusinessProposalList />} />
                 <Route path="/business-proposal/result/:id" element={<BusinessProposalResult />} />
               </Route>

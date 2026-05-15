@@ -38,3 +38,53 @@ export interface BusinessProfile {
   businessContactNumber?: string | null;
   businessEmail?: string | null;
 }
+
+export interface Competitors {
+  competitorID?: string | number;
+  name?: string;
+  strength?: string;
+  weakness?: string;
+}
+
+export interface Products {
+  productID?: string | number;
+  name?: string;
+  description?: string;
+  price?: string;
+}
+
+export interface BusinessProposal {
+  proposalID: string;
+  user_id?: string;
+  businessID?: number;
+  created_at?: string;
+  // status?: string;
+  // dateGenerated?: string;
+  businessName?: string;
+  businessDescription?: string;
+  competitors?: Competitors[];
+  products?: Products[];
+  visi?: string;
+  misi?: string;
+  targetPasar?: string;
+  psikografi?: string;
+  trenPasar?: string;
+  strategiPemasaran?: string;
+  pelayananPelanggan?: string;
+  jamOperasional?: string;
+  jumlahStaff?: string | number;
+  supplier?: string;
+  prosesOperasional?: string;
+  modalAwal?: string;
+  targetPendapatan?: string;
+  analisa?: string;
+  kesimpulan?: string;
+  // competitors?: Competitor[];
+  // products?: Product[];
+  // menuProduk?: Product[];
+}
+
+export type BusinessProposalInput = Omit<
+  BusinessProposal,
+  "proposalID" | "user_id" | "businessID" | "dateGenerated" | "status"
+>;

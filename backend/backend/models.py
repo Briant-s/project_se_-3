@@ -53,12 +53,47 @@ class Document(BaseModel):
     isChecked: bool
     documentInstruction: str | None = None
     
+class Competitors(BaseModel):
+    competitorID: str | None = None
+    proposalID: str | None = None
+    name: str | None = None
+    strength: str | None = None
+    weakness: str | None = None
+
+class Products(BaseModel):
+    productID: str | None = None
+    proposalID: str | None = None
+    name: str | None = None
+    description: str | None = None
+    price: str | None = None
+
 class BusinessProposal(BaseModel):
-    proposalID: int 
-    user_id: str 
-    businessID: int 
-    status: str | None = None
-    dateGenerated: str | None = None
+    proposalID: str | None = None
+    user_id: str | None = None
+    businessID: int | None = None
+    # status: str | None = None
+    # dateGenerated: str | None = None
+    businessName: str | None = None
+    businessDescription: str | None = None
+    visi: str | None = None
+    misi: str | None = None
+    targetPasar: str | None = None
+    psikografi: str | None = None
+    trenPasar: str | None = None
+    strategiPemasaran: str | None = None
+    pelayananPelanggan: str | None = None
+    jamOperasional: str | None = None
+    jumlahStaff: int | None = None
+    supplier: str | None = None
+    prosesOperasional: str | None = None
+    modalAwal: str | None = None
+    targetPendapatan: str | None = None
+    analisa: str | None = None
+    kesimpulan: str | None = None
+
+class BusinessProposalData(BusinessProposal):
+    competitors: list[Competitors] | None = None
+    products: list[Products] | None = None
 
 class Profiles(BaseModel):
     profile_id: int 

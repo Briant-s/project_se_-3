@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Container,
   Stack,
@@ -14,14 +14,22 @@ import {
   NumberInput,
   Divider,
 } from "@mantine/core";
+import {
+  createBusinessProposal,
+  getBusinessProposal,
+  updateBusinessProposal,
+} from "../services/businessProposalService";
+import type { BusinessProposal, BusinessProposalInput } from "../services/models";
 
 interface MenuItem {
+  productID?: string | number;
   name: string;
   description: string;
   price: string;
 }
 
 interface Competitor {
+  competitorID?: string | number;
   name: string;
   strength: string;
   weakness: string;
@@ -81,13 +89,72 @@ function SectionTitle({ title }: { title: string }) {
 }
 
 function BusinessProposal() {
+  const navigate = useNavigate();
+  const { proposalID } = useParams<{ proposalID: string }>();
   const [form, setForm] = useState<FormData>(initialForm);
   const [submitted, setSubmitted] = useState(false);
-  const navigate = useNavigate();
+  const [newProposalId, setNewProposalId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [loadingProposal, setLoadingProposal] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
+  const isEditMode = Boolean(proposalID);
 
   const set = (field: keyof FormData, value: unknown) =>
     setForm((prev) => ({ ...prev, [field]: value }));
+
+  useEffect(() => {
+    if (!proposalID) return;
+
+    const fetchProposal = async () => {
+      setLoadingProposal(true);
+      setError(null);
+
+      try {
+        const proposal = await getBusinessProposal(proposalID);
+        setForm({
+          businessName: proposal.businessName ?? "",
+          businessDescription: proposal.businessDescription ?? "",
+          visi: proposal.visi ?? "",
+          misi: proposal.misi ?? "",
+          targetPasar: proposal.targetPasar ?? "",
+          psikografi: proposal.psikografi ?? "",
+          trenPasar: proposal.trenPasar ?? "",
+          competitors:
+            proposal.competitors?.map((comp) => ({
+              competitorID: comp.competitorID,
+              name: comp.name ?? "",
+              strength: comp.strength ?? "",
+              weakness: comp.weakness ?? "",
+            })) ?? [{ name: "", strength: "", weakness: "" }],
+          strategiPemasaran: proposal.strategiPemasaran ?? "",
+          pelayananPelanggan: proposal.pelayananPelanggan ?? "",
+          menuProduk:
+            proposal.products?.map((prod) => ({
+              productID: prod.productID,
+              name: prod.name ?? "",
+              description: prod.description ?? "",
+              price: prod.price ?? "",
+            })) ?? [{ name: "", description: "", price: "" }],
+          jamOperasional: proposal.jamOperasional ?? "",
+          jumlahStaff: String(proposal.jumlahStaff ?? ""),
+          supplier: proposal.supplier ?? "",
+          prosesOperasional: proposal.prosesOperasional ?? "",
+          modalAwal: proposal.modalAwal ?? "",
+          targetPendapatan: proposal.targetPendapatan ?? "",
+          analisa: proposal.analisa ?? "",
+          kesimpulan: proposal.kesimpulan ?? "",
+        });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load proposal");
+        navigate("/business-proposal/list");
+      } finally {
+        setLoadingProposal(false);
+      }
+    };
+
+    fetchProposal();
+  }, [proposalID, navigate]);
 
   const updateCompetitor = (index: number, field: keyof Competitor, value: string) => {
     const updated = form.competitors.map((c, i) =>
@@ -111,9 +178,60 @@ function BusinessProposal() {
   const removeMenu = (index: number) =>
     set("menuProduk", form.menuProduk.filter((_, i) => i !== index));
 
-const handleSubmit = () => {
-  navigate("/business-proposal/list");
+const handleSubmit = async () => {
+  setLoading(true);
+  setError(null);
+
+  const payload: BusinessProposalInput = {
+    businessName: form.businessName,
+    businessDescription: form.businessDescription,
+    visi: form.visi,
+    misi: form.misi,
+    targetPasar: form.targetPasar,
+    psikografi: form.psikografi,
+    trenPasar: form.trenPasar,
+    strategiPemasaran: form.strategiPemasaran,
+    pelayananPelanggan: form.pelayananPelanggan,
+    jamOperasional: form.jamOperasional,
+    jumlahStaff: form.jumlahStaff,
+    supplier: form.supplier,
+    prosesOperasional: form.prosesOperasional,
+    modalAwal: form.modalAwal,
+    targetPendapatan: form.targetPendapatan,
+    analisa: form.analisa,
+    kesimpulan: form.kesimpulan,
+    competitors: form.competitors,
+    products: form.menuProduk,
+  };
+
+  try {
+    if (isEditMode && proposalID) {
+      await updateBusinessProposal(proposalID, payload);
+      navigate("/business-proposal/list");
+      return;
+    }
+
+    const createdProposal = await createBusinessProposal(payload);
+    setNewProposalId(createdProposal.proposalID ?? null);
+    setSubmitted(true);
+    setForm(initialForm);
+  } catch (err) {
+    setError(err instanceof Error ? err.message : "Failed to save proposal");
+  } finally {
+    setLoading(false);
+  }
 };
+
+  if (loadingProposal) {
+    return (
+      <Container fluid>
+        <Stack gap="lg" align="center" mt="xl">
+          <Text size="xl" fw={700}>Loading proposal...</Text>
+          <Text c="dimmed">Please wait while we load the draft.</Text>
+        </Stack>
+      </Container>
+    );
+  }
 
   if (submitted) {
     return (
@@ -121,7 +239,26 @@ const handleSubmit = () => {
         <Stack gap="lg" align="center" mt="xl">
           <Text size="xl" fw={700} c="blue">Proposal Created Successfully!</Text>
           <Text c="dimmed">Your business proposal has been successfully saved.</Text>
-          <Button variant="light" onClick={() => { setSubmitted(false); setForm(initialForm); }}>
+          <Group>
+            <Button
+              variant="filled"
+              onClick={() => navigate("/business-proposal/list")}
+            >
+              View Proposal List
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                if (newProposalId) {
+                  navigate(`/business-proposal/result/${newProposalId}`);
+                }
+              }}
+              disabled={!newProposalId}
+            >
+              View Proposal PDF
+            </Button>
+          </Group>
+          <Button variant="light" onClick={() => { setSubmitted(false); setForm(initialForm); setNewProposalId(null); }}>
             Create New Proposal
           </Button>
         </Stack>
@@ -420,10 +557,15 @@ const handleSubmit = () => {
           </Stack>
         </Card>
 
+        {error && (
+          <Text c="red" size="sm">
+            {error}
+          </Text>
+        )}
         {/* Submit */}
         <Group justify="flex-end" pb="xl">
-          <Button color="blue" size="md" onClick={handleSubmit}>
-            Save Draft
+          <Button color="blue" size="md" onClick={handleSubmit} loading={loading}>
+            {isEditMode ? "Update Proposal" : "Save Draft"}
           </Button>
         </Group>
 
