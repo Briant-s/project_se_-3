@@ -84,28 +84,6 @@ function AppLayout() {
       ],
     },
     {
-      icon: HiDocumentDuplicate,
-      label: "Document Prep",
-      path: "document-prep",
-      children: [
-        {
-          icon: HiDocumentText,
-          label: "Document Overview",
-          path: "document-overview",
-        },
-        {
-          icon: HiDocumentCurrencyDollar,
-          label: "Financial Documents",
-          path: "financial-documents",
-        },
-        {
-          icon: HiDocumentText,
-          label: "Legal Documents",
-          path: "legal-documents",
-        },
-      ],
-    },
-    {
       icon: HiClipboardDocumentList,
       label: "Business Proposal",
       path: "business-proposal/list",
