@@ -35,7 +35,7 @@ app.add_middleware(
 # Read Amort List
 @app.get("/amort/amort-calc")
 async def get_all(user_id: str = Depends(get_current_user)):
-    results = (supabase.table('Amort').select('*, Credit!amort_creditID_fkey').eq("user_id", user_id).execute())
+    results = (supabase.table('Amort').select('*, Credit!amort_creditID_fkey(creditType)').eq("user_id", user_id).execute())
     return results.data
 
 # Get per item
