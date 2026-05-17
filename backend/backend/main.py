@@ -6,11 +6,13 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from supabase import create_client, Client
 
-from models import AmortEntry, BusinessProfile, BusinessProposalData, Competitors, Products
+from models import AmortEntry, BusinessProfile, BusinessProposalData, Competitors, Products, AIProposal
 
 from auth import get_current_user
 
 from datetime import datetime, timedelta
+import json
+import requests
 import uuid
 
 # Loading env vars
@@ -27,8 +29,8 @@ supabase: Client = create_client(url, anon_key)
 # Allows communication React <---> FastApi
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Your React dev server
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -100,6 +102,106 @@ def clean_empty_strings(data: dict) -> dict:
 def filter_nonempty_rows(rows: list[dict]) -> list[dict]:
     return [row for row in rows if row]
 
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_ENDPOINT = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent"
+
+
+def build_gemini_prompt(proposal: dict, competitors: list[dict], products: list[dict]) -> str:
+# def build_gemini_prompt(proposal: dict) -> str:
+    return (
+        "You are a professional business consultant. Improve and enhance the following business proposal text fields "
+        "to be more professional, detailed, and compelling. Return a valid JSON object with these fields: "
+        "businessName (keep unchanged), businessDescription (improved version), visi (improved vision statement), "
+        "misi (improved mission statement), targetPasar (detailed target market analysis), psikografi (improved psychographic analysis), "
+        "trenPasar (market trends analysis), strategiPemasaran (comprehensive marketing strategy), pelayananPelanggan (customer service strategy), "
+        "prosesOperasional (detailed operational process), analisa (financial analysis and insights), kesimpulan (professional conclusion), "
+        "competitors (array with name, strength, weakness), menuProduk (array with name, description, price). "
+        "For text fields, enhance them to be professional, detailed, and business-ready. "
+        "If original data is missing or empty for a field, use your knowledge to create a reasonable professional text based on the context. "
+        "Maintain Indonesian language if the original data is in Indonesian. "
+        "Do not include any additional keys or fields. "
+        "\n\nRaw business proposal data:\n"
+        f"{json.dumps({**proposal, "competitors": competitors, "products": products}, ensure_ascii=False, indent=2)}"
+    )
+
+
+def parse_ai_json(output: str) -> dict:
+    if not output:
+        raise ValueError("Empty AI response")
+    start = output.find("{")
+    if start == -1:
+        raise ValueError("AI response did not contain JSON")
+    payload = output[start:]
+    try:
+        return json.loads(payload)
+    except json.JSONDecodeError:
+        # Try to extract JSON object by balancing braces
+        depth = 0
+        end_index = None
+        for i, char in enumerate(payload):
+            if char == '{':
+                depth += 1
+            elif char == '}':
+                depth -= 1
+                if depth == 0:
+                    end_index = i + 1
+                    break
+        if end_index is None:
+            raise
+        return json.loads(payload[:end_index])
+
+
+def generate_ai_proposal_data(proposal: dict, competitors: list[dict], products: list[dict]) -> dict:
+# def generate_ai_proposal_data(proposal: dict) -> dict:
+    if not GEMINI_API_KEY:
+        raise RuntimeError("GEMINI_API_KEY is required to generate AI business proposals. Please set it in .env file")
+
+    prompt = build_gemini_prompt(proposal, competitors, products)
+    # prompt = build_gemini_prompt(proposal)
+    
+    try:
+        response = requests.post(
+            f"{GEMINI_ENDPOINT}?key={GEMINI_API_KEY}",
+            json={
+                "contents": [{
+                    "parts": [{
+                        "text": prompt
+                    }]
+                }]
+            },
+            timeout=30,
+            headers={"Content-Type": "application/json"}
+        )
+        
+        if response.status_code != 200:
+            error_detail = response.text
+            print(f"Gemini API Error {response.status_code}: {error_detail}")
+            raise RuntimeError(f"Gemini generation failed: {response.status_code} {error_detail}")
+
+        body = response.json()
+        candidates = body.get("candidates") or []
+        if not candidates:
+            raise RuntimeError("Gemini returned no candidates")
+        
+        content = candidates[0].get("content", {})
+        parts = content.get("parts", [])
+        if not parts:
+            raise RuntimeError("Gemini response has no parts")
+        
+        output = parts[0].get("text", "")
+        if not output:
+            raise RuntimeError("Gemini response text is empty")
+        
+        ai_data = parse_ai_json(output)
+        return ai_data
+    except requests.exceptions.Timeout:
+        raise RuntimeError("Gemini API request timed out. Please try again later")
+    except requests.exceptions.ConnectionError:
+        raise RuntimeError("Failed to connect to Gemini API. Check your internet connection")
+    except Exception as e:
+        print(f"Gemini processing error: {str(e)}")
+        raise RuntimeError(f"Failed to process AI proposal: {str(e)}")
+
 
 async def get_business_id(user_id: str) -> int | None:
     result = supabase.table("BusinessProfile").select("businessID").eq("user_id", user_id).execute()
@@ -118,6 +220,66 @@ async def get_proposal_with_relations(proposalID: str, user_id: str):
     competitors = supabase.table("Competitors").select("*").eq("proposalID", proposalID).execute().data or []
     products = supabase.table("Products").select("*").eq("proposalID", proposalID).execute().data or []
     return {**proposal, "competitors": competitors, "products": products}
+
+async def get_ai_proposal_or_none(proposalID: str, user_id: str):
+    result = supabase.table("AIProposal").select("*").eq("proposalID", proposalID).eq("user_id", user_id).execute()
+    if not result.data:
+        return None
+    return result.data[0]
+
+@app.get("/ai-business-proposal/{proposalID}")
+async def get_ai_business_proposal(proposalID: str, user_id: str = Depends(get_current_user)):
+    await get_proposal_or_404(proposalID, user_id)
+    ai_proposal = await get_ai_proposal_or_none(proposalID, user_id)
+    if ai_proposal:
+        competitors = supabase.table("Competitors").select("*").eq("proposalID", proposalID).execute().data or []
+        products = supabase.table("Products").select("*").eq("proposalID", proposalID).execute().data or []
+        return {**ai_proposal, "competitors": competitors, "products": products}
+
+    business_proposal = await get_proposal_with_relations(proposalID, user_id)
+    # print(business_proposal)
+    ai_content = generate_ai_proposal_data(
+        proposal=business_proposal,
+        competitors=business_proposal.get("competitors", []),
+        products=business_proposal.get("products", []),
+    )
+
+    
+
+    ai_row = {
+        "AIProposalID": str(uuid.uuid4()),
+        "proposalID": proposalID,
+        "user_id": user_id,
+        "businessID": business_proposal.get("businessID"),
+        "businessName": business_proposal.get("businessName"),
+        "businessDescription": ai_content.get("businessDescription", business_proposal.get("businessDescription")),
+        "visi": ai_content.get("visi", business_proposal.get("visi")),
+        "misi": ai_content.get("misi", business_proposal.get("misi")),
+        "targetPasar": ai_content.get("targetPasar", business_proposal.get("targetPasar")),
+        "psikografi": ai_content.get("psikografi", business_proposal.get("psikografi")),
+        "trenPasar": ai_content.get("trenPasar", business_proposal.get("trenPasar")),
+        "strategiPemasaran": ai_content.get("strategiPemasaran", business_proposal.get("strategiPemasaran")),
+        "pelayananPelanggan": ai_content.get("pelayananPelanggan", business_proposal.get("pelayananPelanggan")),
+        "jamOperasional": business_proposal.get("jamOperasional"),
+        "jumlahStaff": business_proposal.get("jumlahStaff"),
+        "supplier": business_proposal.get("supplier"),
+        "prosesOperasional": ai_content.get("prosesOperasional", business_proposal.get("prosesOperasional")),
+        "modalAwal": business_proposal.get("modalAwal"),
+        "targetPendapatan": business_proposal.get("targetPendapatan"),
+        "analisa": ai_content.get("analisa", business_proposal.get("analisa")),
+        "kesimpulan": ai_content.get("kesimpulan", business_proposal.get("kesimpulan")),
+        # "competitors": ai_content.get("competitors", business_proposal.get("competitors", [])),
+        # "products": ai_content.get("menuProduk", business_proposal.get("products", [])),
+    }
+    ai_row = clean_empty_strings(ai_row)
+    result = supabase.table("AIProposal").insert(ai_row).execute()
+    competitors = supabase.table("Competitors").select("*").eq("proposalID", proposalID).execute().data or []
+    products = supabase.table("Products").select("*").eq("proposalID", proposalID).execute().data or []
+    return {**ai_row, "competitors": competitors, "products": products}
+    
+    # if not result.data:
+    #     raise HTTPException(status_code=500, detail="Failed to save AI business proposal")
+    # return result.data[0]
 
 @app.get("/business-proposal")
 async def list_business_proposals(user_id: str = Depends(get_current_user)):

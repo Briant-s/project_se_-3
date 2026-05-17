@@ -13,17 +13,16 @@ import { HiPencil, HiExternalLink, HiOutlineX } from "react-icons/hi";
 import { useState, useEffect } from "react";
 import { mockBusinessProfile } from "../../mock_user";
 import { getBusinessProfile } from "../../services/businessProfileService";
-import type { BusinessProfile } from "../../services/models";
+import type { BusinessProfile as BusinessProfileData } from "../../services/models";
 import { DataItem } from "./component";
 function BusinessProfile() {
   const [formReminder, setFormReminder] = useState(true);
-  const { operational } = mockBusinessProfile;
   // const formProgress = 70;
   const [formProgress, setFormProgress] = useState(0);
-  const [business, setBusiness] = useState<BusinessProfile | null>();
+  const [business, setBusiness] = useState<BusinessProfileData | null>();
 
   const calculateFormCompletion = (
-    business: BusinessProfile | null | undefined,
+    business: BusinessProfileData | null | undefined,
   ): number => {
     if (!business) return 0;
     const fields = [

@@ -2,6 +2,7 @@ import { supabase } from "../SupabaseClient";
 import type {
   BusinessProposal,
   BusinessProposalInput,
+  AIBusinessProposal,
 } from "./models";
 
 const BASE_URL = "http://localhost:8000";
@@ -78,6 +79,17 @@ export async function updateBusinessProposal(
     const errorBody = await result.text();
     console.error("Update proposal error:", errorBody);
     throw new Error("Failed to update business proposal");
+  }
+  return result.json();
+}
+
+export async function getAIBusinessProposal(id: string): Promise<AIBusinessProposal> {
+  const result = await fetch(`${BASE_URL}/ai-business-proposal/${encodeURIComponent(id)}`, {
+    headers: await getAuthHeader(),
+  });
+  if (!result.ok) {
+    const errorBody = await result.text();
+    throw new Error(`AI business proposal not found: ${result.status} ${errorBody}`);
   }
   return result.json();
 }

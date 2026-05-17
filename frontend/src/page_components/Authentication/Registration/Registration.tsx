@@ -15,7 +15,7 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import classes from "./Regis.module.css";
-import { HiCake, HiCheckCircle } from "react-icons/hi";
+import { HiCheckCircle } from "react-icons/hi";
 import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate } from "react-router-dom";
 import { UserAuth } from "../../../context/AuthContext";
@@ -97,19 +97,16 @@ function RegistrationPage() {
   const imageLink =
     "https://images.unsplash.com/photo-1774387981914-c5a133e7380b?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isPasswordlen, setIsPassowrdlen] = useState(false);
   const [termsChecked, setTermsChecked] = useState(false);
   const [opened, { open, close }] = useDisclosure(false);
 
   const navigate = useNavigate();
 
-  const { session, signUpUser, signInWithGoogle } = UserAuth();
-  console.log(session);
+  const { signUpUser, signInWithGoogle } = UserAuth();
 
   // Hitung validasi email secara real-time
   const emailValidation = useMemo(() => {
@@ -121,7 +118,7 @@ function RegistrationPage() {
     return validatePassword(password);
   }, [password]);
 
-  const handleSignUp = async (values) => {
+  const handleSignUp = async (values: { name: string; email: string; password: string }) => {
     // Validasi email sebelum submit
     const emailCheck = validateEmailFormat(values.email);
     if (!emailCheck.isValid) {
@@ -159,7 +156,10 @@ function RegistrationPage() {
         navigate("/");
       } else if (result && result.error) {
         // Extract error message dari Supabase error object
-        const errorMessage = result.error.message || "Registration failed";
+        const errorMessage =
+          typeof result.error === "string"
+            ? result.error
+            : result.error?.message || "Registration failed";
         setError(errorMessage);
         open();
       }

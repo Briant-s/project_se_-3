@@ -1,6 +1,5 @@
 import {
   ActionIcon,
-  Box,
   Button,
   Card,
   Container,
@@ -13,25 +12,20 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-import { HiArrowRight, HiOutlineReply, HiPlus } from "react-icons/hi";
-import { useNavigate } from "react-router-dom";
-import { AreaChart, LineChart } from "@mantine/charts";
+import { HiOutlineReply, HiPlus } from "react-icons/hi";
 import { BusinessCard } from "../components";
 import { useState, useEffect } from "react";
-import type { BusinessProfile } from "../page_components";
+import type { BusinessProfile } from "../services/models";
 import { getBusinessProfile } from "../services/businessProfileService";
-import { gradients, cardColors } from "../gradients";
+import { cardColors } from "../gradients";
 import { getAmortsCutoff } from "../services/creditService";
 import type { AmortEntry } from "../services/models";
 import { KURBadge, KURCard } from "./component";
 
 function Eligibility_Overview() {
-  const nav = useNavigate();
-
-  const [formProgress, setFormProgress] = useState(0);
   const [business, setBusiness] = useState<BusinessProfile | null>();
 
-  const [days, setDays] = useState(7);
+  const [days] = useState(7);
   const [entries, setEntries] = useState<AmortEntry[]>([]);
 
   // Fetch Business
@@ -52,7 +46,8 @@ function Eligibility_Overview() {
     fetchAmortsCutoff();
   }, [days]);
 
-  const formatDate = (dateString: string | undefined) => {
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return "";
     const date = new Date(dateString);
     return date.toLocaleString("en-GB", {
       day: "2-digit",
@@ -188,9 +183,9 @@ function Eligibility_Overview() {
               </Stack>
             </Card>
             <BusinessCard
-              businessName={business?.businessName}
-              businessSector={business?.businessSector}
-              businessType={business?.businessType}
+              businessName={business?.businessName ?? undefined}
+              businessSector={business?.businessSector ?? undefined}
+              businessType={business?.businessType ?? undefined}
             />
           </SimpleGrid>
 

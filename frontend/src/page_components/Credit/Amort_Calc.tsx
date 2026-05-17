@@ -22,7 +22,7 @@ import {
 } from "react-icons/hi";
 import { FaArrowTrendDown } from "react-icons/fa6";
 import { modals } from "@mantine/modals";
-import type { AmortEntry, AmortFormValues } from "../../services/models";
+import type { AmortEntry } from "../../services/models";
 import {
   getAmortEntries,
   createAmortEntry,
@@ -34,8 +34,7 @@ import { AmortList } from "./components";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import AmortForm from "./AmortForm";
-import { gradients } from "../../gradients";
-import { BarChart, DonutChart } from "@mantine/charts";
+import { BarChart } from "@mantine/charts";
 
 function Amort_Calc() {
   const [entries, setEntries] = useState<AmortEntry[]>([]);
@@ -61,7 +60,7 @@ function Amort_Calc() {
     setEntries(result);
   }
 
-  async function handleSubmit(entry: AmortFormValues, editId: number | null) {
+  async function handleSubmit(entry: AmortEntry, editId: number | null) {
     if (editId !== null) {
       await updateAmortEntry(editId, entry);
       setEditId(null);
@@ -131,77 +130,6 @@ function Amort_Calc() {
   ];
 
   const KURBar = [{ name: "KUR Count", SuperMikro: 20, Mikro: 10, Kecil: 2 }];
-
-  const AmortRows = entries.map((entry) => (
-    <Paper
-      key={entry.amortID}
-      //withBorder
-      shadow="sm"
-      p="md"
-      radius="md"
-      style={{ borderLeft: "4px solid #228be6" }}
-    >
-      <Group justify="space-between" align="center">
-        {/* Kiri: Info utama */}
-        <Stack gap={2}>
-          <Text fw={700} size="lg" c="blue">
-            {entry.title}
-          </Text>
-          <Group gap="xs">
-            <Text size="sm" c="dimmed">
-              {CREDIT_TYPE[entry.creditID ?? 0]}
-            </Text>
-            <Text size="sm" c="dimmed">
-              •
-            </Text>
-            <Text size="sm" c="blue">
-              {entry.tenorMonth} bulan
-            </Text>
-          </Group>
-        </Stack>
-
-        {/* Kanan: Angka + Actions */}
-        <Group gap="xl" align="center">
-          <Stack gap={2} align="flex-end">
-            <Text size="sm" c="dimmed">
-              ~Rp{" "}
-              {(entry.totalInstallment / entry.tenorMonth).toLocaleString(
-                "id-ID",
-              )}{" "}
-              / bulan
-            </Text>
-            <Text size="xs" c="dimmed">
-              Rp {entry.totalInstallment.toLocaleString("id-ID")}
-            </Text>
-          </Stack>
-
-          <Group gap="xs">
-            <ActionIcon
-              variant="filled"
-              radius="md"
-              onClick={() => openForm(entry)}
-            >
-              <HiPencil />
-            </ActionIcon>
-            <ActionIcon
-              variant="filled"
-              radius="md"
-              onClick={() => confirmDelete(entry.amortID!, entry.title)}
-            >
-              <HiTrash />
-            </ActionIcon>
-            <ActionIcon
-              variant="filled"
-              radius="md"
-              onClick={() => navigate(`/credit/amort-calc/${entry.amortID}`)}
-            >
-              <HiOutlineReply style={{ transform: "scaleX(-1)" }} />
-            </ActionIcon>
-          </Group>
-        </Group>
-      </Group>
-    </Paper>
-  ));
 
   return (
     <Container fluid>

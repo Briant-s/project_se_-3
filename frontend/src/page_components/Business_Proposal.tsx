@@ -19,7 +19,7 @@ import {
   getBusinessProposal,
   updateBusinessProposal,
 } from "../services/businessProposalService";
-import type { BusinessProposal, BusinessProposalInput } from "../services/models";
+import type { BusinessProposalInput } from "../services/models";
 
 interface MenuItem {
   productID?: string | number;
@@ -250,7 +250,7 @@ const handleSubmit = async () => {
               variant="outline"
               onClick={() => {
                 if (newProposalId) {
-                  navigate(`/business-proposal/result/${newProposalId}`);
+                  navigate(`/ai-business-proposal/result/${newProposalId}`);
                 }
               }}
               disabled={!newProposalId}

@@ -95,6 +95,29 @@ class BusinessProposalData(BusinessProposal):
     competitors: list[Competitors] | None = None
     products: list[Products] | None = None
 
+class AIProposal(BusinessProposal):
+    AIproposalID: str | None = None
+    user_id: str | None = None
+    businessID: int | None = None
+    proposalID: str | None = None
+    businessName: str | None = None
+    businessDescription: str | None = None
+    visi: str | None = None
+    misi: str | None = None
+    targetPasar: str | None = None
+    psikografi: str | None = None
+    trenPasar: str | None = None
+    strategiPemasaran: str | None = None
+    pelayananPelanggan: str | None = None
+    jamOperasional: str | None = None
+    jumlahStaff: int | None = None
+    supplier: str | None = None
+    prosesOperasional: str | None = None
+    modalAwal: str | None = None
+    targetPendapatan: str | None = None
+    analisa: str | None = None
+    kesimpulan: str | None = None
+
 class Profiles(BaseModel):
     profile_id: int 
     user_id: str 

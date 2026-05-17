@@ -18,7 +18,7 @@ import type { BusinessProposal } from "../services/models";
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface ProposalDraft {
-  id: string | null;
+  id: string | number | null;
   createdAt: string;
   data: ProposalData;
 }
@@ -31,23 +31,8 @@ function BusinessProposalList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const getProposalId = useCallback((proposal: BusinessProposal): string | null => {
-    const rawProposal = proposal as unknown as Record<string, unknown>;
-    const fallback =
-      rawProposal["proposalID"] ??
-      rawProposal["proposal_id"] ??
-      rawProposal["proposalId"] ??
-      rawProposal["id"] ??
-      null;
-
-    const id = proposal.proposalID ?? fallback;
-    const numericId = typeof id === "string" ? Number(id) : id;
-    return Number.isInteger(numericId) && numericId > 0 ? (numericId as number) : null;
-  }, []);
-
   const toProposalDraft = useCallback((proposal: BusinessProposal): ProposalDraft => {
     const rawProposal = proposal as unknown as Record<string, unknown>;
-    // const id = getProposalId(proposal);
       const id = proposal.proposalID;
 
     return {
@@ -87,7 +72,7 @@ function BusinessProposalList() {
         kesimpulan: proposal.kesimpulan ?? "",
       },
     };
-  }, [getProposalId]);
+  }, []);
 
   useEffect(() => {
     const fetchProposals = async () => {
@@ -202,10 +187,10 @@ function BusinessProposalList() {
                     size="xs"
                     variant="light"
                     style={{ flex: 1 }}
-                    onClick={() => proposal.id && navigate(`/business-proposal/result/${proposal.id}`)}
+                    onClick={() => proposal.id != null && navigate(`/ai-business-proposal/result/${proposal.id}`)}
                     // disabled={!proposal.id}
                   >
-                    View PDF
+                    View AI PDF
                   </Button>
                   <Menu shadow="md" width={160} position="bottom-end">
                     <Menu.Target>
@@ -222,7 +207,7 @@ function BusinessProposalList() {
                       </Menu.Item>
                       <Menu.Item
                         color="red"
-                        onClick={() => proposal.id && handleDelete(proposal.id)}
+                        onClick={() => proposal.id != null && handleDelete(String(proposal.id))}
                         // disabled={!proposal.id}
                       >
                         Delete

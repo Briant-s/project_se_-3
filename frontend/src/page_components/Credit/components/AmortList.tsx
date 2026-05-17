@@ -16,7 +16,6 @@ import {
   HiTrash,
   HiOutlineReply,
 } from "react-icons/hi";
-import { cardColors, gradients } from "../../../gradients";
 import Th from "./Th";
 import { KURBadge } from "../../../eligibility/component";
 import { useNavigate } from "react-router-dom";
@@ -27,7 +26,7 @@ interface AmortListProps {
   confirmDelete: (amort_id: number, title: string) => void;
 }
 
-function AmortList({ entries }: AmortListProps) {
+function AmortList({ entries, openForm, confirmDelete }: AmortListProps) {
   const navigate = useNavigate();
   const AmortRows = entries.map((entry) => (
     <Table.Tr key={entry.amortID}>

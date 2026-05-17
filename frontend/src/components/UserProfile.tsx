@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, Group, Menu, Stack, Text } from "@mantine/core";
+import { Avatar, Button, Group, Menu, Stack, Text } from "@mantine/core";
 
 import {
   HiLogout,
@@ -9,8 +9,8 @@ import {
 } from "react-icons/hi";
 
 interface Props {
-  user_email: string | null;
-  business_name: string | null;
+  user_email: string | undefined | null;
+  business_name?: string | null;
   handleSignOut: (e: any) => Promise<void>;
 }
 

@@ -95,7 +95,7 @@ function LoginPage() {
 
   const navigate = useNavigate();
 
-  const { session, signInUser, signInWithGoogle } = UserAuth();
+  const { signInUser, signInWithGoogle } = UserAuth();
 
   // Hitung validasi email secara real-time
   const emailValidation = useMemo(() => {
@@ -110,7 +110,7 @@ function LoginPage() {
     };
   }, [password]);
 
-  const handleSignIn = async (values) => {
+  const handleSignIn = async (values: { email: string; password: string }) => {
     console.log("handleSignIn dipanggil dengan values:", values);
     
     // Validasi email sebelum submit

@@ -19,12 +19,11 @@ import {
   AmortCalcPage,
   BusinessProposal,
   BusinessProposalResult,
-  BusinessProposalList
+  BusinessProposalList,
+  AIBusinessProposalResult,
 } from "./page_components";
 import {
   Elig_Overview,
-  LoanCalculatorPage,
-  CashBufferPage,
   QuizPage,
 } from "./eligibility";
 import AppLayout from "./AppLayout";
@@ -94,6 +93,7 @@ function App() {
                 <Route path="/business-proposal/edit/:proposalID" element={<BusinessProposal />} />
                 <Route path="/business-proposal/list" element={<BusinessProposalList />} />
                 <Route path="/business-proposal/result/:id" element={<BusinessProposalResult />} />
+                <Route path="/ai-business-proposal/result/:id" element={<AIBusinessProposalResult />} />
               </Route>
             </Route>
           </Routes>

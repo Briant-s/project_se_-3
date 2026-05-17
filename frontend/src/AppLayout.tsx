@@ -1,26 +1,19 @@
+import type { MouseEvent } from "react";
 import {
   AppShell,
   Burger,
-  Box,
   Group,
   Stack,
-  Avatar,
-  Button,
 } from "@mantine/core";
 import {
   HiBriefcase,
   HiClipboard,
   HiChartPie,
-  HiCog,
-  HiQuestionMarkCircle,
   HiCalculator,
   HiBanknotes,
   HiClipboardDocumentCheck,
-  HiDocumentCurrencyDollar,
-  HiDocumentText,
   HiIdentification,
   HiClipboardDocumentList,
-  HiDocumentDuplicate,
 } from "react-icons/hi2";
 
 import { useDisclosure } from "@mantine/hooks";
@@ -93,7 +86,7 @@ function AppLayout() {
   const { session, signOutUser } = UserAuth();
   const navigate = useNavigate();
 
-  const handleSignOut = async (e) => {
+  const handleSignOut = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
       await signOutUser();
