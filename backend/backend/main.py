@@ -363,6 +363,7 @@ async def update_business_proposal(proposalID: str, entry: BusinessProposalData,
             data["businessID"] = await get_business_id(user_id)
 
         supabase.table("BusinessProposal").update(data).eq("proposalID", proposalID).eq("user_id", user_id).execute()
+        supabase.table("AIProposal").delete().eq("proposalID", proposalID).eq("user_id", user_id).execute()
 
         if entry.competitors is not None:
             existing = supabase.table("Competitors").select("competitorID").eq("proposalID", proposalID).execute().data or []
