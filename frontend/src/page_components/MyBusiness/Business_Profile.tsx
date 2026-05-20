@@ -8,6 +8,7 @@ import {
   Stack,
   Text,
   Divider,
+  Loader,
 } from "@mantine/core";
 import { HiPencil, HiExternalLink, HiOutlineX } from "react-icons/hi";
 import { useState, useEffect } from "react";
@@ -20,6 +21,7 @@ function BusinessProfile() {
   // const formProgress = 70;
   const [formProgress, setFormProgress] = useState(0);
   const [business, setBusiness] = useState<BusinessProfileData | null>();
+  const [loading, setLoading] = useState(true);
 
   const calculateFormCompletion = (
     business: BusinessProfileData | null | undefined,
@@ -48,14 +50,32 @@ function BusinessProfile() {
   // Fetch Business
   useEffect(() => {
     const fetchBusiness = async () => {
-      const result = await getBusinessProfile();
-      setBusiness(result);
-      const completion = calculateFormCompletion(result);
-      setFormProgress(completion);
-      setFormReminder(completion < 100);
+      setLoading(true);
+      try{
+        const result = await getBusinessProfile();
+        setBusiness(result);
+        const completion = calculateFormCompletion(result);
+        setFormProgress(completion);
+        setFormReminder(completion < 100);
+      } catch (error){
+          console.error(error);
+      } finally {
+          setLoading(false);
+      }
     };
     fetchBusiness();
   }, []);
+
+  if (loading) {
+    return (
+      <Container fluid>
+        <Stack align="center" mt="xl" gap="sm">
+          <Loader />
+          <Text c="dimmed">Loading business overview...</Text>
+        </Stack>
+      </Container>
+    );
+  }
 
   return (
     <>

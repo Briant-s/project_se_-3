@@ -11,6 +11,7 @@ import {
   TextInput,
   Title,
   SimpleGrid,
+  Loader,
 } from "@mantine/core";
 import { useState, useEffect } from "react";
 import { HiArrowRight, HiArrowLeft, HiCheck } from "react-icons/hi2";
@@ -255,6 +256,16 @@ function ProfileQuiz() {
     }
   };
 
+  if (isLoadingProfile) {
+    return (
+      <Container fluid>
+        <Stack align="center" mt="xl" gap="sm">
+          <Loader />
+          <Text c="dimmed">Loading profile quiz...</Text>
+        </Stack>
+      </Container>
+    );
+  }
   return (
     <Container size="md" py="xl">
       <Stack gap="xl">
@@ -264,11 +275,6 @@ function ProfileQuiz() {
             Please complete the following details. You can save your progress at
             any step.
           </Text>
-          {isLoadingProfile && (
-            <Text c="gray" size="sm">
-              Checking for saved profile data...
-            </Text>
-          )}
         </Stack>
 
         <Card withBorder padding="xl" radius="md" shadow="sm">

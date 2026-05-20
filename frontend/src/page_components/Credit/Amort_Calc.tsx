@@ -12,6 +12,7 @@ import {
   Card,
   ColorSwatch,
   Flex,
+  Loader,
 } from "@mantine/core";
 import {
   HiOutlinePlus,
@@ -39,6 +40,7 @@ import { BarChart } from "@mantine/charts";
 function Amort_Calc() {
   const [entries, setEntries] = useState<AmortEntry[]>([]);
   const [editId, setEditId] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   const CREDIT_TYPE: Record<number, string> = {
@@ -49,8 +51,15 @@ function Amort_Calc() {
 
   useEffect(() => {
     const loadEntries = async () => {
-      const result = await getAmortEntries();
-      setEntries(result);
+      setLoading(true);
+      try {
+        const result = await getAmortEntries();
+        setEntries(result);
+      } catch (error) {
+        console.error("Failed to load amort entries:", error);
+      } finally {
+        setLoading(false); 
+      }
     };
     loadEntries();
   }, []);
@@ -130,6 +139,17 @@ function Amort_Calc() {
   ];
 
   const KURBar = [{ name: "KUR Count", SuperMikro: 20, Mikro: 10, Kecil: 2 }];
+
+  if (loading) {
+    return (
+      <Container fluid>
+        <Stack align="center" mt="xl" gap="sm">
+          <Loader />
+          <Text c="dimmed">Loading loan calculator...</Text>
+        </Stack>
+      </Container>
+    );
+  }
 
   return (
     <Container fluid>

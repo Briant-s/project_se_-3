@@ -6,6 +6,7 @@ import {
   Text,
   Divider,
   Badge,
+  Loader,
 } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { HiExternalLink } from "react-icons/hi";
@@ -17,15 +18,34 @@ import { BusinessCard } from "../../components";
 
 function FinancialOverview() {
   const [business, setBusiness] = useState<BusinessProfile | null>();
+  const [loading, setLoading] = useState(true);
 
   // Fetch Business
   useEffect(() => {
     const fetchBusiness = async () => {
-      const result = await getBusinessProfile();
-      setBusiness(result);
+      setLoading(true);
+      try {
+        const result = await getBusinessProfile();
+        setBusiness(result);
+      } catch(error){
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchBusiness();
   }, []);
+
+if (loading) {
+    return (
+      <Container fluid>
+        <Stack align="center" mt="xl" gap="sm">
+          <Loader />
+          <Text c="dimmed">Loading financial overview...</Text>
+        </Stack>
+      </Container>
+    );
+  }
 
   return (
     <>

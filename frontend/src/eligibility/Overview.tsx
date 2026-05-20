@@ -11,6 +11,7 @@ import {
   Stack,
   Text,
   Title,
+  Loader,
 } from "@mantine/core";
 import { HiOutlineReply, HiPlus } from "react-icons/hi";
 import { BusinessCard } from "../components";
@@ -28,11 +29,21 @@ function Eligibility_Overview() {
   const [days] = useState(7);
   const [entries, setEntries] = useState<AmortEntry[]>([]);
 
+  const [businessLoading, setBusinessLoading] = useState(true);
+  const [amortsLoading, setAmortsLoading] = useState(true);
+
   // Fetch Business
   useEffect(() => {
     const fetchBusiness = async () => {
-      const result = await getBusinessProfile();
-      setBusiness(result);
+      setBusinessLoading(true); 
+      try {
+        const result = await getBusinessProfile();
+        setBusiness(result);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setBusinessLoading(false); 
+      }
     };
     fetchBusiness();
   }, []);
@@ -40,8 +51,15 @@ function Eligibility_Overview() {
   // Fetch days
   useEffect(() => {
     const fetchAmortsCutoff = async () => {
-      const result = await getAmortsCutoff(days);
-      setEntries(result);
+      setAmortsLoading(true); // <-- Nyalakan sebelum fetch
+      try {
+        const result = await getAmortsCutoff(days);
+        setEntries(result);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setAmortsLoading(false); // <-- Matikan setelah selesai
+      }
     };
     fetchAmortsCutoff();
   }, [days]);
@@ -173,6 +191,18 @@ function Eligibility_Overview() {
       </Group>
     </Paper>
   ));
+
+
+  if (businessLoading || amortsLoading) {
+    return (
+      <Container fluid>
+        <Stack align="center" mt="xl" gap="sm">
+          <Loader />
+          <Text c="dimmed">Loading eligibility overview...</Text>
+        </Stack>
+      </Container>
+    );
+  }
 
   return (
     <>
