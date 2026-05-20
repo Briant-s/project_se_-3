@@ -60,9 +60,9 @@ function Eligibility_Overview() {
 
   // KUR User Stats
   const KUR_stats = [
-    { label: "KUR Super Mikro", value: 20, gradient: cardColors.super_mikro },
-    { label: "KUR Mikro", value: 12, gradient: cardColors.mikro },
-    { label: "KUR Kecil", value: 8, gradient: cardColors.kecil },
+    { label: "KUR Super Mikro", value: 20, background_color: cardColors.sm_bg, text_color: cardColors.super_mikro  },
+    { label: "KUR Mikro", value: 12, background_color: cardColors.m_bg, text_color: cardColors.mikro },
+    { label: "KUR Kecil", value: 8, background_color: cardColors.k_bg, text_color: cardColors.kecil },
   ];
 
   // Dashboard Texts
@@ -113,16 +113,19 @@ function Eligibility_Overview() {
       label: "Healthy",
       value: 20,
       color: cardColors.healthy,
+      bg: cardColors.h_bg,
     },
     {
       label: "Warning",
       value: 12,
       color: cardColors.warning,
+      bg: cardColors.w_bg
     },
     {
       label: "Not Healthy",
       value: 10,
       color: cardColors.not_healthy,
+      bg: cardColors.nh_bg
     },
   ];
 
@@ -222,6 +225,8 @@ function Eligibility_Overview() {
                           withBorder
                           style={{
                             borderLeft: `8px solid ${item.color}`,
+                            background: item.bg,
+                                      // boxShadow: "0 1px 10px rgba(0, 0, 0, 0.1)",
                           }}
                         >
                           <Stack gap="sm">

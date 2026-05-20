@@ -4,18 +4,20 @@ import { HiOutlineReply } from "react-icons/hi";
 interface KURCardProps {
   label: string;
   value: number | string;
-  gradient: string;
+  background_color : string;
+  text_color: string;
+
 }
 
-function KURCard({ label, value, gradient }: KURCardProps) {
+function KURCard({ label, value, background_color, text_color }: KURCardProps) {
   return (
     <>
       <Card
         p={2}
         style={{
-          background: gradient,
+          background: background_color,
           borderRadius: "16px",
-          boxShadow: "0 4px 30px rgba(0, 0, 0, 0.2)",
+          boxShadow: "0 1px 10px rgba(0, 0, 0, 0.2)",
         }}
       >
         <Card
@@ -29,7 +31,7 @@ function KURCard({ label, value, gradient }: KURCardProps) {
         >
           <Stack gap="xs">
             <Group justify="space-between">
-              <Text size="md" c="white">
+              <Text size="md" c={text_color}>
                 {label}
               </Text>
               <ActionIcon bg="white">
@@ -39,7 +41,7 @@ function KURCard({ label, value, gradient }: KURCardProps) {
                 />
               </ActionIcon>
             </Group>
-            <Text size="2rem" c="white">
+            <Text size="2rem" c={text_color}>
               {value}
             </Text>
           </Stack>

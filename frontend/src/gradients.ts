@@ -37,9 +37,19 @@ export const gradients = {
 
 export const cardColors = {
   healthy: "#008552",
+  h_bg: "#eaf3de",
   warning: "#ff9912",
+  w_bg: "#faeeda",
   not_healthy: "rgba(237, 33, 58, 1)",
-  super_mikro: "#54c0cc",
-  mikro: "#1d4f58",
-  kecil: "#1e3700",
+  nh_bg: "#fcebeb",
+  super_mikro: "#1d9e75",
+  sm_bg: "#e1f5ee",
+  mikro: "#378add",
+  m_bg: "#e6f1fb",
+  kecil: "#7f77dd",
+  k_bg: "#eeedfe"
 };
+
+export const brandColors = {
+  primaryButton: "#378ADD",
+}
