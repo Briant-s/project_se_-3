@@ -217,9 +217,11 @@ function ProfileQuiz() {
         : createBusinessProfile;
 
       saveFunction(profileData)
-        .then(() =>
-          setActive((current) => (current < 3 ? current + 1 : current)),
-        )
+        .then(() => {
+          // window.dispatchEvent(new Event("quiz_updated"));
+          window.dispatchEvent(new CustomEvent("quiz_updated", { detail: { progress: 100 } }));
+          setActive((current) => (current < 3 ? current + 1 : current));
+        })
         .catch((err) => {
           console.error(err);
           alert("Failed to save profile to Supabase. Please try again.");
@@ -234,6 +236,38 @@ function ProfileQuiz() {
     setSaving(true);
     try {
       await saveProfileToSupabase();
+      // 1. Definisikan array field yang mau dihitung progresnya
+      const fields = [
+        formData.businessName,
+        formData.businessAge,
+        formData.ownerName,
+        formData.businessLocation,
+        formData.businessType,
+        formData.businessSector,
+        formData.totalEmployees,
+        formData.storeType,
+        formData.monthlyAverageIncome,
+        formData.monthlyAverageProfitLoss,
+        formData.businessAssets,
+        formData.isOtherKredit,
+        // formData.businessName, formData.businessAge, formData.ownerName,
+        // formData.businessLocation, formData.businessType, formData.businessSector,
+        // formData.totalEmployees, formData.storeType, formData.monthlyAverageIncome,
+        // formData.monthlyAverageProfitLoss, formData.businessAssets, formData.isOtherKredit
+      ];
+      // 2. Hitung berapa banyak field yang sudah terisi
+      const filled = fields.filter(
+        (value) => value !== null && value !== undefined && value !== "",
+      ).length;
+
+      // 3. 💡 BUAT VARIABEL currentProgress DISINI AGAR TIDAK ERROR LAGI
+      const currentProgress = Math.round((filled / fields.length) * 100);
+
+      // 4. Kirimkan custom event ke Sidebar beserta datanya
+      window.dispatchEvent(
+        new CustomEvent("quiz_updated", { detail: { progress: currentProgress } })
+      );
+
       alert("Progress saved to Supabase");
     } catch (error) {
       console.error("Save error:", error);

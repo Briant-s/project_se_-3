@@ -16,6 +16,8 @@ import { mockBusinessProfile } from "../../mock_user";
 import { getBusinessProfile } from "../../services/businessProfileService";
 import type { BusinessProfile as BusinessProfileData } from "../../services/models";
 import { DataItem } from "./component";
+import { Link } from "react-router-dom";
+
 function BusinessProfile() {
   const [formReminder, setFormReminder] = useState(true);
   // const formProgress = 70;
@@ -109,6 +111,8 @@ function BusinessProfile() {
 
                 <Group gap="xs">
                   <Button
+                    component={Link} 
+                    to="/my-business/profile-quiz"
                     variant="white"
                     color="red"
                     size="compact-xs"
@@ -146,7 +150,11 @@ function BusinessProfile() {
                 <Text fw={700} size="lg">
                   {business?.businessName}
                 </Text>
-                <ActionIcon variant="subtle" color="gray">
+                <ActionIcon 
+                component={Link}                 
+                to="/my-business/profile-quiz"
+                variant="subtle" 
+                color="grey">
                   <HiPencil />
                 </ActionIcon>
               </Group>
@@ -217,6 +225,8 @@ function BusinessProfile() {
                   </Text>
                 </Stack>
                 <Button
+                  component={Link} 
+                  to="/my-business/financial-overview"
                   variant="light"
                   rightSection={<HiExternalLink />}
                   size="xs"
@@ -251,9 +261,14 @@ function BusinessProfile() {
                     </Text>
                   </Stack>
                 </Group>
-                <Button rightSection={<HiExternalLink />} size="xs">
+              {formProgress < 100 && (
+                <Button 
+                  component={Link}
+                  to="/my-business/profile-quiz"
+                  rightSection={<HiExternalLink />} size="xs">
                   Continue Quiz
                 </Button>
+              )}
               </Group>
             </Stack>
           </Card>
