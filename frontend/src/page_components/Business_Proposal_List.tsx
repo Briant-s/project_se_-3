@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+
 import {
   Container,
   Stack,
@@ -10,26 +11,33 @@ import {
   Menu,
   Loader,
 } from "@mantine/core";
+
 import { useNavigate } from "react-router-dom";
+
 import { getBusinessProposals, deleteBusinessProposal } from "../services/businessProposalService";
+
 import type { ProposalData } from "./Business_Proposal_PDF";
+
 import type { BusinessProposal } from "../services/models";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
 
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 export interface ProposalDraft {
   id: string | number | null;
   createdAt: string;
   data: ProposalData;
 }
 
-// ─── Component ───────────────────────────────────────────────────────────────
 
+
+// ─── Component ───────────────────────────────────────────────────────────────
 function BusinessProposalList() {
   const navigate = useNavigate();
   const [proposals, setProposals] = useState<ProposalDraft[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
 
   const toProposalDraft = useCallback((proposal: BusinessProposal): ProposalDraft => {
     const rawProposal = proposal as unknown as Record<string, unknown>;
@@ -55,6 +63,7 @@ function BusinessProposalList() {
           strength: comp.strength ?? "",
           weakness: comp.weakness ?? "",
         })),
+
         strategiPemasaran: proposal.strategiPemasaran ?? "",
         pelayananPelanggan: proposal.pelayananPelanggan ?? "",
         menuProduk: (proposal.products ?? []).map((prod) => ({
@@ -62,6 +71,7 @@ function BusinessProposalList() {
           description: prod.description ?? "",
           price: prod.price ?? "",
         })),
+
         jamOperasional: proposal.jamOperasional ?? "",
         jumlahStaff: String(proposal.jumlahStaff ?? ""),
         supplier: proposal.supplier ?? "",
@@ -70,11 +80,17 @@ function BusinessProposalList() {
         targetPendapatan: proposal.targetPendapatan ?? "",
         analisa: proposal.analisa ?? "",
         kesimpulan: proposal.kesimpulan ?? "",
+
       },
+
     };
+
   }, []);
 
+
+
   useEffect(() => {
+
     const fetchProposals = async () => {
       setLoading(true);
       setError(null);
@@ -94,10 +110,12 @@ function BusinessProposalList() {
       } finally {
         setLoading(false);
       }
-    };
 
+    };
     fetchProposals();
   }, [toProposalDraft]);
+
+
 
   const handleDelete = async (id: string) => {
     // const numericId = Number(id);
@@ -106,6 +124,8 @@ function BusinessProposalList() {
     //   return;
     // }
 
+
+
     try {
       await deleteBusinessProposal(id);
       console.log("Attempting to delete proposal with id:", id);
@@ -113,7 +133,10 @@ function BusinessProposalList() {
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to delete proposal");
     }
+
   };
+
+
 
   return (
     <Container fluid>
@@ -139,6 +162,7 @@ function BusinessProposalList() {
             </Stack>
           </Card>
         ) : (
+
           <>
             {error && (
               <Text c="red" size="sm">
@@ -159,28 +183,49 @@ function BusinessProposalList() {
             )}
 
         {/* Proposal Cards */}
+
         <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md">
+
           {proposals.map((proposal, index) => (
-            <Card key={`${proposal.id ?? index}-${index}`} radius="md" withBorder shadow="sm" p="lg">
-              <Stack gap="sm">
-                <Text fw={700} size="md">
-                  {proposal.data.businessName}
-                </Text>
+
+        <Card
+          key={`${proposal.id ?? index}-${index}`}
+          radius="md"
+          withBorder
+          shadow="sm"
+          p="lg"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            height: "100%",
+          }}
+
+        >
+
+                <Stack gap="xs" style={{ flex: 1 }}>
+                    <Text fw={700} size="md" lineClamp={2} style={{ overflow: "hidden", textOverflow: "ellipsis" }}>
+                      {proposal.data.businessName}
+                    </Text>
+                    <Text size="sm" c="dimmed" lineClamp={2}>
+                      {proposal.data.businessDescription}
+                    </Text>
+                  </Stack>
+
+
+
+                <Text size="xs" c="dimmed" mt="auto" pt="xs">
+                    Created:{" "}
+                    {new Date(proposal.createdAt).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </Text>
 
                 {/* {console.log(proposal)} */}
 
-                <Text size="sm" c="dimmed" lineClamp={2}>
-                  {proposal.data.businessDescription}
-                </Text>
 
-                <Text size="xs" c="dimmed">
-                  Created:{" "}
-                  {new Date(proposal.createdAt).toLocaleDateString("en-GB", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
-                </Text>
 
                 <Group gap="xs" mt="xs">
                   <Button
@@ -190,6 +235,7 @@ function BusinessProposalList() {
                     onClick={() => proposal.id != null && navigate(`/ai-business-proposal/result/${proposal.id}`)}
                     // disabled={!proposal.id}
                   >
+
                     View AI PDF
                   </Button>
                   <Menu shadow="md" width={160} position="bottom-end">
@@ -205,6 +251,7 @@ function BusinessProposalList() {
                       >
                         Edit
                       </Menu.Item>
+
                       <Menu.Item
                         color="red"
                         onClick={() => proposal.id != null && handleDelete(String(proposal.id))}
@@ -215,7 +262,7 @@ function BusinessProposalList() {
                     </Menu.Dropdown>
                   </Menu>
                 </Group>
-              </Stack>
+              {/* </Stack> */}
             </Card>
           ))}
         </SimpleGrid>
@@ -223,7 +270,10 @@ function BusinessProposalList() {
         )}
       </Stack>
     </Container>
+
   );
+
 }
 
-export default BusinessProposalList;
+export default BusinessProposalList; 
+
