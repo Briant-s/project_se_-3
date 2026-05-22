@@ -32,7 +32,7 @@ import {
   deleteAmortEntry,
 } from "../../services/amortService";
 import { AmortList } from "./components";
-import { useKURTypeCounts } from "../../eligibility/hooks";
+import { useAmortModal, useKURTypeCounts } from "../../eligibility/hooks";
 
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -81,6 +81,11 @@ function Amort_Calc() {
     fetchEntries();
   }
 
+  const { openForm } = useAmortModal({
+    onSubmit: handleSubmit,
+    setEditId: setEditId,
+  });
+
   async function handleDelete(amort_id: number) {
     try {
       await deleteAmortEntry(amort_id);
@@ -104,33 +109,6 @@ function Amort_Calc() {
       onConfirm: () => handleDelete(amort_id),
     });
   }
-
-  const openForm = (entry?: AmortEntry) => {
-    if (entry) {
-      setEditId(entry.amortID!);
-    } else {
-      setEditId(null);
-    }
-    modals.open({
-      title: entry ? "Edit Calculation" : "Add New Calculation",
-      children: (
-        <AmortForm
-          editId={entry?.amortID ?? null}
-          onSubmit={handleSubmit}
-          initialValues={
-            entry
-              ? {
-                  title: entry.title,
-                  tenorMonth: entry.tenorMonth,
-                  totalInstallment: entry.totalInstallment,
-                  principalAmount: entry.principalAmount,
-                }
-              : undefined
-          }
-        />
-      ),
-    });
-  };
 
   // User KUR Amount
   const KURAmount = [

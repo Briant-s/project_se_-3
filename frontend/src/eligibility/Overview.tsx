@@ -23,7 +23,10 @@ import { getAmortsCutoff } from "../services/creditService";
 import type { AmortEntry } from "../services/models";
 import { KURBadge, KURCard } from "./component";
 import { getAmortEntries } from "../services/amortService";
-import { useKURTypeCounts, useKURDaysList } from "./hooks";
+import { useKURTypeCounts, useKURDaysList, useAmortModal } from "./hooks";
+import { createAmortEntry, updateAmortEntry } from "../services/amortService";
+import { modals } from "@mantine/modals";
+import { AmortList } from "../page_components/Credit/components";
 
 function Eligibility_Overview() {
   const theme = useMantineTheme();
@@ -82,6 +85,25 @@ function Eligibility_Overview() {
       minute: "2-digit",
     });
   };
+
+  const handleSubmit = async (entry: AmortEntry, editId: number | null) => {
+    try {
+      if (editId !== null) {
+        await updateAmortEntry(editId, entry);
+      } else {
+        await createAmortEntry(entry);
+      }
+      fetchEntries();
+    } catch (error) {
+      console.error("Failed to save entry:", error);
+    } finally {
+      modals.closeAll();
+    }
+  };
+
+  const { openForm } = useAmortModal({
+    onSubmit: handleSubmit,
+  });
 
   // KUR User Stats
   const KUR_stats = [
@@ -169,7 +191,22 @@ function Eligibility_Overview() {
     },
   ];
 
-  const amortRows = daysEntries.map((entry) => (
+  function confirmDelete(amort_id: number, title: string) {
+    modals.openConfirmModal({
+      title: <Text fw={700}>Loan Deletion Warning</Text>,
+      children: (
+        <Text size="sm">
+          Are you sure you want to delete <b>{title}</b>? This action can't be
+          reversed.
+        </Text>
+      ),
+      labels: { confirm: "Delete", cancel: "Cancel" },
+      confirmProps: { color: "red" },
+      onConfirm: () => handleDelete(amort_id),
+    });
+  }
+
+  const amortRows = daysEntries.map((entry: AmortEntry) => (
     <Paper
       key={entry.amortID}
       p="md"
@@ -324,7 +361,11 @@ function Eligibility_Overview() {
                           { value: "0", label: "All Time" },
                         ]}
                       />
-                      <Button bg={theme.primaryColor} leftSection={<HiPlus />}>
+                      <Button
+                        bg={theme.primaryColor}
+                        leftSection={<HiPlus />}
+                        onClick={() => openForm()}
+                      >
                         New Calculation
                       </Button>
                     </Group>
@@ -336,7 +377,12 @@ function Eligibility_Overview() {
                           Belum ada data. Tambahkan pinjaman baru.
                         </Text>
                       ) : (
-                        amortRows
+                        <AmortList
+                          entries={daysEntries}
+                          openForm={openForm}
+                          confirmDelete={handleDelete}
+                          compact
+                        />
                       )}
                     </ScrollArea>
                   </Card>
@@ -362,6 +408,6 @@ function Eligibility_Overview() {
 }
 
 export default Eligibility_Overview;
-function setLoading(arg0: boolean) {
+function handleDelete(amort_id: number): void {
   throw new Error("Function not implemented.");
 }

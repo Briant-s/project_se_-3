@@ -24,9 +24,15 @@ interface AmortListProps {
   entries: AmortEntry[];
   openForm: (entry?: AmortEntry) => void;
   confirmDelete: (amort_id: number, title: string) => void;
+  compact?: boolean;
 }
 
-function AmortList({ entries, openForm, confirmDelete }: AmortListProps) {
+function AmortList({
+  entries,
+  openForm,
+  confirmDelete,
+  compact,
+}: AmortListProps) {
   const navigate = useNavigate();
   const AmortRows = entries.map((entry) => (
     <Table.Tr key={entry.amortID}>
@@ -37,8 +43,8 @@ function AmortList({ entries, openForm, confirmDelete }: AmortListProps) {
       </Table.Td>
       <Table.Td>NULL</Table.Td>
       <Table.Td>{entry.tenorMonth}</Table.Td>
-      <Table.Td>{entry.totalInstallment}</Table.Td>
-      <Table.Td>{entry.principalAmount}</Table.Td>
+      {!compact && <Table.Td>{entry.totalInstallment}</Table.Td>}
+      {!compact && <Table.Td>{entry.principalAmount}</Table.Td>}
       <Table.Td>
         {" "}
         <Group gap="xs">
@@ -99,18 +105,23 @@ function AmortList({ entries, openForm, confirmDelete }: AmortListProps) {
               <Th sorted={false} reversed={false}>
                 Credit Type
               </Th>
+
               <Th sorted={false} reversed={false}>
                 Health
               </Th>
               <Th sorted={false} reversed={false}>
                 Tenor Months
               </Th>
-              <Th sorted={false} reversed={false}>
-                Total Installment
-              </Th>
-              <Th sorted={false} reversed={false}>
-                Principal Amount
-              </Th>
+              {!compact && (
+                <Th sorted={false} reversed={false}>
+                  Total Installment
+                </Th>
+              )}
+              {!compact && (
+                <Th sorted={false} reversed={false}>
+                  Principal Amount
+                </Th>
+              )}
               <Table.Th>Actions</Table.Th>
             </Table.Tr>
           </Table.Tbody>
