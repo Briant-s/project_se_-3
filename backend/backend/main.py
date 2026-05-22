@@ -105,12 +105,11 @@ def filter_nonempty_rows(rows: list[dict]) -> list[dict]:
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GEMINI_ENDPOINT = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent"
 
-
+# ini versi revisi, agar number list bisa tetap kebawah
 def build_gemini_prompt(proposal: dict, competitors: list[dict], products: list[dict]) -> str:
-# def build_gemini_prompt(proposal: dict) -> str:
     return (
         "You are a professional business consultant. Improve and enhance the following business proposal text fields "
-        "to be more professional, detailed, and compelling. Return a valid JSON object with these fields: "
+        "to be more professional, detailed, and compelling.\n\n"
         "businessName (keep unchanged), businessDescription (improved version), visi (improved vision statement), "
         "misi (improved mission statement), targetPasar (detailed target market analysis), psikografi (improved psychographic analysis), "
         "trenPasar (market trends analysis), strategiPemasaran (comprehensive marketing strategy), pelayananPelanggan (customer service strategy), "
@@ -120,9 +119,32 @@ def build_gemini_prompt(proposal: dict, competitors: list[dict], products: list[
         "If original data is missing or empty for a field, use your knowledge to create a reasonable professional text based on the context. "
         "Maintain Indonesian language if the original data is in Indonesian. "
         "Do not include any additional keys or fields. "
-        "\n\nRaw business proposal data:\n"
-        f"{json.dumps({**proposal, "competitors": competitors, "products": products}, ensure_ascii=False, indent=2)}"
+        "IMPORTANT RULES FOR TEXT FIELDS:\n"
+        "- If you need to make lists, points, or ordered steps, ALWAYS use Markdown format (e.g., '- Point 1' or '1. Step 1').\n"
+        "- Separate each point or paragraph with double newlines (\\n\\n) so it renders correctly on separate lines.\n"
+        "- Maintain Indonesian language if the original data is in Indonesian.\n"
+        "- If original data is missing or empty for a field, use your knowledge to create a reasonable professional text based on the context.\n\n"
+        "Raw business proposal data:\n"
+        f"{json.dumps({**proposal, 'competitors': competitors, 'products': products}, ensure_ascii=False, indent=2)}"
     )
+
+# def build_gemini_prompt(proposal: dict, competitors: list[dict], products: list[dict]) -> str:
+# # def build_gemini_prompt(proposal: dict) -> str:
+#     return (
+#         "You are a professional business consultant. Improve and enhance the following business proposal text fields "
+#         "to be more professional, detailed, and compelling. Return a valid JSON object with these fields: "
+#         "businessName (keep unchanged), businessDescription (improved version), visi (improved vision statement), "
+#         "misi (improved mission statement), targetPasar (detailed target market analysis), psikografi (improved psychographic analysis), "
+#         "trenPasar (market trends analysis), strategiPemasaran (comprehensive marketing strategy), pelayananPelanggan (customer service strategy), "
+#         "prosesOperasional (detailed operational process), analisa (financial analysis and insights), kesimpulan (professional conclusion), "
+#         "competitors (array with name, strength, weakness), menuProduk (array with name, description, price). "
+#         "For text fields, enhance them to be professional, detailed, and business-ready. "
+#         "If original data is missing or empty for a field, use your knowledge to create a reasonable professional text based on the context. "
+#         "Maintain Indonesian language if the original data is in Indonesian. "
+#         "Do not include any additional keys or fields. "
+#         "\n\nRaw business proposal data:\n"
+#         f"{json.dumps({**proposal, "competitors": competitors, "products": products}, ensure_ascii=False, indent=2)}"
+#     )
 
 
 def parse_ai_json(output: str) -> dict:
@@ -158,6 +180,55 @@ def generate_ai_proposal_data(proposal: dict, competitors: list[dict], products:
 
     prompt = build_gemini_prompt(proposal, competitors, products)
     # prompt = build_gemini_prompt(proposal)
+
+    # Definisikan skema JSON yang wajib diikuti oleh Gemini
+    json_schema = {
+        "type": "OBJECT",
+        "properties": {
+            "businessName": {"type": "STRING"},
+            "businessDescription": {"type": "STRING"},
+            "visi": {"type": "STRING"},
+            "misi": {"type": "STRING"},
+            "targetPasar": {"type": "STRING"},
+            "psikografi": {"type": "STRING"},
+            "trenPasar": {"type": "STRING"},
+            "strategiPemasaran": {"type": "STRING"},
+            "pelayananPelanggan": {"type": "STRING"},
+            "prosesOperasional": {"type": "STRING"},
+            "analisa": {"type": "STRING"},
+            "kesimpulan": {"type": "STRING"},
+            "competitors": {
+                "type": "ARRAY",
+                "items": {
+                    "type": "OBJECT",
+                    "properties": {
+                        "name": {"type": "STRING"},
+                        "strength": {"type": "STRING"},
+                        "weakness": {"type": "STRING"}
+                    },
+                    "required": ["name", "strength", "weakness"]
+                }
+            },
+            "menuProduk": {
+                "type": "ARRAY",
+                "items": {
+                    "type": "OBJECT",
+                    "properties": {
+                        "name": {"type": "STRING"},
+                        "description": {"type": "STRING"},
+                        "price": {"type": "NUMBER"}
+                    },
+                    "required": ["name", "description", "price"]
+                }
+            }
+        },
+        "required": [
+            "businessName", "businessDescription", "visi", "misi", 
+            "targetPasar", "psikografi", "trenPasar", "strategiPemasaran", 
+            "pelayananPelanggan", "prosesOperasional", "analisa", "kesimpulan",
+            "competitors", "menuProduk"
+        ]
+    }
     
     try:
         response = requests.post(
@@ -167,7 +238,11 @@ def generate_ai_proposal_data(proposal: dict, competitors: list[dict], products:
                     "parts": [{
                         "text": prompt
                     }]
-                }]
+                }], 
+                "generationConfig": {
+                    "responseMimeType": "application/json",
+                    "responseSchema": json_schema  # Variabel json_schema yang sudah didefinisikan sebelumnya
+                }
             },
             timeout=30,
             headers={"Content-Type": "application/json"}
