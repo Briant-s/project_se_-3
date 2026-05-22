@@ -23,6 +23,7 @@ import { getAmortsCutoff } from "../services/creditService";
 import type { AmortEntry } from "../services/models";
 import { KURBadge, KURCard } from "./component";
 import { getAmortEntries } from "../services/amortService";
+import { useKURTypeCounts, useKURDaysList } from "./hooks";
 
 function Eligibility_Overview() {
   const theme = useMantineTheme();
@@ -33,6 +34,9 @@ function Eligibility_Overview() {
 
   const [businessLoading, setBusinessLoading] = useState(true);
   const [amortsLoading, setAmortsLoading] = useState(true);
+
+  const KURTypeCounts = useKURTypeCounts(entries);
+  const daysEntries = useKURDaysList(entries, days);
 
   // Fetch Business
   useEffect(() => {
@@ -52,64 +56,20 @@ function Eligibility_Overview() {
 
   // Fetch Amort Entries
   const fetchEntries = async () => {
-    setLoading(true);
+    setAmortsLoading(true);
     try {
       const result = await getAmortEntries();
       setEntries(result);
     } catch (error) {
       console.error("Failed to load amort entries:", error);
     } finally {
-      setLoading(false);
+      setAmortsLoading(false);
     }
   };
 
   useEffect(() => {
     fetchEntries();
   }, []);
-
-  const KUR_TYPE_MAP = {
-    1: "supermikro",
-    2: "mikro",
-    3: "kecil",
-    4: "supermikro",
-    5: "mikro",
-    6: "kecil",
-  };
-
-  // Days Entries
-  const daysEntries = useMemo(() => {
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - days);
-    return entries.filter((entry) => new Date(entry.created_at) >= cutoff);
-  }, [entries, days]);
-
-  //  KUR Type Count
-  const KURTypeCounts = useMemo(() =>
-    entries.reduce(
-      (acc, entry) => {
-        const type = KUR_TYPE_MAP[entry.creditID];
-        if (type) acc[type] = (acc[type] || 0) + 1;
-        return acc;
-      },
-      { supermikro: 0, mikro: 0, kecil: 0 },
-    ),
-  );
-
-  // Fetch days
-  useEffect(() => {
-    const fetchAmortsCutoff = async () => {
-      setAmortsLoading(true); // <-- Nyalakan sebelum fetch
-      try {
-        const result = await getAmortsCutoff(days);
-        setEntries(result);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setAmortsLoading(false); // <-- Matikan setelah selesai
-      }
-    };
-    fetchAmortsCutoff();
-  }, [days]);
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return "";
@@ -127,19 +87,19 @@ function Eligibility_Overview() {
   const KUR_stats = [
     {
       label: "KUR Super Mikro",
-      value: 20,
+      value: KURTypeCounts.supermikro,
       background_color: theme.other.KURColors.sm_bg,
       text_color: theme.other.KURColors.supermikro,
     },
     {
       label: "KUR Mikro",
-      value: 12,
+      value: KURTypeCounts.mikro,
       background_color: theme.other.KURColors.m_bg,
       text_color: theme.other.KURColors.mikro,
     },
     {
       label: "KUR Kecil",
-      value: 8,
+      value: KURTypeCounts.kecil,
       background_color: theme.other.KURColors.k_bg,
       text_color: theme.other.KURColors.kecil,
     },
@@ -209,7 +169,7 @@ function Eligibility_Overview() {
     },
   ];
 
-  const amortRows = entries.map((entry) => (
+  const amortRows = daysEntries.map((entry) => (
     <Paper
       key={entry.amortID}
       p="md"
@@ -356,10 +316,12 @@ function Eligibility_Overview() {
                         label="Sort by Date Created"
                         placeholder="Pick Day Range"
                         defaultValue="7"
+                        onChange={(val) => setDays(Number(val))}
                         data={[
                           { value: "1", label: "Last 1 Day" },
                           { value: "3", label: "Last 3 Day" },
                           { value: "7", label: "Last 7 Day" },
+                          { value: "0", label: "All Time" },
                         ]}
                       />
                       <Button bg={theme.primaryColor} leftSection={<HiPlus />}>
@@ -369,7 +331,7 @@ function Eligibility_Overview() {
                   </Group>
                   <Card withBorder>
                     <ScrollArea h={400}>
-                      {entries.length === 0 ? (
+                      {daysEntries.length === 0 ? (
                         <Text c="dimmed" ta="center" py="xl">
                           Belum ada data. Tambahkan pinjaman baru.
                         </Text>

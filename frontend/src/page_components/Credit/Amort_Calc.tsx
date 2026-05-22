@@ -32,6 +32,7 @@ import {
   deleteAmortEntry,
 } from "../../services/amortService";
 import { AmortList } from "./components";
+import { useKURTypeCounts } from "../../eligibility/hooks";
 
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -44,6 +45,8 @@ function Amort_Calc() {
   const [editId, setEditId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  const KURTypeCounts = useKURTypeCounts(entries);
 
   const CREDIT_TYPE: Record<number, string> = {
     1: "KUR Super Mikro",
@@ -131,9 +134,21 @@ function Amort_Calc() {
 
   // User KUR Amount
   const KURAmount = [
-    { name: "Super Mikro", value: 20, color: theme.other.KURColors.supermikro },
-    { name: "Mikro", value: 10, color: theme.other.KURColors.mikro },
-    { name: "Kecil", value: 2, color: theme.other.KURColors.kecil },
+    {
+      name: "Super Mikro",
+      value: KURTypeCounts.supermikro,
+      color: theme.other.KURColors.supermikro,
+    },
+    {
+      name: "Mikro",
+      value: KURTypeCounts.mikro,
+      color: theme.other.KURColors.mikro,
+    },
+    {
+      name: "Kecil",
+      value: KURTypeCounts.kecil,
+      color: theme.other.KURColors.kecil,
+    },
   ];
 
   if (loading) {
