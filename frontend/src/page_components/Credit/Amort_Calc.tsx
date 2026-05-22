@@ -13,6 +13,7 @@ import {
   ColorSwatch,
   Flex,
   Loader,
+  useMantineTheme,
 } from "@mantine/core";
 import {
   HiOutlinePlus,
@@ -35,9 +36,10 @@ import { AmortList } from "./components";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import AmortForm from "./AmortForm";
-import { BarChart } from "@mantine/charts";
+import { DonutChart } from "@mantine/charts";
 
 function Amort_Calc() {
+  const theme = useMantineTheme();
   const [entries, setEntries] = useState<AmortEntry[]>([]);
   const [editId, setEditId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
@@ -49,25 +51,21 @@ function Amort_Calc() {
     3: "KUR Kecil",
   };
 
-  useEffect(() => {
-    const loadEntries = async () => {
-      setLoading(true);
-      try {
-        const result = await getAmortEntries();
-        setEntries(result);
-      } catch (error) {
-        console.error("Failed to load amort entries:", error);
-      } finally {
-        setLoading(false); 
-      }
-    };
-    loadEntries();
-  }, []);
+  const fetchEntries = async () => {
+    setLoading(true);
+    try {
+      const result = await getAmortEntries();
+      setEntries(result);
+    } catch (error) {
+      console.error("Failed to load amort entries:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  async function fetchEntries() {
-    const result = await getAmortEntries();
-    setEntries(result);
-  }
+  useEffect(() => {
+    fetchEntries();
+  }, []);
 
   async function handleSubmit(entry: AmortEntry, editId: number | null) {
     if (editId !== null) {
@@ -133,12 +131,10 @@ function Amort_Calc() {
 
   // User KUR Amount
   const KURAmount = [
-    { name: "Super Mikro", value: 20, color: "red" },
-    { name: "Mikro", value: 10, color: "blue" },
-    { name: "Kecil", value: 2, color: "green" },
+    { name: "Super Mikro", value: 20, color: theme.other.KURColors.supermikro },
+    { name: "Mikro", value: 10, color: theme.other.KURColors.mikro },
+    { name: "Kecil", value: 2, color: theme.other.KURColors.kecil },
   ];
-
-  const KURBar = [{ name: "KUR Count", SuperMikro: 20, Mikro: 10, Kecil: 2 }];
 
   if (loading) {
     return (
@@ -158,7 +154,11 @@ function Amort_Calc() {
           <Text fw={700} size="xl">
             Loan Simulations
           </Text>
-          <Button leftSection={<HiPlus size={14} />} onClick={() => openForm()}>
+          <Button
+            bg={theme.primaryColor}
+            leftSection={<HiPlus size={14} />}
+            onClick={() => openForm()}
+          >
             Add New Loan Calculation
           </Button>
         </Group>
@@ -185,23 +185,12 @@ function Amort_Calc() {
                 </Card>
                 <Card p="xs">
                   <Flex justify="center" align="center" h="100%">
-                    {/* <DonutChart
+                    <DonutChart
                       data={KURAmount}
                       thickness={20}
                       strokeWidth={5}
                       size={100}
                       withTooltip={false}
-                    /> */}
-                    <BarChart
-                      h={180}
-                      w={180}
-                      data={KURBar}
-                      dataKey="name"
-                      series={[
-                        { name: "SuperMikro", color: "red" },
-                        { name: "Mikro", color: "blue" },
-                        { name: "Kecil", color: "green" },
-                      ]}
                     />
                   </Flex>
                 </Card>

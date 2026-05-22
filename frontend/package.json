@@ -10,6 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fontsource/dm-mono": "^5.2.7",
+    "@fontsource/manrope": "^5.2.8",
+    "@fontsource/outfit": "^5.2.8",
+    "@fontsource/sora": "^5.2.8",
     "@mantine/charts": "^9.0.0",
     "@mantine/core": "^9.0.0",
     "@mantine/form": "^9.0.0",

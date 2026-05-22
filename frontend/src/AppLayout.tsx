@@ -1,10 +1,5 @@
 import type { MouseEvent } from "react";
-import {
-  AppShell,
-  Burger,
-  Group,
-  Stack,
-} from "@mantine/core";
+import { AppShell, Burger, Group, Stack } from "@mantine/core";
 import {
   HiBriefcase,
   HiClipboard,
@@ -111,12 +106,12 @@ function AppLayout() {
         bdrs="sm"
         // bg="#D2E5E8"
         style={{
-          background: "rgba(210, 229, 232, 0.4)",
+          background: "rgba(55, 138, 221, 0.2)",
           borderRadius: "16px",
           boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
           backdropFilter: "blur(12px)",
           WebkitBackdropFilter: "blur(12px)",
-          border: "1px solid rgba(210, 214, 218, 0.13)",
+          border: "1px solid rgba(55, 138, 221, 0.13)",
           // position: "relative",
           zIndex: 1,
         }}

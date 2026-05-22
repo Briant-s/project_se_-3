@@ -1,15 +1,15 @@
-import { Badge } from "@mantine/core";
-import { cardColors } from "../../gradients";
+import { Badge, useMantineTheme } from "@mantine/core";
 import { HiOutlineCreditCard } from "react-icons/hi";
 
 function KURBadge({ type }: { type: number }) {
+  const theme = useMantineTheme();
   const map: Record<number, { color: string; label: string }> = {
-    1: { color: cardColors.super_mikro, label: "Super Mikro KI" },
-    2: { color: cardColors.mikro, label: "Mikro KI" },
-    3: { color: cardColors.kecil, label: "Kecil KI" },
-    4: { color: cardColors.super_mikro, label: "Super Mikro KMK" },
-    5: { color: cardColors.mikro, label: "Mikro KMK" },
-    6: { color: cardColors.kecil, label: "Kecil KMK" },
+    1: { color: theme.other.KURColors.supermikro, label: "Super Mikro KI" },
+    2: { color: theme.other.KURColors.mikro, label: "Mikro KI" },
+    3: { color: theme.other.KURColors.kecil, label: "Kecil KI" },
+    4: { color: theme.other.KURColors.supermikro, label: "Super Mikro KMK" },
+    5: { color: theme.other.KURColors.mikro, label: "Mikro KMK" },
+    6: { color: theme.other.KURColors.kecil, label: "Kecil KMK" },
   };
 
   const { color, label } = map[type] ?? { color: "gray", label: "Unknown" };

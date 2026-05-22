@@ -12,21 +12,23 @@ import {
   Text,
   Title,
   Loader,
+  useMantineTheme,
 } from "@mantine/core";
 import { HiOutlineReply, HiPlus } from "react-icons/hi";
 import { BusinessCard } from "../components";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import type { BusinessProfile } from "../services/models";
 import { getBusinessProfile } from "../services/businessProfileService";
-import { cardColors } from "../gradients";
 import { getAmortsCutoff } from "../services/creditService";
 import type { AmortEntry } from "../services/models";
 import { KURBadge, KURCard } from "./component";
+import { getAmortEntries } from "../services/amortService";
 
 function Eligibility_Overview() {
+  const theme = useMantineTheme();
   const [business, setBusiness] = useState<BusinessProfile | null>();
 
-  const [days] = useState(7);
+  const [days, setDays] = useState(7);
   const [entries, setEntries] = useState<AmortEntry[]>([]);
 
   const [businessLoading, setBusinessLoading] = useState(true);
@@ -35,18 +37,63 @@ function Eligibility_Overview() {
   // Fetch Business
   useEffect(() => {
     const fetchBusiness = async () => {
-      setBusinessLoading(true); 
+      setBusinessLoading(true);
       try {
         const result = await getBusinessProfile();
         setBusiness(result);
       } catch (error) {
         console.error(error);
       } finally {
-        setBusinessLoading(false); 
+        setBusinessLoading(false);
       }
     };
     fetchBusiness();
   }, []);
+
+  // Fetch Amort Entries
+  const fetchEntries = async () => {
+    setLoading(true);
+    try {
+      const result = await getAmortEntries();
+      setEntries(result);
+    } catch (error) {
+      console.error("Failed to load amort entries:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchEntries();
+  }, []);
+
+  const KUR_TYPE_MAP = {
+    1: "supermikro",
+    2: "mikro",
+    3: "kecil",
+    4: "supermikro",
+    5: "mikro",
+    6: "kecil",
+  };
+
+  // Days Entries
+  const daysEntries = useMemo(() => {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - days);
+    return entries.filter((entry) => new Date(entry.created_at) >= cutoff);
+  }, [entries, days]);
+
+  //  KUR Type Count
+  const KURTypeCounts = useMemo(() =>
+    entries.reduce(
+      (acc, entry) => {
+        const type = KUR_TYPE_MAP[entry.creditID];
+        if (type) acc[type] = (acc[type] || 0) + 1;
+        return acc;
+      },
+      { supermikro: 0, mikro: 0, kecil: 0 },
+    ),
+  );
 
   // Fetch days
   useEffect(() => {
@@ -78,9 +125,24 @@ function Eligibility_Overview() {
 
   // KUR User Stats
   const KUR_stats = [
-    { label: "KUR Super Mikro", value: 20, background_color: cardColors.sm_bg, text_color: cardColors.super_mikro  },
-    { label: "KUR Mikro", value: 12, background_color: cardColors.m_bg, text_color: cardColors.mikro },
-    { label: "KUR Kecil", value: 8, background_color: cardColors.k_bg, text_color: cardColors.kecil },
+    {
+      label: "KUR Super Mikro",
+      value: 20,
+      background_color: theme.other.KURColors.sm_bg,
+      text_color: theme.other.KURColors.supermikro,
+    },
+    {
+      label: "KUR Mikro",
+      value: 12,
+      background_color: theme.other.KURColors.m_bg,
+      text_color: theme.other.KURColors.mikro,
+    },
+    {
+      label: "KUR Kecil",
+      value: 8,
+      background_color: theme.other.KURColors.k_bg,
+      text_color: theme.other.KURColors.kecil,
+    },
   ];
 
   // Dashboard Texts
@@ -130,20 +192,20 @@ function Eligibility_Overview() {
     {
       label: "Healthy",
       value: 20,
-      color: cardColors.healthy,
-      bg: cardColors.h_bg,
+      color: theme.other.HealthStatus.healthy,
+      bg: theme.other.HealthStatus.h_bg,
     },
     {
       label: "Warning",
       value: 12,
-      color: cardColors.warning,
-      bg: cardColors.w_bg
+      color: theme.other.HealthStatus.warning,
+      bg: theme.other.HealthStatus.w_bg,
     },
     {
       label: "Not Healthy",
       value: 10,
-      color: cardColors.not_healthy,
-      bg: cardColors.nh_bg
+      color: theme.other.HealthStatus.not_healthy,
+      bg: theme.other.HealthStatus.nh_bg,
     },
   ];
 
@@ -192,7 +254,6 @@ function Eligibility_Overview() {
     </Paper>
   ));
 
-
   if (businessLoading || amortsLoading) {
     return (
       <Container fluid>
@@ -211,7 +272,7 @@ function Eligibility_Overview() {
           <SimpleGrid cols={2} autoFlow="auto-fill">
             <Card>
               <Stack>
-                <Text size="67px">{dashboardCopy.hero.title}</Text>
+                <Text size="40px">{dashboardCopy.hero.title}</Text>
                 {/* <Text c="dimmed">{dashboardCopy.hero.description}</Text> */}
               </Stack>
             </Card>
@@ -256,7 +317,7 @@ function Eligibility_Overview() {
                           style={{
                             borderLeft: `8px solid ${item.color}`,
                             background: item.bg,
-                                      // boxShadow: "0 1px 10px rgba(0, 0, 0, 0.1)",
+                            // boxShadow: "0 1px 10px rgba(0, 0, 0, 0.1)",
                           }}
                         >
                           <Stack gap="sm">
@@ -301,7 +362,7 @@ function Eligibility_Overview() {
                           { value: "7", label: "Last 7 Day" },
                         ]}
                       />
-                      <Button bg="#1D4F58" leftSection={<HiPlus />}>
+                      <Button bg={theme.primaryColor} leftSection={<HiPlus />}>
                         New Calculation
                       </Button>
                     </Group>
@@ -339,3 +400,6 @@ function Eligibility_Overview() {
 }
 
 export default Eligibility_Overview;
+function setLoading(arg0: boolean) {
+  throw new Error("Function not implemented.");
+}
