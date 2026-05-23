@@ -153,7 +153,7 @@ function RegistrationPage() {
       );
       console.log("Sign up result:", result);
       if (result && result.success) {
-        navigate("/");
+        navigate("/my-business/profile-quiz");
       } else if (result && result.error) {
         // Extract error message dari Supabase error object
         const errorMessage =
