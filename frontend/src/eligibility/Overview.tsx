@@ -23,10 +23,6 @@ import { getAmortsCutoff } from "../services/creditService";
 import type { AmortEntry } from "../services/models";
 import { KURBadge, KURCard } from "./component";
 import { getAmortEntries } from "../services/amortService";
-import { useKURTypeCounts, useKURDaysList, useAmortModal } from "./hooks";
-import { createAmortEntry, updateAmortEntry } from "../services/amortService";
-import { modals } from "@mantine/modals";
-import { AmortList } from "../page_components/Credit/components";
 
 function Eligibility_Overview() {
   const theme = useMantineTheme();
@@ -37,9 +33,6 @@ function Eligibility_Overview() {
 
   const [businessLoading, setBusinessLoading] = useState(true);
   const [amortsLoading, setAmortsLoading] = useState(true);
-
-  const KURTypeCounts = useKURTypeCounts(entries);
-  const daysEntries = useKURDaysList(entries, days);
 
   // Fetch Business
   useEffect(() => {
@@ -59,20 +52,67 @@ function Eligibility_Overview() {
 
   // Fetch Amort Entries
   const fetchEntries = async () => {
-    setAmortsLoading(true);
+    setLoading(true);
     try {
       const result = await getAmortEntries();
       setEntries(result);
     } catch (error) {
       console.error("Failed to load amort entries:", error);
     } finally {
-      setAmortsLoading(false);
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchEntries();
   }, []);
+
+  const KUR_TYPE_MAP = {
+    1: "supermikro",
+    2: "mikro",
+    3: "kecil",
+    4: "supermikro",
+    5: "mikro",
+    6: "kecil",
+  };
+
+  // Days Entries
+  const daysEntries = useMemo(() => {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - days);
+    return entries.filter((entry) => new Date(entry.created_at) >= cutoff);
+  }, [entries, days]);
+
+  //  KUR Type Count
+  const KURTypeCounts = useMemo(() =>
+    entries.reduce(
+      (acc, entry) => {
+        const type = KUR_TYPE_MAP[entry.creditID];
+        if (type) acc[type] = (acc[type] || 0) + 1;
+        return acc;
+      },
+      { supermikro: 0, mikro: 0, kecil: 0 },
+    ),
+  );
+
+  // KUR Health Count
+  // const KURHealthCount = useMemo()
+
+  // Fetch days
+  useEffect(() => {
+    const fetchAmortsCutoff = async () => {
+      setAmortsLoading(true); // <-- Nyalakan sebelum fetch
+      try {
+        const result = await getAmortsCutoff(days);
+        setEntries(result);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setAmortsLoading(false); // <-- Matikan setelah selesai
+      }
+    };
+    fetchAmortsCutoff();
+  }, [days]);
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return "";
@@ -86,42 +126,23 @@ function Eligibility_Overview() {
     });
   };
 
-  const handleSubmit = async (entry: AmortEntry, editId: number | null) => {
-    try {
-      if (editId !== null) {
-        await updateAmortEntry(editId, entry);
-      } else {
-        await createAmortEntry(entry);
-      }
-      fetchEntries();
-    } catch (error) {
-      console.error("Failed to save entry:", error);
-    } finally {
-      modals.closeAll();
-    }
-  };
-
-  const { openForm } = useAmortModal({
-    onSubmit: handleSubmit,
-  });
-
   // KUR User Stats
   const KUR_stats = [
     {
       label: "KUR Super Mikro",
-      value: KURTypeCounts.supermikro,
+      value: 20,
       background_color: theme.other.KURColors.sm_bg,
       text_color: theme.other.KURColors.supermikro,
     },
     {
       label: "KUR Mikro",
-      value: KURTypeCounts.mikro,
+      value: 12,
       background_color: theme.other.KURColors.m_bg,
       text_color: theme.other.KURColors.mikro,
     },
     {
       label: "KUR Kecil",
-      value: KURTypeCounts.kecil,
+      value: 8,
       background_color: theme.other.KURColors.k_bg,
       text_color: theme.other.KURColors.kecil,
     },
@@ -191,22 +212,7 @@ function Eligibility_Overview() {
     },
   ];
 
-  function confirmDelete(amort_id: number, title: string) {
-    modals.openConfirmModal({
-      title: <Text fw={700}>Loan Deletion Warning</Text>,
-      children: (
-        <Text size="sm">
-          Are you sure you want to delete <b>{title}</b>? This action can't be
-          reversed.
-        </Text>
-      ),
-      labels: { confirm: "Delete", cancel: "Cancel" },
-      confirmProps: { color: "red" },
-      onConfirm: () => handleDelete(amort_id),
-    });
-  }
-
-  const amortRows = daysEntries.map((entry: AmortEntry) => (
+  const amortRows = entries.map((entry) => (
     <Paper
       key={entry.amortID}
       p="md"
@@ -353,36 +359,25 @@ function Eligibility_Overview() {
                         label="Sort by Date Created"
                         placeholder="Pick Day Range"
                         defaultValue="7"
-                        onChange={(val) => setDays(Number(val))}
                         data={[
                           { value: "1", label: "Last 1 Day" },
                           { value: "3", label: "Last 3 Day" },
                           { value: "7", label: "Last 7 Day" },
-                          { value: "0", label: "All Time" },
                         ]}
                       />
-                      <Button
-                        bg={theme.primaryColor}
-                        leftSection={<HiPlus />}
-                        onClick={() => openForm()}
-                      >
+                      <Button bg={theme.primaryColor} leftSection={<HiPlus />}>
                         New Calculation
                       </Button>
                     </Group>
                   </Group>
                   <Card withBorder>
                     <ScrollArea h={400}>
-                      {daysEntries.length === 0 ? (
+                      {entries.length === 0 ? (
                         <Text c="dimmed" ta="center" py="xl">
                           Belum ada data. Tambahkan pinjaman baru.
                         </Text>
                       ) : (
-                        <AmortList
-                          entries={daysEntries}
-                          openForm={openForm}
-                          confirmDelete={handleDelete}
-                          compact
-                        />
+                        amortRows
                       )}
                     </ScrollArea>
                   </Card>
@@ -408,6 +403,6 @@ function Eligibility_Overview() {
 }
 
 export default Eligibility_Overview;
-function handleDelete(amort_id: number): void {
+function setLoading(arg0: boolean) {
   throw new Error("Function not implemented.");
 }

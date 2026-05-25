@@ -18,7 +18,7 @@ class BusinessProfile(BaseModel):
     user_id: str | None = None
     created_at: str | None = None
     businessName: str | None = None
-    businessAge: str | None = None
+    businessAge: int | None = None
     ownerName: str | None = None
     ownerDob: str | None = None
     businessLocation: str | None = None
@@ -27,13 +27,14 @@ class BusinessProfile(BaseModel):
     businessType: str | None = None
     totalEmployees: int | None = None
     storeType: str | None = None
-    monthlyAverageIncome: str | None = None
-    monthlyAverageProfitLoss: str | None = None
+    monthlyAverageIncome: float | None = None
+    monthlyAverageProfitLoss: float | None = None
     businessAssets: str | None = None
     isOtherKredit: str | None = None
     umkmUnlockLevel: str | None = None
     businessContactNumber: str | None = None
     businessEmail: str | None = None
+    isProfitable: bool | None = None
 
 class Credit(BaseModel):
     creditID: int

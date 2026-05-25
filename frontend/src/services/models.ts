@@ -22,7 +22,7 @@ export interface BusinessProfile {
   user_id?: string;
   businessName?: string;
   ownerName?: string;
-  businessAge?: string | null;
+  businessAge?: number;
   ownerDob?: string;
   businessLocation?: string;
   businessBankAcc?: string | null;
@@ -30,13 +30,35 @@ export interface BusinessProfile {
   businessType?: string | null;
   totalEmployees?: number | string | null;
   storeType?: string | null;
-  monthlyAverageIncome?: string | null;
-  monthlyAverageProfitLoss?: string | null;
+  monthlyAverageIncome?: number;
+  monthlyAverageProfitLoss?: number;
   businessAssets?: string;
   isOtherKredit?: string | null;
   umkmUnlockLevel?: string | null;
   businessContactNumber?: string | null;
   businessEmail?: string | null;
+  isProfitable?: boolean;
+}
+
+export interface BusinessProfileForm {
+  businessName: string;
+  ownerName: string;
+  businessAge: number | "";
+  ownerDob: string;
+  businessLocation: string;
+  businessBankAcc: string | null;
+  businessSector: string | null;
+  businessType: string | null;
+  totalEmployees: number | "";
+  storeType: string | null;
+  monthlyAverageIncome: number | "";
+  monthlyAverageProfitLoss: number | "";
+  businessAssets: string;
+  isOtherKredit: string | null;
+  umkmUnlockLevel: string | null;
+  businessContactNumber: string;
+  businessEmail: string;
+  isProfitable: boolean | null;
 }
 
 export interface Competitors {

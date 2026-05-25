@@ -21,31 +21,68 @@ import {
   getBusinessProfile,
   updateBusinessProfile,
 } from "../../services/businessProfileService";
+import type {
+  BusinessProfileForm,
+  BusinessProfile,
+} from "../../services/models";
 
 function ProfileQuiz() {
   const [active, setActive] = useState(0);
   const [saving, setSaving] = useState(false);
   const navigate = useNavigate();
 
+  // A helper function to adjust typing, just ignore
+  const toBusinessProfile = (
+    formData: BusinessProfileForm,
+  ): BusinessProfile => ({
+    businessName: formData.businessName,
+    ownerName: formData.ownerName,
+    businessAge: formData.businessAge !== "" ? formData.businessAge : undefined,
+    totalEmployees:
+      formData.totalEmployees !== "" ? Number(formData.totalEmployees) : null,
+    monthlyAverageIncome:
+      formData.monthlyAverageIncome !== ""
+        ? formData.monthlyAverageIncome
+        : undefined,
+    monthlyAverageProfitLoss:
+      formData.monthlyAverageProfitLoss !== ""
+        ? formData.monthlyAverageProfitLoss
+        : undefined,
+    isProfitable: formData.isProfitable ?? undefined,
+    // rest pass through directly
+    ownerDob: formData.ownerDob,
+    businessLocation: formData.businessLocation,
+    businessBankAcc: formData.businessBankAcc,
+    businessSector: formData.businessSector,
+    businessType: formData.businessType,
+    storeType: formData.storeType,
+    businessAssets: formData.businessAssets,
+    isOtherKredit: formData.isOtherKredit,
+    umkmUnlockLevel: formData.umkmUnlockLevel,
+    businessContactNumber: formData.businessContactNumber,
+    businessEmail: formData.businessEmail,
+  });
+
   // 1. State untuk menyimpan data inputan
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<BusinessProfileForm>({
     businessName: "",
     ownerName: "",
-    businessAge: null as string | null,
+    businessAge: "",
     ownerDob: "",
     businessLocation: "",
-    businessBankAcc: null as string | null,
-    businessSector: null as string | null,
-    businessType: null as string | null,
-    totalEmployees: "" as number | "",
-    storeType: null as string | null,
-    monthlyAverageIncome: null as string | null,
-    monthlyAverageProfitLoss: null as string | null,
+    businessBankAcc: null,
+    businessSector: null,
+    businessType: null,
+    totalEmployees: "",
+    storeType: null,
+    monthlyAverageIncome: "",
+    monthlyAverageProfitLoss: "",
     businessAssets: "",
-    isOtherKredit: null as string | null,
-    umkmUnlockLevel: null as string | null,
+    isOtherKredit: null,
+    umkmUnlockLevel: null,
     businessContactNumber: "",
     businessEmail: "",
+    isProfitable: null,
   });
 
   // 2. State untuk menyimpan pesan error
@@ -65,7 +102,7 @@ function ProfileQuiz() {
         setFormData({
           businessName: profile.businessName || "",
           ownerName: profile.ownerName || "",
-          businessAge: profile.businessAge || null,
+          businessAge: profile.businessAge ?? "",
           ownerDob: profile.ownerDob || "",
           businessLocation: profile.businessLocation || "",
           businessBankAcc: profile.businessBankAcc || null,
@@ -78,13 +115,14 @@ function ProfileQuiz() {
                 ? Number(profile.totalEmployees)
                 : "",
           storeType: profile.storeType || null,
-          monthlyAverageIncome: profile.monthlyAverageIncome || null,
-          monthlyAverageProfitLoss: profile.monthlyAverageProfitLoss || null,
+          monthlyAverageIncome: profile.monthlyAverageIncome ?? "",
+          monthlyAverageProfitLoss: profile.monthlyAverageProfitLoss ?? "",
           businessAssets: profile.businessAssets || "",
           isOtherKredit: profile.isOtherKredit || null,
           umkmUnlockLevel: profile.umkmUnlockLevel || null,
           businessContactNumber: profile.businessContactNumber || "",
           businessEmail: profile.businessEmail || "",
+          isProfitable: profile.isProfitable || null,
         });
         setProfileExists(true);
       } catch (error) {
@@ -98,31 +136,7 @@ function ProfileQuiz() {
   }, []);
 
   const saveProfileToSupabase = async () => {
-    const payload = {
-      businessName: formData.businessName,
-      ownerName: formData.ownerName,
-      businessAge: formData.businessAge,
-      ownerDob: formData.ownerDob,
-      businessLocation: formData.businessLocation,
-      businessBankAcc: formData.businessBankAcc,
-      businessSector: formData.businessSector,
-      businessType: formData.businessType,
-      totalEmployees:
-        typeof formData.totalEmployees === "number"
-          ? formData.totalEmployees
-          : formData.totalEmployees !== ""
-            ? Number(formData.totalEmployees)
-            : null,
-      storeType: formData.storeType,
-      monthlyAverageIncome: formData.monthlyAverageIncome,
-      monthlyAverageProfitLoss: formData.monthlyAverageProfitLoss,
-      businessAssets: formData.businessAssets,
-      isOtherKredit: formData.isOtherKredit,
-      umkmUnlockLevel: formData.umkmUnlockLevel,
-      businessContactNumber: formData.businessContactNumber,
-      businessEmail: formData.businessEmail,
-    };
-    console.log(payload);
+    const payload = toBusinessProfile(formData);
 
     const saveFunction = profileExists
       ? updateBusinessProfile
@@ -187,30 +201,7 @@ function ProfileQuiz() {
 
     if (active === 2) {
       setSaving(true);
-      const profileData = {
-        businessName: formData.businessName,
-        ownerName: formData.ownerName,
-        businessAge: formData.businessAge,
-        ownerDob: formData.ownerDob,
-        businessLocation: formData.businessLocation,
-        businessBankAcc: formData.businessBankAcc,
-        businessSector: formData.businessSector,
-        businessType: formData.businessType,
-        totalEmployees:
-          typeof formData.totalEmployees === "number"
-            ? formData.totalEmployees
-            : formData.totalEmployees !== ""
-              ? Number(formData.totalEmployees)
-              : null,
-        storeType: formData.storeType,
-        monthlyAverageIncome: formData.monthlyAverageIncome,
-        monthlyAverageProfitLoss: formData.monthlyAverageProfitLoss,
-        businessAssets: formData.businessAssets,
-        isOtherKredit: formData.isOtherKredit,
-        umkmUnlockLevel: formData.umkmUnlockLevel,
-        businessContactNumber: formData.businessContactNumber,
-        businessEmail: formData.businessEmail,
-      };
+      const profileData = toBusinessProfile(formData);
 
       const saveFunction = profileExists
         ? updateBusinessProfile
@@ -219,7 +210,9 @@ function ProfileQuiz() {
       saveFunction(profileData)
         .then(() => {
           // window.dispatchEvent(new Event("quiz_updated"));
-          window.dispatchEvent(new CustomEvent("quiz_updated", { detail: { progress: 100 } }));
+          window.dispatchEvent(
+            new CustomEvent("quiz_updated", { detail: { progress: 100 } }),
+          );
           setActive((current) => (current < 3 ? current + 1 : current));
         })
         .catch((err) => {
@@ -265,7 +258,9 @@ function ProfileQuiz() {
 
       // 4. Kirimkan custom event ke Sidebar beserta datanya
       window.dispatchEvent(
-        new CustomEvent("quiz_updated", { detail: { progress: currentProgress } })
+        new CustomEvent("quiz_updated", {
+          detail: { progress: currentProgress },
+        }),
       );
 
       alert("Progress saved to Supabase");
