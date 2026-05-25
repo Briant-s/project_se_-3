@@ -11,6 +11,7 @@ import {
   TextInput,
   Title,
   SimpleGrid,
+  SegmentedControl,
   Loader,
 } from "@mantine/core";
 import { useState, useEffect } from "react";
@@ -83,6 +84,8 @@ function ProfileQuiz() {
     businessContactNumber: "",
     businessEmail: "",
     isProfitable: null,
+    businessAgeYears: "" as number | "",
+    businessAgeMonths: "" as number | "",
   });
 
   // 2. State untuk menyimpan pesan error
@@ -123,6 +126,12 @@ function ProfileQuiz() {
           businessContactNumber: profile.businessContactNumber || "",
           businessEmail: profile.businessEmail || "",
           isProfitable: profile.isProfitable || null,
+          businessAgeYears:
+            profile.businessAge != null
+              ? Math.floor(profile.businessAge / 12)
+              : "",
+          businessAgeMonths:
+            profile.businessAge != null ? profile.businessAge % 12 : "",
         });
         setProfileExists(true);
       } catch (error) {
@@ -157,8 +166,8 @@ function ProfileQuiz() {
       if (!formData.businessContactNumber)
         newErrors.businessContactNumber = "This field is required";
       if (!formData.ownerName) newErrors.ownerName = "This field is required";
-      if (!formData.businessAge)
-        newErrors.businessAge = "Please select an option";
+      if (formData.businessAgeYears === "" && formData.businessAgeMonths === "")
+        newErrors.businessAge = "Please enter business age";
       if (!formData.ownerDob) newErrors.ownerDob = "Please enter a date";
       if (!formData.businessLocation)
         newErrors.businessLocation = "This field is required";
@@ -188,6 +197,8 @@ function ProfileQuiz() {
         newErrors.businessAssets = "This field is required";
       if (!formData.isOtherKredit)
         newErrors.isOtherKredit = "Please select an option";
+      if (formData.isProfitable === null)
+        newErrors.isProfitable = "Please select profit or loss";
     }
 
     // Jika ada error, simpan ke state dan STOP (jangan pindah step)
@@ -360,15 +371,54 @@ function ProfileQuiz() {
                   />
                 </SimpleGrid>
                 <SimpleGrid cols={{ base: 1, sm: 2 }}>
-                  <Select
-                    label="Business Age"
-                    placeholder="Select duration"
-                    withAsterisk
-                    data={["< 1 Year", "1-2 Years", "3-5 Years", "> 5 Years"]}
-                    value={formData.businessAge}
-                    onChange={(val) => updateForm("businessAge", val)}
-                    error={errors.businessAge}
-                  />
+                  <Stack gap={4}>
+                    <Text size="sm" fw={500}>
+                      Business Age <span style={{ color: "red" }}>*</span>
+                    </Text>
+                    <Group gap="sm">
+                      <NumberInput
+                        placeholder="0 years"
+                        min={0}
+                        max={99}
+                        suffix=" yrs"
+                        style={{ width: 120 }}
+                        value={formData.businessAgeYears ?? ""}
+                        hideControls
+                        onChange={(val) => {
+                          setFormData((prev) => ({
+                            ...prev,
+                            businessAgeYears: val as number | "",
+                            businessAge:
+                              (Number(val) || 0) * 12 +
+                              (Number(prev.businessAgeMonths) || 0),
+                          }));
+                        }}
+                      />
+                      <NumberInput
+                        placeholder="0 months"
+                        min={0}
+                        max={11}
+                        suffix=" mo"
+                        style={{ width: 120 }}
+                        value={formData.businessAgeMonths ?? ""}
+                        hideControls
+                        onChange={(val) => {
+                          setFormData((prev) => ({
+                            ...prev,
+                            businessAgeMonths: val as number | "",
+                            businessAge:
+                              (Number(prev.businessAgeYears) || 0) * 12 +
+                              (Number(val) || 0),
+                          }));
+                        }}
+                      />
+                    </Group>
+                    {errors.businessAge && (
+                      <Text size="xs" c="red">
+                        {errors.businessAge}
+                      </Text>
+                    )}
+                  </Stack>
                   <TextInput
                     label="Owner Date of Birth"
                     type="date"
@@ -455,26 +505,65 @@ function ProfileQuiz() {
             {/* STEP 3: Financial */}
             <Stepper.Step label="Financial" description="Financial Health">
               <Stack gap="md" mt="xl">
-                <Select
-                  label="Monthly Revenue Range"
-                  placeholder="Select Range"
+                <NumberInput
+                  label="Monthly Average Income"
+                  placeholder="0"
                   withAsterisk
-                  data={["< 10M", "10-50M", "50-100M", "> 100M"]}
+                  min={0}
+                  prefix="Rp "
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  decimalScale={2}
+                  hideControls
                   value={formData.monthlyAverageIncome}
                   onChange={(val) => updateForm("monthlyAverageIncome", val)}
                   error={errors.monthlyAverageIncome}
                 />
-                <Select
-                  label="Monthly Profit/Loss Range"
-                  placeholder="Select Range"
-                  withAsterisk
-                  data={["Net Loss", "< 5M", "5-20M", "> 20M"]}
-                  value={formData.monthlyAverageProfitLoss}
-                  onChange={(val) =>
-                    updateForm("monthlyAverageProfitLoss", val)
-                  }
-                  error={errors.monthlyAverageProfitLoss}
-                />
+                <Stack gap={4}>
+                  <Text size="sm" fw={500}>
+                    Monthly Profit / Loss{" "}
+                    <span style={{ color: "red" }}>*</span>
+                  </Text>
+                  <Group gap="sm" align="flex-start">
+                    <SegmentedControl
+                      data={[
+                        { label: "Profit", value: "true" },
+                        { label: "Loss", value: "false" },
+                      ]}
+                      value={
+                        formData.isProfitable === null
+                          ? ""
+                          : String(formData.isProfitable)
+                      }
+                      onChange={(val) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          isProfitable: val === "true",
+                        }))
+                      }
+                    />
+                    <NumberInput
+                      placeholder="0"
+                      min={0}
+                      prefix="Rp "
+                      thousandSeparator="."
+                      decimalSeparator=","
+                      decimalScale={2}
+                      hideControls
+                      disabled={formData.isProfitable === null}
+                      value={formData.monthlyAverageProfitLoss}
+                      onChange={(val) =>
+                        updateForm("monthlyAverageProfitLoss", val)
+                      }
+                      error={errors.monthlyAverageProfitLoss}
+                    />
+                  </Group>
+                  {errors.isProfitable && (
+                    <Text size="xs" c="red">
+                      {errors.isProfitable}
+                    </Text>
+                  )}
+                </Stack>
                 <TextInput
                   label="Business Assets"
                   placeholder="e.g. Land, Vehicle, Tools"

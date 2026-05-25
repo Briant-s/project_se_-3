@@ -59,6 +59,8 @@ export interface BusinessProfileForm {
   businessContactNumber: string;
   businessEmail: string;
   isProfitable: boolean | null;
+  businessAgeYears: number | "";
+  businessAgeMonths: number | "";
 }
 
 export interface Competitors {
