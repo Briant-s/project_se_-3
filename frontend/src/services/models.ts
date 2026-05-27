@@ -64,6 +64,18 @@ export interface BusinessProfileForm {
   businessAgeMonths: number | "";
 }
 
+export interface Credit {
+  creditID: number;
+  creditType: string;
+  interestRatePerYear: number;
+  minBusinessAge: number;
+  minLimit: number;
+  maxLimit: number;
+  minTenorMonth: number;
+  maxTenorMonth: number;
+  needsCollateral: boolean;
+}
+
 export interface Competitors {
   competitorID?: string | number;
   name?: string;

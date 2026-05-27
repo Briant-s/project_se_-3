@@ -144,3 +144,16 @@ async def update_business_profile(entry: BusinessProfile, user_id: str = Depends
     except Exception as e:
         print("Business profile PUT error:", str(e))
         raise HTTPException(status_code=500, detail=str(e))
+    
+
+# Get All Credit Reference Table
+@app.get("/credit-reference")
+async def get_credit_reference(user_id: str = Depends(get_current_user)):
+    try:
+        result = supabase.table("Credit").select("*").execute()
+        if not result.data:
+            raise HTTPException(status_code=404, detail="No Credit Reference Table Found")
+        return result.data
+    except Exception as e:
+        print("GET credit reference error:", str(e))
+        raise HTTPException(status_code=500, detail=str(e))

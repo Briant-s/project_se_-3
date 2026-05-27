@@ -7,17 +7,17 @@ import {
   getAmortEntries,
 } from "../services/amortService";
 import { useAmortModal } from "./useAmortModal";
-import type { AmortEntry } from "../services/models";
+import type { AmortEntry, Credit } from "../services/models";
 import { useEffect, useState } from "react";
 import { calculateHealthStatus } from "../utils/amort/health";
-import { useBusinessProfile } from "./useBusinessProfile";
+import { calculateTotalInstallment } from "../utils/amort/totalInstallment";
 
 export function useAmortActions(
   setEditId: (id: number | null) => void,
   monthlyAverageIncome: number | undefined,
+  creditMap: Record<number, Credit>,
   editId: number | null,
 ) {
-  const { business } = useBusinessProfile();
   const [entries, setEntries] = useState<AmortEntry[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -44,9 +44,19 @@ export function useAmortActions(
       monthlyAverageIncome,
     );
 
+    const interestRate = entry.creditID
+      ? creditMap[entry.creditID]?.interestRatePerYear
+      : undefined;
+    const totalInstallment = calculateTotalInstallment(
+      entry.principalAmount,
+      entry.tenorMonth,
+      interestRate,
+    );
+
     const finalEntry = {
       ...entry,
-      healthStatus,
+      totalInstallment,
+      health_status: healthStatus,
     };
 
     if (editId !== null) {

@@ -39,21 +39,21 @@ import { useEffect, useState } from "react";
 import AmortForm from "./AmortForm";
 import { DonutChart } from "@mantine/charts";
 import { useAmortActions } from "../../hooks/useAmortActions";
+import { useBusinessProfile } from "../../hooks/useBusinessProfile";
+import { useCreditReferences } from "../../hooks/useCreditReferences";
 
 function Amort_Calc() {
   const theme = useMantineTheme();
   const [editId, setEditId] = useState<number | null>(null);
   const navigate = useNavigate();
 
-  const CREDIT_TYPE: Record<number, string> = {
-    1: "KUR Super Mikro",
-    2: "KUR Mikro",
-    3: "KUR Kecil",
-  };
-
+  const { business } = useBusinessProfile();
+  const { creditMap } = useCreditReferences();
   const { openForm, confirmDelete, entries, loading } = useAmortActions(
     setEditId,
     editId,
+    business?.monthlyAverageIncome,
+    creditMap,
   );
 
   const KURTypeCounts = useKURTypeCounts(entries);

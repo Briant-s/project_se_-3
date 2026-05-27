@@ -1,6 +1,6 @@
 const BASE_URL = "http://localhost:8000";
 import { supabase } from "../SupabaseClient";
-import type { AmortEntry } from "./models";
+import type { AmortEntry, Credit } from "./models";
 
 // get user JWT token
 export async function getAuthHeader() {
@@ -19,5 +19,13 @@ export async function getAmortsCutoff(days: number): Promise<AmortEntry[]> {
     },
   );
   if (!result.ok) throw new Error("Failed to fecth all entries with cutoff");
+  return result.json();
+}
+
+export async function getCreditReference(): Promise<Credit[]> {
+  const result = await fetch(`${BASE_URL}/credit-reference`, {
+    headers: { ...(await getAuthHeader()) },
+  });
+  if (!result.ok) throw new Error("Failed to fetch credit references");
   return result.json();
 }

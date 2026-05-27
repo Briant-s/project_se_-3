@@ -22,10 +22,10 @@ import { KURCard } from "./component";
 import { useKURDaysList, useKURTypeCounts } from "../hooks";
 import { AmortList } from "../page_components/Credit/components";
 import { useAmortActions } from "../hooks/useAmortActions";
+import { useBusinessProfile } from "../hooks/useBusinessProfile";
 
 function Eligibility_Overview() {
   const theme = useMantineTheme();
-  const [business, setBusiness] = useState<BusinessProfile | null>();
 
   const [days, setDays] = useState(7);
 
@@ -34,27 +34,14 @@ function Eligibility_Overview() {
   const [editId, setEditId] = useState<number | null>(null);
 
   // Fetch Business
-  useEffect(() => {
-    const fetchBusiness = async () => {
-      setBusinessLoading(true);
-      try {
-        const result = await getBusinessProfile();
-        setBusiness(result);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setBusinessLoading(false);
-      }
-    };
-    fetchBusiness();
-  }, []);
+  const { business } = useBusinessProfile();
 
   const {
     openForm,
     confirmDelete,
     entries,
     loading: amortsLoading,
-  } = useAmortActions(setEditId, editId);
+  } = useAmortActions(setEditId, editId, business?.monthlyAverageIncome);
 
   const KURTypeCounts = useKURTypeCounts(entries);
   const daysEntries = useKURDaysList(entries, days);

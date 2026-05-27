@@ -2,8 +2,9 @@ export const calculateHealthStatus = (
   totalInstallment: number | undefined,
   tenorMonth: number | undefined,
   monthlyAverageIncome: number | undefined,
-): string | null => {
-  if (!totalInstallment || !tenorMonth || !monthlyAverageIncome) return null;
+): string | undefined => {
+  if (!totalInstallment || !tenorMonth || !monthlyAverageIncome)
+    return undefined;
 
   const healthRatio = totalInstallment / tenorMonth / monthlyAverageIncome;
 
