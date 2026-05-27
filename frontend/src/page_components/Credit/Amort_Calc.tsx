@@ -31,7 +31,7 @@ import {
   updateAmortEntry,
   deleteAmortEntry,
 } from "../../services/amortService";
-import { AmortList } from "./components";
+import { AmortList, TrendIndicator } from "./components";
 import { useAmortModal, useKURTypeCounts } from "../../hooks";
 
 import { useNavigate } from "react-router-dom";
@@ -41,6 +41,8 @@ import { DonutChart } from "@mantine/charts";
 import { useAmortActions } from "../../hooks/useAmortActions";
 import { useBusinessProfile } from "../../hooks/useBusinessProfile";
 import { useCreditReferences } from "../../hooks/useCreditReferences";
+import { useLoanSummaryMetrics } from "../../hooks/useLoanSumMetrics";
+import { formatPercent, formatRupiah } from "../../utils/globalFormatter";
 
 function Amort_Calc() {
   const theme = useMantineTheme();
@@ -55,6 +57,8 @@ function Amort_Calc() {
     creditMap,
     editId,
   );
+
+  const metrics = useLoanSummaryMetrics(entries, business);
 
   const KURTypeCounts = useKURTypeCounts(entries);
 
@@ -150,11 +154,10 @@ function Amort_Calc() {
                 <Stack gap="0.1rem">
                   <Group align="flex-end" gap="xs">
                     <Text fz="lg" fw={500}>
-                      Rp. 8.100.000,00
+                      {formatRupiah(metrics.averageLoanRequested)}
                     </Text>
                     <Text c="red" fw={700}>
-                      <span>15%</span>
-                      <FaArrowTrendDown size={16} />
+                      <TrendIndicator value={metrics.loanToRevenueRatio} />
                     </Text>
                   </Group>
                   <Text fz="xs" c="dimmed" fw={700}>
@@ -168,7 +171,7 @@ function Amort_Calc() {
                   Total Loan Amount
                 </Text>
                 <Text fz="lg" fw={500}>
-                  Rp. 60.000.000,00
+                  {formatRupiah(metrics.totalLoanAmount)}
                 </Text>
               </Stack>
             </Stack>
@@ -185,7 +188,7 @@ function Amort_Calc() {
                   </Text>
                   {/* Healthy / Possible vs Total */}
                   <Badge color="green" variant="light" size="lg">
-                    25 / 30
+                    {metrics.feasibleCount} / {metrics.totalSimulations}
                   </Badge>
                 </Group>
                 {/* Avg Surplus After Payment */}
@@ -194,7 +197,7 @@ function Amort_Calc() {
                     Avg Surplus After Payment
                   </Text>
                   <Badge color="yellow" variant="light" size="lg">
-                    Rp 300.000,00
+                    {formatRupiah(metrics.avgSurplus)}
                   </Badge>
                 </Group>
                 {/* Avg Debt-To-Income */}
@@ -203,7 +206,7 @@ function Amort_Calc() {
                     Debt-to-Income Ratio
                   </Text>
                   <Badge color="red" variant="light" size="lg">
-                    30%
+                    {formatPercent(metrics.avgDti)}
                   </Badge>
                 </Group>
               </Stack>

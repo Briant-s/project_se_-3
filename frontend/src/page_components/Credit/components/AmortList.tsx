@@ -19,6 +19,7 @@ import {
 import Th from "./Th";
 import { HealthBadge, KURBadge } from "../../../eligibility/component";
 import { useNavigate } from "react-router-dom";
+import { formatRupiah } from "../../../utils/globalFormatter";
 
 interface AmortListProps {
   entries: AmortEntry[];
@@ -44,9 +45,9 @@ function AmortList({
       <Table.Td>
         <HealthBadge type={entry.health_status} />
       </Table.Td>
-      <Table.Td>{entry.tenorMonth}</Table.Td>
-      {!compact && <Table.Td>{entry.totalInstallment}</Table.Td>}
-      {!compact && <Table.Td>{entry.principalAmount}</Table.Td>}
+      <Table.Td>{entry.tenorMonth} months</Table.Td>
+      {!compact && <Table.Td>{formatRupiah(entry.totalInstallment)}</Table.Td>}
+      {!compact && <Table.Td>{formatRupiah(entry.principalAmount)}</Table.Td>}
       <Table.Td>
         {" "}
         <Group gap="xs">
