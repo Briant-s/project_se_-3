@@ -19,31 +19,32 @@ import { useState, useEffect } from "react";
 import type { BusinessProfile } from "../services/models";
 import { getBusinessProfile } from "../services/businessProfileService";
 import { KURCard } from "./component";
-import { useKURDaysList, useKURTypeCounts } from "../hooks";
+import { useKURDaysList, useKURHealthCounts, useKURTypeCounts } from "../hooks";
 import { AmortList } from "../page_components/Credit/components";
 import { useAmortActions } from "../hooks/useAmortActions";
 import { useBusinessProfile } from "../hooks/useBusinessProfile";
+import { useCreditReferences } from "../hooks/useCreditReferences";
 
 function Eligibility_Overview() {
   const theme = useMantineTheme();
 
   const [days, setDays] = useState(7);
 
-  const [businessLoading, setBusinessLoading] = useState(true);
-
   const [editId, setEditId] = useState<number | null>(null);
 
   // Fetch Business
   const { business } = useBusinessProfile();
+  const { creditMap } = useCreditReferences();
 
   const {
     openForm,
     confirmDelete,
     entries,
-    loading: amortsLoading,
-  } = useAmortActions(setEditId, editId, business?.monthlyAverageIncome);
+    loading: businessLoading,
+  } = useAmortActions(setEditId, business, creditMap, editId);
 
   const KURTypeCounts = useKURTypeCounts(entries);
+  const KURHealthCounts = useKURHealthCounts(entries);
   const daysEntries = useKURDaysList(entries, days);
   // KUR Health Count
   // const KURHealthCount = useMemo()
@@ -128,25 +129,25 @@ function Eligibility_Overview() {
   const health_stats = [
     {
       label: "Healthy",
-      value: 20,
+      value: KURHealthCounts.healthy,
       color: theme.other.HealthStatus.healthy,
       bg: theme.other.HealthStatus.h_bg,
     },
     {
       label: "Warning",
-      value: 12,
+      value: KURHealthCounts.warning,
       color: theme.other.HealthStatus.warning,
       bg: theme.other.HealthStatus.w_bg,
     },
     {
       label: "Not Healthy",
-      value: 10,
+      value: KURHealthCounts.not_healthy,
       color: theme.other.HealthStatus.not_healthy,
       bg: theme.other.HealthStatus.nh_bg,
     },
   ];
 
-  if (businessLoading || amortsLoading) {
+  if (businessLoading) {
     return (
       <Container fluid>
         <Stack align="center" mt="xl" gap="sm">

@@ -3,10 +3,23 @@ export const calculateHealthStatus = (
   tenorMonth: number | undefined,
   monthlyAverageIncome: number | undefined,
 ): string | undefined => {
-  if (!totalInstallment || !tenorMonth || !monthlyAverageIncome)
+  console.log("calculateHealthStatus inputs:", {
+    totalInstallment,
+    tenorMonth,
+    monthlyAverageIncome,
+  });
+
+  if (!totalInstallment || !tenorMonth || !monthlyAverageIncome) {
+    console.log("Guard failed:", {
+      totalInstallment,
+      tenorMonth,
+      monthlyAverageIncome,
+    });
     return undefined;
+  }
 
   const healthRatio = totalInstallment / tenorMonth / monthlyAverageIncome;
+  console.log("healthRatio:", healthRatio);
 
   if (healthRatio <= 0.3) return "healthy";
   else if (healthRatio <= 0.5) return "warning";

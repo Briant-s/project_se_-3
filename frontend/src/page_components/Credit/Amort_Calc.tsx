@@ -51,9 +51,9 @@ function Amort_Calc() {
   const { creditMap } = useCreditReferences();
   const { openForm, confirmDelete, entries, loading } = useAmortActions(
     setEditId,
-    editId,
-    business?.monthlyAverageIncome,
+    business,
     creditMap,
+    editId,
   );
 
   const KURTypeCounts = useKURTypeCounts(entries);

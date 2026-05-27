@@ -91,7 +91,8 @@ async def delete_amort(amortID: int, user_id: str = Depends(get_current_user)):
 
 
 def clean_empty_strings(data: dict) -> dict:
-    return {k: v for k, v in data.items() if not (isinstance(v, str) and v == "")}
+    return {k: (None if isinstance(v, str) and v == "" else v) 
+            for k, v in data.items()}
 
 # Read Business Profile
 @app.get("/business-profile")
@@ -148,12 +149,15 @@ async def update_business_profile(entry: BusinessProfile, user_id: str = Depends
 
 # Get All Credit Reference Table
 @app.get("/credit-reference")
-async def get_credit_reference(user_id: str = Depends(get_current_user)):
+async def get_credit_reference():
     try:
         result = supabase.table("Credit").select("*").execute()
+        print("Credit data:", result.data)
         if not result.data:
             raise HTTPException(status_code=404, detail="No Credit Reference Table Found")
         return result.data
+    except HTTPException:
+        raise  # re-raise HTTP exceptions as-is
     except Exception as e:
         print("GET credit reference error:", str(e))
         raise HTTPException(status_code=500, detail=str(e))

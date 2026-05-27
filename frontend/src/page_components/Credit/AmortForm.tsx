@@ -22,26 +22,24 @@ function AmortForm({ onSubmit, initialValues, editId }: Props) {
     initialValues: initialValues ?? {
       title: "",
       tenorMonth: 0,
-      totalInstallment: 0,
       principalAmount: 0,
       loanType: "KUR_SUPER_MIKRO",
+      loanPurpose: "KI",
     },
     validate: {
       title: (value) =>
         value.length < 2 ? "Title must have at least 2 letters" : null,
       tenorMonth: (value) =>
         value <= 0 ? "Tenor Length must be greater than 0" : null,
-      totalInstallment: (value) =>
-        value <= 0 ? "Installment must be greater than 0" : null,
       principalAmount: (value) =>
         value <= 0 ? "Principal must be greater than 0" : null,
     },
   });
 
-  const resolve_creditID: Record<string, number> = {
-    KUR_SUPER_MIKRO: 1,
-    KUR_MIKRO: 2,
-    KUR_KECIL: 3,
+  const resolveCreditID: Record<string, Record<string, number>> = {
+    KUR_SUPER_MIKRO: { KI: 1, KMK: 4 },
+    KUR_MIKRO: { KI: 2, KMK: 5 },
+    KUR_KECIL: { KI: 3, KMK: 6 },
   };
 
   return (
@@ -51,9 +49,8 @@ function AmortForm({ onSubmit, initialValues, editId }: Props) {
           const entry: AmortEntry = {
             title: values.title,
             tenorMonth: values.tenorMonth,
-            totalInstallment: values.totalInstallment,
             principalAmount: values.principalAmount,
-            creditID: resolve_creditID[values.loanType],
+            creditID: resolveCreditID[values.loanType][values.loanPurpose],
           };
 
           onSubmit(entry, editId);
@@ -64,20 +61,6 @@ function AmortForm({ onSubmit, initialValues, editId }: Props) {
             {...form.getInputProps("title")}
             label="Calculation Name"
           />
-          <Group>
-            <NumberInput
-              {...form.getInputProps("totalInstallment")}
-              label="Total Installment"
-            />
-            <NumberInput
-              {...form.getInputProps("tenorMonth")}
-              label="Tenor Months"
-            />
-            <NumberInput
-              {...form.getInputProps("principalAmount")}
-              label="Principal Amount"
-            />
-          </Group>
           <Stack>
             <Text size="sm" fw={700}>
               Select KUR Type
@@ -91,6 +74,28 @@ function AmortForm({ onSubmit, initialValues, editId }: Props) {
               ]}
             />
           </Stack>
+          <Stack>
+            <Text size="sm" fw={700}>
+              Select Loan Purpose
+            </Text>
+            <SegmentedControl
+              {...form.getInputProps("loanPurpose")}
+              data={[
+                { label: "Kredit Investasi", value: "KI" },
+                { label: "Kredit Modal Kerja", value: "KMK" },
+              ]}
+            />
+          </Stack>
+          <Group>
+            <NumberInput
+              {...form.getInputProps("principalAmount")}
+              label="Principal Amount"
+            />
+            <NumberInput
+              {...form.getInputProps("tenorMonth")}
+              label="Tenor Months"
+            />
+          </Group>
         </Stack>
         <Button type="submit" fullWidth mt="md">
           Submit

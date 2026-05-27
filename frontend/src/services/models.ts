@@ -17,6 +17,7 @@ export interface AmortFormValues {
   totalInstallment: number;
   principalAmount: number;
   loanType: "KUR_SUPER_MIKRO" | "KUR_MIKRO" | "KUR_KECIL";
+  loanPurpose: "KI" | "KMK";
 }
 
 export interface BusinessProfile {
@@ -52,8 +53,8 @@ export interface BusinessProfileForm {
   businessType: string | null;
   totalEmployees: number | "";
   storeType: string | null;
-  monthlyAverageIncome: number | "";
-  monthlyAverageProfitLoss: number | "";
+  monthlyAverageIncome: number | null;
+  monthlyAverageProfitLoss: number | null;
   businessAssets: string;
   isOtherKredit: string | null;
   umkmUnlockLevel: string | null;

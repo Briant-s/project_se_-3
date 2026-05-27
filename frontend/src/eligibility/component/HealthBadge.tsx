@@ -1,15 +1,24 @@
 import { Badge, useMantineTheme } from "@mantine/core";
 import { HiOutlineCreditCard } from "react-icons/hi";
 
-function HealthBadge({ type }: { type: number }) {
+export type KurBadgeType = "healthy" | "warning" | "not_healthy";
+
+interface KurTypeBadgeProps {
+  type: KurBadgeType | string; // Allows the strict types, but accepts string for API fallbacks
+}
+
+function HealthBadge({ type }: KurTypeBadgeProps) {
   const theme = useMantineTheme();
-  const map: Record<number, { color: string; label: string }> = {
-    1: { color: theme.other.KURColors.supermikro, label: "Super Mikro KI" },
-    2: { color: theme.other.KURColors.mikro, label: "Mikro KI" },
-    3: { color: theme.other.KURColors.kecil, label: "Kecil KI" },
-    4: { color: theme.other.KURColors.supermikro, label: "Super Mikro KMK" },
-    5: { color: theme.other.KURColors.mikro, label: "Mikro KMK" },
-    6: { color: theme.other.KURColors.kecil, label: "Kecil KMK" },
+  const map: Record<string, { color: string; label: string }> = {
+    healthy: {
+      color: theme.other.HealthStatus.healthy,
+      label: "Healthy",
+    },
+    warning: { color: theme.other.HealthStatus.warning, label: "Warning" },
+    not_healthy: {
+      color: theme.other.HealthStatus.not_healthy,
+      label: "Not Healthy",
+    },
   };
 
   const { color, label } = map[type] ?? { color: "gray", label: "Unknown" };

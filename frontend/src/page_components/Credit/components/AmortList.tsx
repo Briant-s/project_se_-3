@@ -17,7 +17,7 @@ import {
   HiOutlineReply,
 } from "react-icons/hi";
 import Th from "./Th";
-import { KURBadge } from "../../../eligibility/component";
+import { HealthBadge, KURBadge } from "../../../eligibility/component";
 import { useNavigate } from "react-router-dom";
 
 interface AmortListProps {
@@ -41,7 +41,9 @@ function AmortList({
       <Table.Td>
         <KURBadge type={entry.creditID ?? 0} />
       </Table.Td>
-      <Table.Td>{entry.healthStatus ?? null}</Table.Td>
+      <Table.Td>
+        <HealthBadge type={entry.health_status} />
+      </Table.Td>
       <Table.Td>{entry.tenorMonth}</Table.Td>
       {!compact && <Table.Td>{entry.totalInstallment}</Table.Td>}
       {!compact && <Table.Td>{entry.principalAmount}</Table.Td>}
