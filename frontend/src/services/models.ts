@@ -8,6 +8,7 @@ export interface AmortEntry {
   tenorMonth?: number;
   totalInstallment?: number;
   principalAmount?: number;
+  health_status?: string;
 }
 
 export interface AmortFormValues {

@@ -19,9 +19,9 @@ import { useState, useEffect } from "react";
 import type { BusinessProfile } from "../services/models";
 import { getBusinessProfile } from "../services/businessProfileService";
 import { KURCard } from "./component";
-import { useKURDaysList, useKURTypeCounts } from "./hooks";
+import { useKURDaysList, useKURTypeCounts } from "../hooks";
 import { AmortList } from "../page_components/Credit/components";
-import { useAmortActions } from "./hooks/useAmortActions";
+import { useAmortActions } from "../hooks/useAmortActions";
 
 function Eligibility_Overview() {
   const theme = useMantineTheme();

@@ -41,7 +41,7 @@ function AmortList({
       <Table.Td>
         <KURBadge type={entry.creditID ?? 0} />
       </Table.Td>
-      <Table.Td>NULL</Table.Td>
+      <Table.Td>{entry.healthStatus ?? null}</Table.Td>
       <Table.Td>{entry.tenorMonth}</Table.Td>
       {!compact && <Table.Td>{entry.totalInstallment}</Table.Td>}
       {!compact && <Table.Td>{entry.principalAmount}</Table.Td>}

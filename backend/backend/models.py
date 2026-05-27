@@ -12,6 +12,7 @@ class AmortEntry(BaseModel):
     tenorMonth: int | None = None
     totalInstallment: float | None = None
     principalAmount: float | None = None
+    health_status: str | None = None
     
 class BusinessProfile(BaseModel):
     businessID: int | None = None

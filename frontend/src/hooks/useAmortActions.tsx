@@ -5,15 +5,19 @@ import {
   createAmortEntry,
   deleteAmortEntry,
   getAmortEntries,
-} from "../../services/amortService";
+} from "../services/amortService";
 import { useAmortModal } from "./useAmortModal";
-import type { AmortEntry } from "../../services/models";
+import type { AmortEntry } from "../services/models";
 import { useEffect, useState } from "react";
+import { calculateHealthStatus } from "../utils/amort/health";
+import { useBusinessProfile } from "./useBusinessProfile";
 
 export function useAmortActions(
   setEditId: (id: number | null) => void,
+  monthlyAverageIncome: number | undefined,
   editId: number | null,
 ) {
+  const { business } = useBusinessProfile();
   const [entries, setEntries] = useState<AmortEntry[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -34,11 +38,22 @@ export function useAmortActions(
   }, []);
 
   async function handleSubmit(entry: AmortEntry, editId: number | null) {
+    const healthStatus = calculateHealthStatus(
+      entry.totalInstallment,
+      entry.tenorMonth,
+      monthlyAverageIncome,
+    );
+
+    const finalEntry = {
+      ...entry,
+      healthStatus,
+    };
+
     if (editId !== null) {
-      await updateAmortEntry(editId, entry);
+      await updateAmortEntry(editId, finalEntry);
       setEditId(null);
     } else {
-      await createAmortEntry(entry);
+      await createAmortEntry(finalEntry);
     }
     modals.closeAll();
     fetchEntries();

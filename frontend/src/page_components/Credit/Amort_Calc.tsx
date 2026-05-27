@@ -32,13 +32,13 @@ import {
   deleteAmortEntry,
 } from "../../services/amortService";
 import { AmortList } from "./components";
-import { useAmortModal, useKURTypeCounts } from "../../eligibility/hooks";
+import { useAmortModal, useKURTypeCounts } from "../../hooks";
 
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import AmortForm from "./AmortForm";
 import { DonutChart } from "@mantine/charts";
-import { useAmortActions } from "../../eligibility/hooks/useAmortActions";
+import { useAmortActions } from "../../hooks/useAmortActions";
 
 function Amort_Calc() {
   const theme = useMantineTheme();

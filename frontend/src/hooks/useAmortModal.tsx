@@ -1,6 +1,6 @@
 import { modals } from "@mantine/modals";
-import type { AmortEntry } from "../../services/models";
-import AmortForm from "../../page_components/Credit/AmortForm";
+import type { AmortEntry } from "../services/models";
+import AmortForm from "../page_components/Credit/AmortForm";
 
 interface Props {
   onSubmit: (entry: AmortEntry, editId: number | null) => Promise<void> | void;
