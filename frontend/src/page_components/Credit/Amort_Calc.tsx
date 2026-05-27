@@ -38,15 +38,12 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import AmortForm from "./AmortForm";
 import { DonutChart } from "@mantine/charts";
+import { useAmortActions } from "../../eligibility/hooks/useAmortActions";
 
 function Amort_Calc() {
   const theme = useMantineTheme();
-  const [entries, setEntries] = useState<AmortEntry[]>([]);
   const [editId, setEditId] = useState<number | null>(null);
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
-  const KURTypeCounts = useKURTypeCounts(entries);
 
   const CREDIT_TYPE: Record<number, string> = {
     1: "KUR Super Mikro",
@@ -54,61 +51,12 @@ function Amort_Calc() {
     3: "KUR Kecil",
   };
 
-  const fetchEntries = async () => {
-    setLoading(true);
-    try {
-      const result = await getAmortEntries();
-      setEntries(result);
-    } catch (error) {
-      console.error("Failed to load amort entries:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { openForm, confirmDelete, entries, loading } = useAmortActions(
+    setEditId,
+    editId,
+  );
 
-  useEffect(() => {
-    fetchEntries();
-  }, []);
-
-  async function handleSubmit(entry: AmortEntry, editId: number | null) {
-    if (editId !== null) {
-      await updateAmortEntry(editId, entry);
-      setEditId(null);
-    } else {
-      await createAmortEntry(entry);
-    }
-    modals.closeAll();
-    fetchEntries();
-  }
-
-  const { openForm } = useAmortModal({
-    onSubmit: handleSubmit,
-    setEditId: setEditId,
-  });
-
-  async function handleDelete(amort_id: number) {
-    try {
-      await deleteAmortEntry(amort_id);
-      await fetchEntries();
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  function confirmDelete(amort_id: number, title: string) {
-    modals.openConfirmModal({
-      title: <Text fw={700}>Loan Deletion Warning</Text>,
-      children: (
-        <Text size="sm">
-          Are you sure you want to delete <b>{title}</b>? This action can't be
-          reversed.
-        </Text>
-      ),
-      labels: { confirm: "Delete", cancel: "Cancel" },
-      confirmProps: { color: "red" },
-      onConfirm: () => handleDelete(amort_id),
-    });
-  }
+  const KURTypeCounts = useKURTypeCounts(entries);
 
   // User KUR Amount
   const KURAmount = [

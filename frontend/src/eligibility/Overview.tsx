@@ -4,7 +4,6 @@ import {
   Card,
   Container,
   Group,
-  Paper,
   ScrollArea,
   Select,
   SimpleGrid,
@@ -16,23 +15,23 @@ import {
 } from "@mantine/core";
 import { HiOutlineReply, HiPlus } from "react-icons/hi";
 import { BusinessCard } from "../components";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import type { BusinessProfile } from "../services/models";
 import { getBusinessProfile } from "../services/businessProfileService";
-import { getAmortsCutoff } from "../services/creditService";
-import type { AmortEntry } from "../services/models";
-import { KURBadge, KURCard } from "./component";
-import { getAmortEntries } from "../services/amortService";
+import { KURCard } from "./component";
+import { useKURDaysList, useKURTypeCounts } from "./hooks";
+import { AmortList } from "../page_components/Credit/components";
+import { useAmortActions } from "./hooks/useAmortActions";
 
 function Eligibility_Overview() {
   const theme = useMantineTheme();
   const [business, setBusiness] = useState<BusinessProfile | null>();
 
   const [days, setDays] = useState(7);
-  const [entries, setEntries] = useState<AmortEntry[]>([]);
 
   const [businessLoading, setBusinessLoading] = useState(true);
-  const [amortsLoading, setAmortsLoading] = useState(true);
+
+  const [editId, setEditId] = useState<number | null>(null);
 
   // Fetch Business
   useEffect(() => {
@@ -50,69 +49,17 @@ function Eligibility_Overview() {
     fetchBusiness();
   }, []);
 
-  // Fetch Amort Entries
-  const fetchEntries = async () => {
-    setLoading(true);
-    try {
-      const result = await getAmortEntries();
-      setEntries(result);
-    } catch (error) {
-      console.error("Failed to load amort entries:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    openForm,
+    confirmDelete,
+    entries,
+    loading: amortsLoading,
+  } = useAmortActions(setEditId, editId);
 
-  useEffect(() => {
-    fetchEntries();
-  }, []);
-
-  const KUR_TYPE_MAP = {
-    1: "supermikro",
-    2: "mikro",
-    3: "kecil",
-    4: "supermikro",
-    5: "mikro",
-    6: "kecil",
-  };
-
-  // Days Entries
-  const daysEntries = useMemo(() => {
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - days);
-    return entries.filter((entry) => new Date(entry.created_at) >= cutoff);
-  }, [entries, days]);
-
-  //  KUR Type Count
-  const KURTypeCounts = useMemo(() =>
-    entries.reduce(
-      (acc, entry) => {
-        const type = KUR_TYPE_MAP[entry.creditID];
-        if (type) acc[type] = (acc[type] || 0) + 1;
-        return acc;
-      },
-      { supermikro: 0, mikro: 0, kecil: 0 },
-    ),
-  );
-
+  const KURTypeCounts = useKURTypeCounts(entries);
+  const daysEntries = useKURDaysList(entries, days);
   // KUR Health Count
   // const KURHealthCount = useMemo()
-
-  // Fetch days
-  useEffect(() => {
-    const fetchAmortsCutoff = async () => {
-      setAmortsLoading(true); // <-- Nyalakan sebelum fetch
-      try {
-        const result = await getAmortsCutoff(days);
-        setEntries(result);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setAmortsLoading(false); // <-- Matikan setelah selesai
-      }
-    };
-    fetchAmortsCutoff();
-  }, [days]);
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return "";
@@ -130,19 +77,19 @@ function Eligibility_Overview() {
   const KUR_stats = [
     {
       label: "KUR Super Mikro",
-      value: 20,
+      value: KURTypeCounts.supermikro,
       background_color: theme.other.KURColors.sm_bg,
       text_color: theme.other.KURColors.supermikro,
     },
     {
       label: "KUR Mikro",
-      value: 12,
+      value: KURTypeCounts.mikro,
       background_color: theme.other.KURColors.m_bg,
       text_color: theme.other.KURColors.mikro,
     },
     {
       label: "KUR Kecil",
-      value: 8,
+      value: KURTypeCounts.kecil,
       background_color: theme.other.KURColors.k_bg,
       text_color: theme.other.KURColors.kecil,
     },
@@ -211,51 +158,6 @@ function Eligibility_Overview() {
       bg: theme.other.HealthStatus.nh_bg,
     },
   ];
-
-  const amortRows = entries.map((entry) => (
-    <Paper
-      key={entry.amortID}
-      p="md"
-      radius={0}
-      bg="transparent"
-      style={{
-        borderBottom: "1px solid gray",
-      }}
-    >
-      <Group justify="space-between">
-        <Stack gap="0.05rem">
-          <Group>
-            <Text size="md">{entry.title}</Text>
-            <KURBadge type={entry.creditID ?? 0} />
-          </Group>
-          <Text size="xs" c="dimmed">
-            {formatDate(entry.created_at)}
-          </Text>
-        </Stack>
-        <Stack gap="0.05rem">
-          <Text>{entry.totalInstallment}</Text>
-          <Text size="xs" c="dimmed">
-            Total Installment
-          </Text>
-        </Stack>
-        <Stack gap="0.05rem">
-          <Text size="md">{entry.principalAmount}</Text>
-          <Text size="xs" c="dimmed">
-            Principal Amount
-          </Text>
-        </Stack>
-        <Stack gap="0.05rem">
-          <Text size="md">{entry.tenorMonth}</Text>
-          <Text size="xs" c="dimmed">
-            Tenor Months
-          </Text>
-        </Stack>
-        <ActionIcon>
-          <HiOutlineReply style={{ transform: "scaleX(-1)" }} />
-        </ActionIcon>
-      </Group>
-    </Paper>
-  ));
 
   if (businessLoading || amortsLoading) {
     return (
@@ -359,13 +261,19 @@ function Eligibility_Overview() {
                         label="Sort by Date Created"
                         placeholder="Pick Day Range"
                         defaultValue="7"
+                        onChange={(val) => setDays(parseInt(val ?? "0"))}
                         data={[
                           { value: "1", label: "Last 1 Day" },
                           { value: "3", label: "Last 3 Day" },
                           { value: "7", label: "Last 7 Day" },
+                          { value: "0", label: "All Time" },
                         ]}
                       />
-                      <Button bg={theme.primaryColor} leftSection={<HiPlus />}>
+                      <Button
+                        bg={theme.primaryColor}
+                        leftSection={<HiPlus />}
+                        onClick={() => openForm()}
+                      >
                         New Calculation
                       </Button>
                     </Group>
@@ -377,7 +285,12 @@ function Eligibility_Overview() {
                           Belum ada data. Tambahkan pinjaman baru.
                         </Text>
                       ) : (
-                        amortRows
+                        <AmortList
+                          entries={daysEntries}
+                          openForm={openForm}
+                          confirmDelete={confirmDelete}
+                          compact
+                        />
                       )}
                     </ScrollArea>
                   </Card>
@@ -403,6 +316,3 @@ function Eligibility_Overview() {
 }
 
 export default Eligibility_Overview;
-function setLoading(arg0: boolean) {
-  throw new Error("Function not implemented.");
-}
