@@ -1,3 +1,11 @@
+export interface Asset {
+  assetsID?: number;
+  businessID?: number;
+  assetsName?: string;
+  assetsType?: "Usaha" | "Pribadi";
+  assetsValue?: number;
+}
+
 export interface AmortEntry {
   amortID?: number;
   user_id?: number;
@@ -55,7 +63,6 @@ export interface BusinessProfileForm {
   storeType: string | null;
   monthlyAverageIncome: number | null;
   monthlyAverageProfitLoss: number | null;
-  businessAssets: string;
   isOtherKredit: string | null;
   umkmUnlockLevel: string | null;
   businessContactNumber: string;

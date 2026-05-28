@@ -1,12 +1,12 @@
 import os
 from dotenv import load_dotenv
 
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from supabase import create_client, Client
 
-from models import AmortEntry, BusinessProfile, BusinessProposalData, Competitors, Products, AIProposal
+from models import AmortEntry, BusinessProfile, BusinessProposalData, Competitors, Products, AIProposal, Assets
 
 from auth import get_current_user
 
@@ -612,7 +612,80 @@ async def update_business_profile(entry: BusinessProfile, user_id: str = Depends
     except Exception as e:
         print("Business profile PUT error:", str(e))
         raise HTTPException(status_code=500, detail=str(e))
-    
+
+
+# Get Assets for Business Profile
+@app.get("/assets")
+async def get_assets(user_id: str = Depends(get_current_user)):
+    try:
+        # Get businessID from BusinessProfile
+        business = supabase.table("BusinessProfile").select("businessID").eq("user_id", user_id).execute()
+        if not business.data:
+            return []
+        
+        businessID = business.data[0]["businessID"]
+        result = supabase.table("Assets").select("*").eq("businessID", businessID).execute()
+        return result.data if result.data else []
+    except Exception as e:
+        print("GET assets error:", str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# Create Asset
+@app.post("/assets")
+async def create_asset(asset: Assets, request: Request, user_id: str = Depends(get_current_user)):
+    try:
+        raw_body = await request.json()
+        # print(f"RAW JSON FROM FRONTEND: {raw_body}")
+        businessID = await get_business_id(user_id)
+        if businessID is None:
+            raise HTTPException(status_code=404, detail="Business Profile not found. Please create a business profile first.")
+
+        # data = asset.model_dump(exclude={"assetsID", "businessID"}, exclude_none=True)
+        # data = asset.model_dump(exclude={"assetsID", "businessID"})
+        # data["businessID"] = businessID
+        data = {
+            "businessID": businessID,
+            "assetsName": raw_body.get("assetsName"),
+            "assetsType": raw_body.get("assetsType"),
+            # Paksa konversi ke float di sini agar Supabase tidak menolak
+            "assetsValue": float(raw_body.get("assetsValue", 0)) 
+        }
+
+        # print(f"Inserting asset data: {data}")
+        result = supabase.table("Assets").insert(data).execute()
+
+        if not result.data:
+            raise HTTPException(status_code=500, detail="Failed to insert asset into database")
+
+        return result.data[0]
+    except HTTPException:
+        raise
+    except Exception as e:
+        print("POST asset error:", str(e))
+        raise HTTPException(status_code=500, detail=f"Failed to save asset: {str(e)}")
+
+
+# Delete Asset
+@app.delete("/assets/{assetsID}")
+async def delete_asset(assetsID: str, user_id: str = Depends(get_current_user)):
+    try:
+        # Verify asset belongs to user's business
+        business = supabase.table("BusinessProfile").select("businessID").eq("user_id", user_id).execute()
+        if not business.data:
+            raise HTTPException(status_code=404, detail="Business Profile not found")
+        
+        businessID = business.data[0]["businessID"]
+        asset = supabase.table("Assets").select("*").eq("assetsID", assetsID).eq("businessID", businessID).execute()
+        if not asset.data:
+            raise HTTPException(status_code=404, detail="Asset not found or unauthorized")
+        
+        supabase.table("Assets").delete().eq("assetsID", assetsID).execute()
+        return {"message": f"Asset #{assetsID} successfully deleted"}
+    except Exception as e:
+        print("DELETE asset error:", str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
     
     
 # Query Amort based On Cutoff

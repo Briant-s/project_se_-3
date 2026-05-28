@@ -30,12 +30,19 @@ class BusinessProfile(BaseModel):
     storeType: str | None = None
     monthlyAverageIncome: float | None = None
     monthlyAverageProfitLoss: float | None = None
-    businessAssets: str | None = None
+    # businessAssets: str | None = None
     isOtherKredit: str | None = None
     umkmUnlockLevel: str | None = None
     businessContactNumber: str | None = None
     businessEmail: str | None = None
     isProfitable: bool | None = None
+
+class Assets(BaseModel):
+    assetsID: int | None = None
+    businessID: int | None = None
+    assetsName: str | None = None
+    assetsType: Literal["Usaha", "Pribadi"] | None = None
+    assetsValue: float | None = None
 
 class Credit(BaseModel):
     creditID: int

@@ -13,18 +13,27 @@ import {
   SimpleGrid,
   SegmentedControl,
   Loader,
+  Badge,
+  Table,
+  ActionIcon,
 } from "@mantine/core";
 import { useState, useEffect } from "react";
-import { HiArrowRight, HiArrowLeft, HiCheck } from "react-icons/hi2";
+import { HiArrowRight, HiArrowLeft, HiCheck, HiTrash } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
 import {
   createBusinessProfile,
   getBusinessProfile,
   updateBusinessProfile,
 } from "../../services/businessProfileService";
+import {
+  getAssets,
+  createAsset,
+  deleteAsset,
+} from "../../services/assetService";
 import type {
   BusinessProfileForm,
   BusinessProfile,
+  Asset,
 } from "../../services/models";
 
 function ProfileQuiz() {
@@ -57,7 +66,6 @@ function ProfileQuiz() {
     businessSector: formData.businessSector,
     businessType: formData.businessType,
     storeType: formData.storeType,
-    businessAssets: formData.businessAssets,
     isOtherKredit: formData.isOtherKredit,
     umkmUnlockLevel: formData.umkmUnlockLevel,
     businessContactNumber: formData.businessContactNumber,
@@ -78,7 +86,6 @@ function ProfileQuiz() {
     storeType: null,
     monthlyAverageIncome: "",
     monthlyAverageProfitLoss: "",
-    businessAssets: "",
     isOtherKredit: null,
     umkmUnlockLevel: null,
     businessContactNumber: "",
@@ -88,10 +95,20 @@ function ProfileQuiz() {
     businessAgeMonths: "" as number | "",
   });
 
+  // State untuk assets
+  const [assets, setAssets] = useState<Asset[]>([]);
+  const [businessID, setBusinessID] = useState<string | number | null>(null);
+  const [assetForm, setAssetForm] = useState({
+    assetsName: "",
+    assetsType: null as "Usaha" | "Pribadi" | null,
+    assetsValue: null as number | null,
+  });
+
   // 2. State untuk menyimpan pesan error
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   const [profileExists, setProfileExists] = useState(false);
+  const [isAddingAsset, setIsAddingAsset] = useState(false);
 
   const prevStep = () =>
     setActive((current) => (current > 0 ? current - 1 : current));
@@ -101,6 +118,10 @@ function ProfileQuiz() {
       try {
         const profile = await getBusinessProfile();
         if (!profile) return;
+
+        if (profile.businessID) {
+          setBusinessID(profile.businessID);
+        }
 
         setFormData({
           businessName: profile.businessName || "",
@@ -120,7 +141,6 @@ function ProfileQuiz() {
           storeType: profile.storeType || null,
           monthlyAverageIncome: profile.monthlyAverageIncome ?? "",
           monthlyAverageProfitLoss: profile.monthlyAverageProfitLoss ?? "",
-          businessAssets: profile.businessAssets || "",
           isOtherKredit: profile.isOtherKredit || null,
           umkmUnlockLevel: profile.umkmUnlockLevel || null,
           businessContactNumber: profile.businessContactNumber || "",
@@ -134,6 +154,10 @@ function ProfileQuiz() {
             profile.businessAge != null ? profile.businessAge % 12 : "",
         });
         setProfileExists(true);
+
+        // Load assets from Supabase
+        const loadedAssets = await getAssets();
+        setAssets(loadedAssets);
       } catch (error) {
         console.error("Unable to load profile:", error);
       } finally {
@@ -193,8 +217,6 @@ function ProfileQuiz() {
         newErrors.monthlyAverageIncome = "Please select a range";
       if (!formData.monthlyAverageProfitLoss)
         newErrors.monthlyAverageProfitLoss = "Please select a range";
-      if (!formData.businessAssets)
-        newErrors.businessAssets = "This field is required";
       if (!formData.isOtherKredit)
         newErrors.isOtherKredit = "Please select an option";
       if (formData.isProfitable === null)
@@ -252,12 +274,7 @@ function ProfileQuiz() {
         formData.storeType,
         formData.monthlyAverageIncome,
         formData.monthlyAverageProfitLoss,
-        formData.businessAssets,
         formData.isOtherKredit,
-        // formData.businessName, formData.businessAge, formData.ownerName,
-        // formData.businessLocation, formData.businessType, formData.businessSector,
-        // formData.totalEmployees, formData.storeType, formData.monthlyAverageIncome,
-        // formData.monthlyAverageProfitLoss, formData.businessAssets, formData.isOtherKredit
       ];
       // 2. Hitung berapa banyak field yang sudah terisi
       const filled = fields.filter(
@@ -293,6 +310,66 @@ function ProfileQuiz() {
         delete nextErrors[field];
         return nextErrors;
       });
+    }
+  };
+
+  // Fungsi untuk tambah asset
+  const handleAddAsset = async () => {
+    if (!assetForm.assetsName || !assetForm.assetsType || assetForm.assetsValue === null) {
+      alert("Please fill in all asset fields");
+      return;
+    }
+
+    if (!profileExists) {
+      alert("Please save your business profile first before adding assets.");
+      return;
+    }
+
+    setIsAddingAsset(true);
+    try {
+      const newAsset: Asset = {
+        assetsID: 0,
+        businessID: businessID,
+        assetsName: assetForm.assetsName,
+        assetsType: assetForm.assetsType,
+        // assetsValue: assetForm.assetsValue,
+        assetsValue: Number(assetForm.assetsValue),
+      };
+
+      console.log("Creating asset with data:", newAsset);
+
+      const savedAsset = await createAsset(newAsset);
+      setAssets([...assets, savedAsset]);
+      setAssetForm({
+        assetsName: "",
+        assetsType: null,
+        assetsValue: null,
+      });
+      alert("Asset added successfully!");
+    } catch (error) {
+      console.error("Failed to add asset:", error);
+      const errorMsg = error instanceof Error ? error.message : "Failed to add asset";
+      alert(`Error: ${errorMsg}`);
+    } finally {
+      setIsAddingAsset(false);
+    }
+  };
+
+  // Fungsi untuk hapus asset
+  const handleDeleteAsset = async (index: number) => {
+    const asset = assets[index];
+    if (!asset.assetsID) {
+      // Jika asset belum tersimpan (tidak ada ID), hanya hapus dari state
+      setAssets(assets.filter((_, i) => i !== index));
+      return;
+    }
+
+    try {
+      await deleteAsset(String(asset.assetsID));
+      setAssets(assets.filter((_, i) => i !== index));
+    } catch (error) {
+      console.error("Failed to delete asset:", error);
+      alert("Failed to delete asset. Please try again.");
     }
   };
 
@@ -564,16 +641,115 @@ function ProfileQuiz() {
                     </Text>
                   )}
                 </Stack>
-                <TextInput
-                  label="Business Assets"
-                  placeholder="e.g. Land, Vehicle, Tools"
-                  withAsterisk
-                  value={formData.businessAssets}
-                  onChange={(e) =>
-                    updateForm("businessAssets", e.currentTarget.value)
-                  }
-                  error={errors.businessAssets}
-                />
+                {/* Assets Section */}
+                <Stack gap={4}>
+                  <Text size="sm" fw={500}>
+                    Business Assets
+                  </Text>
+                  <Stack gap="md" p="md" style={{ border: "1px solid #ddd", borderRadius: "8px" }}>
+                    <SimpleGrid cols={{ base: 1, sm: 2 }}>
+                      <TextInput
+                        label="Asset Name"
+                        placeholder="e.g. Land, Vehicle, Tools"
+                        value={assetForm.assetsName}
+                        onChange={(e) =>
+                          setAssetForm({
+                            ...assetForm,
+                            assetsName: e.currentTarget.value,
+                          })
+                        }
+                      />
+                      <Select
+                        label="Asset Type"
+                        placeholder="Select Type"
+                        data={[
+                          { value: "Usaha", label: "Business" },
+                          { value: "Pribadi", label: "Personal" },
+                        ]}
+                        value={assetForm.assetsType}
+                        onChange={(val) =>
+                          setAssetForm({
+                            ...assetForm,
+                            assetsType: val as "Usaha" | "Pribadi" | null,
+                          })
+                        }
+                      />
+                    </SimpleGrid>
+                    <NumberInput
+                      label="Asset Value"
+                      placeholder="0"
+                      min={0}
+                      prefix="Rp "
+                      thousandSeparator="."
+                      decimalSeparator=","
+                      decimalScale={2}
+                      hideControls
+                      value={assetForm.assetsValue ?? ""}
+                      onChange={(val) =>
+                        setAssetForm({
+                          ...assetForm,
+                          assetsValue: val !== "" ? Number(val) : null
+                          // assetsValue: typeof val === 'number' ? val : null,
+                        })
+                      }
+                    />
+                    <Button onClick={handleAddAsset} variant="light" loading={isAddingAsset}>
+                      Add Asset
+                    </Button>
+                  </Stack>
+
+                  {/* Assets List */}
+                  {assets.length > 0 && (
+                    <Table striped highlightOnHover>
+                      <Table.Thead>
+                        <Table.Tr>
+                          <Table.Th>Asset Name</Table.Th>
+                          <Table.Th>Type</Table.Th>
+                          <Table.Th>Value</Table.Th>
+                          <Table.Th></Table.Th>
+                        </Table.Tr>
+                      </Table.Thead>
+                      <Table.Tbody>
+                        {assets.map((asset, index) => (
+                          <Table.Tr key={index}>
+                            <Table.Td>{asset.assetsName}</Table.Td>
+                            
+                            <Table.Td>
+                              {/* Tambahkan logika dinamis pada properti color */}
+                              <Badge 
+                                size="sm" 
+                                color={asset.assetsType === "Usaha" ? "blue" : "teal"}
+                                variant="light"
+                              >
+                                {asset.assetsType === "Usaha" ? "Business" : "Personal"}
+                              </Badge>
+                            </Table.Td>
+                            {/*<Table.Td>
+                              <Badge size="sm">
+                                {asset.assetsType === "Usaha"
+                                  ? "Business"
+                                  : "Personal"}
+                              </Badge>
+                            </Table.Td>*/}
+                            <Table.Td>
+                              Rp {Number(asset.assetsValue).toLocaleString("id-ID")}
+                            </Table.Td>
+                            <Table.Td>
+                              <ActionIcon
+                                size="sm"
+                                color="red"
+                                variant="light"
+                                onClick={() => handleDeleteAsset(index)}
+                              >
+                                <HiTrash style={{ width: "16px", height: "16px" }} />
+                              </ActionIcon>
+                            </Table.Td>
+                          </Table.Tr>
+                        ))}
+                      </Table.Tbody>
+                    </Table>
+                  )}
+                </Stack>
                 <Select
                   label="Existing Loans?"
                   placeholder="Select Status"
