@@ -13,6 +13,10 @@ class AmortEntry(BaseModel):
     totalInstallment: float | None = None
     principalAmount: float | None = None
     health_status: str | None = None
+    totalInterest: float | None = None
+    dbr: float | None = None
+    pmt: float | None = None
+    isFeasible: bool | None = None
     
 class BusinessProfile(BaseModel):
     businessID: int | None = None

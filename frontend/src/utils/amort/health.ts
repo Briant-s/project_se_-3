@@ -25,3 +25,15 @@ export const calculateHealthStatus = (
   else if (healthRatio <= 0.5) return "warning";
   else return "not_healthy";
 };
+
+export const isFeasible = (
+  pmt?: number,
+  monthlyAverageIncome?: number,
+): boolean => {
+  if (!pmt || !monthlyAverageIncome || monthlyAverageIncome <= 0) {
+    return false;
+  }
+
+  const dbrPercentage = (pmt / monthlyAverageIncome) * 100;
+  return dbrPercentage <= 40;
+};

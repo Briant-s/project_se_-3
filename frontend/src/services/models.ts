@@ -17,6 +17,10 @@ export interface AmortEntry {
   totalInstallment?: number;
   principalAmount?: number;
   health_status?: string;
+  totalInterest?: number;
+  dbr?: number;
+  pmt?: number;
+  isFeasible?: boolean;
 }
 
 export interface AmortFormValues {
@@ -159,3 +163,17 @@ export type BusinessProposalInput = Omit<
   BusinessProposal,
   "proposalID" | "user_id" | "businessID" | "dateGenerated" | "status"
 >;
+
+export interface AmortizationChartData {
+  month: string;
+  income: number;
+  principalPaid: number;
+  interestPaid: number;
+  remainingBalance: number;
+  installment: number; // Added for tooltips
+}
+
+export interface AmortizationChartProps {
+  data: AmortizationChartData[];
+  isFeasible: boolean; // Used to color the bars red or blue
+}
