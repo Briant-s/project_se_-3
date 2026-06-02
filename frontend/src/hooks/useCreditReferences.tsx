@@ -21,18 +21,20 @@ export const useCreditReferences = () => {
     fetch();
   }, []);
 
-  // index by creditID for easy lookup
-  const creditMap = useMemo(
-    () =>
-      creditReferences.reduce(
-        (acc, credit) => {
-          acc[credit.creditID] = credit;
-          return acc;
-        },
-        {} as Record<number, Credit>,
-      ),
-    [creditReferences],
-  );
+  const { creditMap, creditMapByType } = useMemo(() => {
+    const mapById: Record<number, Credit> = {};
+    const mapByType: Record<string, Credit> = {};
 
-  return { creditReferences, creditMap, loading };
+    creditReferences.forEach((credit) => {
+      // 1. Original map for backward compatibility (by ID)
+      mapById[credit.creditID] = credit;
+
+      // 2. New map for dynamic form validations (by "supermikro-ki")
+      mapByType[credit.creditType] = credit;
+    });
+
+    return { creditMap: mapById, creditMapByType: mapByType };
+  }, [creditReferences]);
+
+  return { creditReferences, creditMap, creditMapByType, loading };
 };
