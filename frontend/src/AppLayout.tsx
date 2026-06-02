@@ -9,6 +9,7 @@ import {
   HiClipboardDocumentCheck,
   HiIdentification,
   HiClipboardDocumentList,
+  HiDocumentText,
 } from "react-icons/hi2";
 
 import { useDisclosure } from "@mantine/hooks";
@@ -60,8 +61,8 @@ function AppLayout() {
           path: "eligibility-overview",
         },
         {
-          icon: HiClipboard,
-          label: "Eligibility Quiz",
+          icon: HiDocumentText,
+          label: "Available KUR Types",
           path: "eligibility-quiz",
         },
         {
