@@ -29,7 +29,14 @@ export function useAmortActions(
     setLoading(true);
     try {
       const result = await getAmortEntries();
-      setEntries(result);
+
+      const sortedResult = result.sort((a, b) => {
+        const dateA = new Date(a.created_at || 0).getTime();
+        const dateB = new Date(b.created_at || 0).getTime();
+
+        return dateB - dateA;
+      });
+      setEntries(sortedResult);
     } catch (error) {
       console.error("Failed to load amort entries:", error);
     } finally {

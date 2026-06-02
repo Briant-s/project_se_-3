@@ -43,6 +43,11 @@ import { useBusinessProfile } from "../../hooks/useBusinessProfile";
 import { useCreditReferences } from "../../hooks/useCreditReferences";
 import { useLoanSummaryMetrics } from "../../hooks/useLoanSumMetrics";
 import { formatPercent, formatRupiah } from "../../utils/globalFormatter";
+import {
+  getDtiColor,
+  getFeasibilityColor,
+  getSurplusColor,
+} from "../../utils/getColors";
 
 function Amort_Calc() {
   const theme = useMantineTheme();
@@ -157,7 +162,11 @@ function Amort_Calc() {
                       {formatRupiah(metrics.averageLoanRequested)}
                     </Text>
                     <Text c="red" fw={700}>
-                      <TrendIndicator value={metrics.loanToRevenueRatio} />
+                      <TrendIndicator
+                        value={metrics.loanToRevenueRatio}
+                        semantic="higher-is-worse"
+                        threshold={50}
+                      />
                     </Text>
                   </Group>
                   <Text fz="xs" c="dimmed" fw={700}>
@@ -186,26 +195,42 @@ function Amort_Calc() {
                   <Text fz="xs" tt="uppercase" c="dimmed" fw={700}>
                     feasible simulations
                   </Text>
-                  {/* Healthy / Possible vs Total */}
-                  <Badge color="green" variant="light" size="lg">
+                  <Badge
+                    color={getFeasibilityColor(
+                      metrics.feasibleCount,
+                      metrics.totalSimulations,
+                    )}
+                    variant="light"
+                    size="lg"
+                  >
                     {metrics.feasibleCount} / {metrics.totalSimulations}
                   </Badge>
                 </Group>
+
                 {/* Avg Surplus After Payment */}
                 <Group justify="space-between">
                   <Text fz="xs" tt="uppercase" c="dimmed" fw={700}>
                     Avg Surplus After Payment
                   </Text>
-                  <Badge color="yellow" variant="light" size="lg">
+                  <Badge
+                    color={getSurplusColor(metrics.avgSurplus)}
+                    variant="light"
+                    size="lg"
+                  >
                     {formatRupiah(metrics.avgSurplus)}
                   </Badge>
                 </Group>
+
                 {/* Avg Debt-To-Income */}
                 <Group justify="space-between">
                   <Text fz="xs" tt="uppercase" c="dimmed" fw={700}>
                     Debt-to-Income Ratio
                   </Text>
-                  <Badge color="red" variant="light" size="lg">
+                  <Badge
+                    color={getDtiColor(metrics.avgDti)}
+                    variant="light"
+                    size="lg"
+                  >
                     {formatPercent(metrics.avgDti)}
                   </Badge>
                 </Group>
@@ -216,13 +241,6 @@ function Amort_Calc() {
         <Divider />
 
         <Stack gap="sm">
-          {/* {entries.length === 0 ? (
-            <Text c="dimmed" ta="center" py="xl">
-              Belum ada data. Tambahkan pinjaman baru.
-            </Text>
-          ) : (
-            AmortRows
-          )} */}
           <AmortList
             entries={entries}
             openForm={openForm}

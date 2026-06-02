@@ -5,14 +5,14 @@ interface HeaderProps {
   children: React.ReactNode;
   reversed: boolean;
   sorted: boolean;
-  //   onSort: () => void;
+  onSort: () => void;
 }
 
-function Th({ children, reversed, sorted }: HeaderProps) {
+function Th({ children, reversed, sorted, onSort }: HeaderProps) {
   const Icon = sorted ? (reversed ? HiChevronUp : HiChevronDown) : HiSelector;
   return (
     <Table.Th>
-      <UnstyledButton w="100%" h="100%" p="sm">
+      <UnstyledButton w="100%" h="100%" p="sm" onClick={onSort}>
         <Group justify="space-between">
           <Text fw={500} fz="sm">
             {children}
