@@ -9,8 +9,9 @@ import {
 import { useAmortModal } from "./useAmortModal";
 import type { AmortEntry, BusinessProfile, Credit } from "../services/models";
 import { useEffect, useState, useCallback } from "react";
-import { calculateHealthStatus } from "../utils/amort/health";
-import { calculateTotalInstallment } from "../utils/amort/totalInstallment";
+import { calculateHealthStatus, isFeasible } from "../utils/amort/health";
+import { calculatePMT } from "../utils/amort/pmt";
+import { calculateDebtBurdenRatio } from "../utils/amort/dbr";
 
 export function useAmortActions(
   setEditId: (id: number | null) => void,
@@ -38,17 +39,23 @@ export function useAmortActions(
     fetchEntries();
   }, [fetchEntries]);
 
-  // 2. Memoize handleSubmit and remove 'editId' from parameters so it uses the hook's state
   const handleSubmit = useCallback(
     async (entry: AmortEntry) => {
       const interestRate = entry.creditID
         ? creditMap[entry.creditID]?.interestRatePerYear
         : undefined;
 
-      const totalInstallment = calculateTotalInstallment(
+      const monthlyPMT = calculatePMT(
         entry.principalAmount,
         entry.tenorMonth,
         interestRate,
+      );
+
+      const totalInstallment = (monthlyPMT || 0) * (entry.tenorMonth || 0);
+
+      const totalInterest = Math.max(
+        0,
+        totalInstallment - (entry.principalAmount || 0),
       );
 
       const healthStatus = calculateHealthStatus(
@@ -57,10 +64,21 @@ export function useAmortActions(
         business?.monthlyAverageIncome,
       );
 
+      const feasible = isFeasible(monthlyPMT, business?.monthlyAverageIncome);
+
+      const dbr = calculateDebtBurdenRatio(
+        monthlyPMT,
+        business?.monthlyAverageIncome,
+      );
+
       const finalEntry = {
         ...entry,
         totalInstallment,
         health_status: healthStatus,
+        pmt: monthlyPMT,
+        isFeasible: feasible,
+        dbr,
+        totalInterest,
       };
 
       if (editId !== null) {
@@ -73,7 +91,7 @@ export function useAmortActions(
       modals.closeAll();
       fetchEntries();
     },
-    // Add all external variables used inside this function to the dependency array
+
     [
       business?.monthlyAverageIncome,
       creditMap,
