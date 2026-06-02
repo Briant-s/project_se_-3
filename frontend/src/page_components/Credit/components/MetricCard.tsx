@@ -1,8 +1,11 @@
+import { Paper, Text, useMantineTheme } from "@mantine/core";
+
 interface MetricProps {
   label: string;
   value: string;
   sub: string;
-  variant: "default" | "warning" | "success" | "info";
+  // Updated to match your exact HealthStatus keys
+  variant?: "default" | "healthy" | "warning" | "not_healthy" | "info";
 }
 
 export function MetricCard({
@@ -11,69 +14,69 @@ export function MetricCard({
   sub,
   variant = "default",
 }: MetricProps) {
+  const theme = useMantineTheme();
+  const { HealthStatus } = theme.other;
+
   const themes = {
     default: {
-      bg: "#f8fafc",
-      border: "#e2e8f0",
-      labelColor: "#94a3b8",
-      valueColor: "#0f172a",
-      subColor: "#64748b",
-    },
-    warning: {
-      bg: "#fff1f2",
-      border: "#fca5a5",
-      labelColor: "#94a3b8",
-      valueColor: "#dc2626",
-      subColor: "#ef4444",
-    },
-    success: {
-      bg: "#f0fdf4",
-      border: "#86efac",
-      labelColor: "#94a3b8",
-      valueColor: "#15803d",
-      subColor: "#16a34a",
+      bg: "white",
+      border: "var(--mantine-color-gray-3)",
+      labelColor: "dimmed",
+      valueColor: "dark.9",
+      subColor: "gray.6",
     },
     info: {
-      bg: "#eff6ff",
-      border: "#93c5fd",
-      labelColor: "#94a3b8",
-      valueColor: "#1d4ed8",
-      subColor: "#3b82f6",
+      bg: "blue.0",
+      border: "var(--mantine-color-blue-2)",
+      labelColor: "dimmed",
+      valueColor: "blue.9",
+      subColor: "blue.6",
+    },
+    healthy: {
+      bg: HealthStatus.h_bg,
+      border: `${HealthStatus.healthy}40`, // 25% opacity hex trick for borders
+      labelColor: "dimmed",
+      valueColor: HealthStatus.healthy,
+      subColor: HealthStatus.healthy,
+    },
+    warning: {
+      bg: HealthStatus.w_bg,
+      border: `${HealthStatus.warning}40`,
+      labelColor: "dimmed",
+      valueColor: HealthStatus.warning,
+      subColor: HealthStatus.warning,
+    },
+    not_healthy: {
+      bg: HealthStatus.nh_bg,
+      border: `${HealthStatus.not_healthy}40`,
+      labelColor: "dimmed",
+      valueColor: HealthStatus.not_healthy,
+      subColor: HealthStatus.not_healthy,
     },
   };
 
   const t = themes[variant] ?? themes.default;
 
   return (
-    <div
-      style={{
-        background: t.bg,
-        border: `0.5px solid ${t.border}`,
-        borderRadius: 10,
-        padding: "12px 14px",
-      }}
+    <Paper
+      bg={t.bg}
+      radius="md"
+      px={14}
+      py={12}
+      style={{ border: `0.5px solid ${t.border}` }}
+      shadow="sm"
     >
-      <p
-        style={{
-          margin: 0,
-          fontSize: 11,
-          color: t.labelColor,
-          fontWeight: 500,
-        }}
-      >
+      <Text fz={11} fw={500} c={t.labelColor}>
         {label}
-      </p>
-      <p
-        style={{
-          margin: "4px 0 2px",
-          fontSize: 17,
-          fontWeight: 700,
-          color: t.valueColor,
-        }}
-      >
+      </Text>
+
+      <Text mt={4} mb={2} fz={17} fw={700} c={t.valueColor}>
         {value}
-      </p>
-      <p style={{ margin: 0, fontSize: 11, color: t.subColor }}>{sub}</p>
-    </div>
+      </Text>
+
+      <Text fz={11} c={t.subColor}>
+        {sub}
+      </Text>
+    </Paper>
   );
 }

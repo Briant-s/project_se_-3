@@ -20,6 +20,7 @@ export const FeasibilityChart: React.FC<AmortizationChartProps> = ({
 
   return (
     <CompositeChart
+      ml={-75}
       h={400}
       data={data}
       dataKey="month"

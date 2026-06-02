@@ -21,6 +21,8 @@ export interface AmortEntry {
   dbr?: number;
   pmt?: number;
   isFeasible?: boolean;
+  maxSafePrincipal?: number;
+  SafeExtendedTenor?: number;
 }
 
 export interface AmortFormValues {

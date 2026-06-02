@@ -12,6 +12,8 @@ import { useEffect, useState, useCallback } from "react";
 import { calculateHealthStatus, isFeasible } from "../utils/amort/health";
 import { calculatePMT } from "../utils/amort/pmt";
 import { calculateDebtBurdenRatio } from "../utils/amort/dbr";
+import { calculateMaxSafePrincipal } from "../utils/amort/maxsafe";
+import { calculateSafeExtendedTenor } from "../utils/amort/safetenor";
 
 export function useAmortActions(
   setEditId: (id: number | null) => void,
@@ -71,6 +73,19 @@ export function useAmortActions(
         business?.monthlyAverageIncome,
       );
 
+      const maxSafePrincipal = calculateMaxSafePrincipal(
+        entry.tenorMonth || 0,
+        interestRate || 0,
+        business?.monthlyAverageIncome || 0,
+      );
+
+      const SafeExtendedTenor = calculateSafeExtendedTenor(
+        entry.principalAmount || 0,
+        interestRate || 0,
+        business?.monthlyAverageIncome || 0,
+        healthStatus || "healthy",
+      );
+
       const finalEntry = {
         ...entry,
         totalInstallment,
@@ -79,6 +94,8 @@ export function useAmortActions(
         isFeasible: feasible,
         dbr,
         totalInterest,
+        maxSafePrincipal,
+        SafeExtendedTenor,
       };
 
       if (editId !== null) {

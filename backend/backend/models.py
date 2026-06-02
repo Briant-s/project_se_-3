@@ -17,6 +17,8 @@ class AmortEntry(BaseModel):
     dbr: float | None = None
     pmt: float | None = None
     isFeasible: bool | None = None
+    maxSafePrincipal: float | None = None
+    SafeExtendedTenor: int | None = None
     
 class BusinessProfile(BaseModel):
     businessID: int | None = None

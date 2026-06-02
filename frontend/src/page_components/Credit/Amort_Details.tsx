@@ -1,4 +1,12 @@
-import { Stack, Group, Text, Divider, SimpleGrid } from "@mantine/core";
+import {
+  Card,
+  Stack,
+  Group,
+  Text,
+  Divider,
+  SimpleGrid,
+  ActionIcon,
+} from "@mantine/core";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import type { AmortEntry } from "../../services/models";
@@ -12,6 +20,9 @@ import { generateChartData } from "../../utils/amort/generateChartData";
 import { useBusinessProfile } from "../../hooks/useBusinessProfile";
 import { useCreditReferences } from "../../hooks/useCreditReferences";
 import { FeasibilityChart } from "./components/AmortChart";
+import KURBadge from "../../eligibility/component/KURBadge";
+import { HealthBadge } from "../../eligibility/component";
+import { AdvisoryCard } from "./components/AdvisoryCard";
 
 function Amort_Details() {
   const { id } = useParams();
@@ -19,6 +30,8 @@ function Amort_Details() {
 
   const { business } = useBusinessProfile();
   const { creditMap } = useCreditReferences();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const load = async () => {
@@ -42,45 +55,98 @@ function Amort_Details() {
     business?.monthlyAverageIncome,
   );
 
+  const healthStatus = (entry.health_status || "warning") as
+    | "healthy"
+    | "warning"
+    | "not_healthy";
+
+  // 2. Set dynamic subtitle text based on your strict 30/50 thresholds
+  const dbrSubtext =
+    healthStatus === "healthy"
+      ? "Aman (≤ 30%)"
+      : healthStatus === "warning"
+        ? "Waspada (31% - 50%)"
+        : "Berisiko (> 50%)";
+
   return (
     <>
-      <Stack>
-        <Text>Title</Text>
+      <Stack p="md">
+        <Group>
+          <ActionIcon variant="filled" radius="md" onClick={() => navigate(-1)}>
+            <HiOutlineReply style={{ transform: "scaleX(1)" }} />
+          </ActionIcon>
+          <Text fw={700}>Loan Eligibility Analysis UMKM</Text>
+        </Group>
         <Group justify="space-between">
           {/* Amort Title */}
-          <Text fw={700}>{entry.title}</Text>
+          <Stack gap="0.5rem">
+            <Text size="xl" fw={700}>
+              {entry.title}
+            </Text>
+            <Group gap="0.5rem">
+              <KURBadge type={entry.creditID ?? 0} />
+              <HealthBadge type={entry.health_status} />
+            </Group>
+          </Stack>
           {/* Health Badge with status and dbr */}
           <AmortBadge isFeasible={true} dbrPercent={entry.dbr} />
         </Group>
         <Divider my="md" />
         {/* 4 Amort Cards */}
-        <SimpleGrid cols={4}>
-          <MetricCard
-            label="Principal Amount"
-            value={formatRupiah(entry.principalAmount)}
-            sub={`${entry.tenorMonth} months`}
-            variant="default"
+        <Stack gap="0.5rem">
+          <Text size="sm" c="dimmed">
+            Simulation Metrics
+          </Text>
+          <SimpleGrid cols={4}>
+            <MetricCard
+              label="Principal Amount"
+              value={formatRupiah(entry.principalAmount)}
+              sub={`${entry.tenorMonth} months`}
+              variant="default"
+            />
+            <MetricCard
+              label="Installment / Month"
+              value={formatRupiah(entry.pmt)}
+              sub="PMT"
+              variant={healthStatus}
+            />
+            <MetricCard
+              label="Total Interest"
+              value={formatRupiah(entry.totalInterest)}
+              sub={`${(interestRate || 0) * 100}% p.a`}
+              variant="default"
+            />
+            <MetricCard
+              label="Debt Burden Ratio"
+              value={`${entry.dbr}%`}
+              sub={dbrSubtext}
+              variant={healthStatus}
+            />
+          </SimpleGrid>
+        </Stack>
+        <Card withBorder shadow="sm">
+          <Stack>
+            <Text c="dimmed" size="sm">
+              Amortization Chart
+            </Text>
+
+            <FeasibilityChart
+              data={chartDataArray}
+              isFeasible={entry.isFeasible}
+            />
+          </Stack>
+          <AdvisoryCard
+            status={healthStatus}
+            dbrPercent={entry.dbr}
+            pmt={entry.pmt}
+            totalInterest={entry.totalInterest}
+            avgMonthlyIncome={business?.monthlyAverageIncome}
+            tenorMonth={entry.tenorMonth}
+            principalAmount={entry.principalAmount}
+            maxSafePrincipal={entry.maxSafePrincipal}
+            safeExtendedTenor={entry.SafeExtendedTenor}
           />
-          <MetricCard
-            label="Installment / Month"
-            value={formatRupiah(entry.pmt)}
-            sub="PMT"
-            variant={entry.isFeasible ? "default" : "warning"}
-          />
-          <MetricCard
-            label="Total Interest"
-            value={formatRupiah(entry.totalInterest)}
-            sub="test"
-            variant="default"
-          />
-          <MetricCard
-            label="Debt Burden Ratio"
-            value={`${entry.dbr}%`}
-            sub={entry.isFeasible ? "Aman <= 40%" : "Melebihi 40%"}
-            variant="success"
-          />
-        </SimpleGrid>
-        <FeasibilityChart data={chartDataArray} isFeasible={entry.isFeasible} />
+        </Card>
       </Stack>
     </>
   );

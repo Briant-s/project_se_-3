@@ -160,26 +160,12 @@ function Eligibility_Overview() {
 
   return (
     <>
-      <Container fluid style={{ minWidth: 0, minHeight: 0 }}>
+      <Container fluid style={{ minWidth: 0, minHeight: 0 }} p="xl">
         <Stack gap="md">
-          <SimpleGrid cols={2} autoFlow="auto-fill">
-            <Card>
-              <Stack>
-                <Text size="40px">{dashboardCopy.hero.title}</Text>
-                {/* <Text c="dimmed">{dashboardCopy.hero.description}</Text> */}
-              </Stack>
-            </Card>
-            <BusinessCard
-              businessName={business?.businessName ?? undefined}
-              businessSector={business?.businessSector ?? undefined}
-              businessType={business?.businessType ?? undefined}
-            />
-          </SimpleGrid>
-
-          <Card withBorder>
+          <Card withBorder shadow="sm" padding="md">
             <Title order={1}>Amortization Overview</Title>
             <SimpleGrid cols={2}>
-              <Card>
+              <Card bg="white" shadow="none">
                 <Stack gap="lg">
                   {/* AMORT KUR COUNT */}
                   <Stack>
@@ -237,7 +223,7 @@ function Eligibility_Overview() {
                   </Stack>
                 </Stack>
               </Card>
-              <Card>
+              <Card bg="white" shadow="none">
                 <Stack>
                   <Group justify="space-between" align="flex-end">
                     <Stack gap="0.2rem">

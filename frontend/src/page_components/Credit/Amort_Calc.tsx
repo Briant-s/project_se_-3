@@ -109,11 +109,11 @@ function Amort_Calc() {
         </Group>
         <SimpleGrid cols={3} autoFlow="auto-fill">
           {/* KUR Preference Distribution */}
-          <Card h="auto">
+          <Card h="auto" withBorder shadow="sm">
             <Stack>
               <Text>KUR Preference Distribution</Text>
               <SimpleGrid cols={{ base: 2 }} autoFlow="auto-fill">
-                <Card withBorder>
+                <Card withBorder shadow="none">
                   <Stack>
                     {KURAmount.map((item) => (
                       <Group key={item.name} justify="space-between">
@@ -128,7 +128,7 @@ function Amort_Calc() {
                     ))}
                   </Stack>
                 </Card>
-                <Card p="xs">
+                <Card p="xs" shadow="none">
                   <Flex justify="center" align="center" h="100%">
                     <DonutChart
                       data={KURAmount}
@@ -143,7 +143,7 @@ function Amort_Calc() {
             </Stack>
           </Card>
           {/* Loan Summary */}
-          <Card>
+          <Card withBorder shadow="sm">
             <Stack>
               <Text c="dimmed">Loan Summary</Text>
               {/* Average Loan Requested*/}
@@ -177,7 +177,7 @@ function Amort_Calc() {
             </Stack>
           </Card>
           {/* Repayment Health Overview */}
-          <Card>
+          <Card withBorder shadow="sm">
             <Stack>
               <Text>Repayment Health Overview</Text>
               <Stack gap="2rem">
