@@ -9,6 +9,7 @@ import {
   TextInput,
   Stack,
   useMantineTheme,
+  Menu,
 } from "@mantine/core";
 import type { AmortEntry } from "../../../services/models";
 import {
@@ -17,6 +18,7 @@ import {
   HiPencil,
   HiTrash,
   HiOutlineReply,
+  HiDotsVertical,
 } from "react-icons/hi";
 import Th from "./Th";
 import { HealthBadge, KURBadge } from "../../../eligibility/component";
@@ -108,29 +110,56 @@ function AmortList({
       {!compact && <Table.Td>{formatRupiah(entry.totalInstallment)}</Table.Td>}
       {!compact && <Table.Td>{formatRupiah(entry.principalAmount)}</Table.Td>}
       <Table.Td>
-        {" "}
-        <Group gap="xs">
-          <ActionIcon
-            variant="filled"
-            radius="md"
-            onClick={() => openForm(entry)}
-          >
-            <HiPencil />
-          </ActionIcon>
-          <ActionIcon
-            variant="filled"
-            radius="md"
-            onClick={() => confirmDelete(entry.amortID!, entry.title)}
-          >
-            <HiTrash />
-          </ActionIcon>
-          <ActionIcon
-            variant="filled"
-            radius="md"
+        <Group gap="xs" wrap="nowrap" w="100%">
+          <Menu shadow="md" width={160} position="bottom-end" withArrow>
+            <Menu.Target>
+              <Button variant="subtle" size="xs" px="xs">
+                <HiDotsVertical />
+              </Button>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Item
+                leftSection={<HiPencil />}
+                onClick={() => openForm(entry)}
+              >
+                Edit
+              </Menu.Item>
+              <Menu.Item
+                leftSection={
+                  <HiOutlineReply style={{ transform: "scaleX(-1)" }} />
+                }
+                onClick={() => navigate(`/credit/amort-calc/${entry.amortID}`)}
+              >
+                View Detail
+              </Menu.Item>
+              <Menu.Divider />
+              <Menu.Item
+                color="red"
+                leftSection={<HiTrash />}
+                onClick={() => confirmDelete(entry.amortID!, entry.title)}
+              >
+                Delete
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+          <Button
             onClick={() => navigate(`/credit/amort-calc/${entry.amortID}`)}
+            size="xs"
+            variant="light"
+            color="teal"
+            px={compact ? "xs" : undefined}
+            rightSection={
+              !compact ? (
+                <HiOutlineReply style={{ transform: "scaleX(-1)" }} />
+              ) : undefined
+            }
           >
-            <HiOutlineReply style={{ transform: "scaleX(-1)" }} />
-          </ActionIcon>
+            {compact ? (
+              <HiOutlineReply style={{ transform: "scaleX(-1)" }} />
+            ) : (
+              "Advisory"
+            )}
+          </Button>
         </Group>
       </Table.Td>
     </Table.Tr>
@@ -156,7 +185,7 @@ function AmortList({
         <Table
           horizontalSpacing="md"
           verticalSpacing="xs"
-          miw={700}
+          miw={compact ? 500 : 700}
           layout="fixed"
           px={0}
         >

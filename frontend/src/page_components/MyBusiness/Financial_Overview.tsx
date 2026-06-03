@@ -7,36 +7,25 @@ import {
   Divider,
   Badge,
   Loader,
+  Table,
+  ActionIcon,
 } from "@mantine/core";
 import { useEffect, useState } from "react";
-import { HiExternalLink } from "react-icons/hi";
+import { HiExternalLink, HiTrash } from "react-icons/hi";
 import { HiOutlineCreditCard, HiOutlineBanknotes } from "react-icons/hi2";
 import { getBusinessProfile } from "../../services/businessProfileService";
 import type { BusinessProfile } from "../../services/models";
 import { DataItem } from "./component";
 import { BusinessCard } from "../../components";
+import { formatRupiah } from "../../utils/globalFormatter";
+import { useBusinessProfile } from "../../hooks/useBusinessProfile";
+import { useAssets } from "../../hooks/useAssets";
 
 function FinancialOverview() {
-  const [business, setBusiness] = useState<BusinessProfile | null>();
-  const [loading, setLoading] = useState(true);
+  const { business, loading: businessLoading } = useBusinessProfile();
+  const { assets, totalAssetsValue, loading: assetsLoading } = useAssets();
 
-  // Fetch Business
-  useEffect(() => {
-    const fetchBusiness = async () => {
-      setLoading(true);
-      try {
-        const result = await getBusinessProfile();
-        setBusiness(result);
-      } catch(error){
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchBusiness();
-  }, []);
-
-if (loading) {
+  if (businessLoading || assetsLoading) {
     return (
       <Container fluid>
         <Stack align="center" mt="xl" gap="sm">
@@ -93,7 +82,7 @@ if (loading) {
                     label="Revenue"
                     value={
                       <Text c="green.7" fw={600}>
-                        {business?.monthlyAverageIncome ?? "--"}
+                        {formatRupiah(business?.monthlyAverageIncome) ?? "--"}
                       </Text>
                     }
                   />
@@ -101,7 +90,8 @@ if (loading) {
                     label="Profit/Loss"
                     value={
                       <Text fw={600}>
-                        {business?.monthlyAverageProfitLoss ?? "--"}
+                        {formatRupiah(business?.monthlyAverageProfitLoss) ??
+                          "--"}
                       </Text>
                     }
                   />
@@ -139,7 +129,7 @@ if (loading) {
           <Card shadow="sm" radius="md" withBorder padding="xl">
             <Stack gap="xl">
               <Text fw={700} size="lg">
-                Assets & Liabilities
+                Assets
               </Text>
 
               {/* Assets */}
@@ -148,34 +138,63 @@ if (loading) {
                   Business Assets
                 </Text>
                 <Group justify="space-between" align="flex-start">
-                  <DataItem label="Total Assets Value" value="Rp 0,00" />
-                  <DataItem label="Asset Types" value="None recorded" />
+                  <DataItem
+                    label="Total Assets Value"
+                    value={formatRupiah(totalAssetsValue)}
+                  />
                 </Group>
-              </Stack>
+                {assets.length > 0 && (
+                  <Table striped highlightOnHover>
+                    <Table.Thead>
+                      <Table.Tr>
+                        <Table.Th>Asset Name</Table.Th>
+                        <Table.Th>Type</Table.Th>
+                        <Table.Th>Value</Table.Th>
+                        <Table.Th></Table.Th>
+                      </Table.Tr>
+                    </Table.Thead>
+                    <Table.Tbody>
+                      {assets.map((asset, index) => (
+                        <Table.Tr key={index}>
+                          <Table.Td>{asset.assetsName}</Table.Td>
 
-              <Divider />
-
-              {/* Credits & Liabilities */}
-              <Stack gap="xs">
-                <Text size="sm" c="dimmed" fw={500}>
-                  Credits & Liabilities
-                </Text>
-                <Group justify="space-between" align="flex-start">
-                  <DataItem label="Total Liabilities" value="Rp 0,00" />
-                  <DataItem label="Status" value="Clear" />
-                </Group>
-              </Stack>
-
-              <Divider />
-
-              {/* Other Loans */}
-              <Stack gap="xs">
-                <Text size="sm" c="dimmed" fw={500}>
-                  Other Loans
-                </Text>
-                <Group justify="space-between" align="flex-start">
-                  <DataItem label="Non-KUR Loans" value="No active loans" />
-                </Group>
+                          <Table.Td>
+                            {/* Tambahkan logika dinamis pada properti color */}
+                            <Badge
+                              size="sm"
+                              color={
+                                asset.assetsType === "Usaha" ? "blue" : "teal"
+                              }
+                              variant="light"
+                            >
+                              {asset.assetsType === "Usaha"
+                                ? "Business"
+                                : "Personal"}
+                            </Badge>
+                          </Table.Td>
+                          {/*<Table.Td>
+                                              <Badge size="sm">
+                                                {asset.assetsType === "Usaha"
+                                                  ? "Business"
+                                                  : "Personal"}
+                                              </Badge>
+                                            </Table.Td>*/}
+                          <Table.Td>
+                            Rp{" "}
+                            {Number(asset.assetsValue).toLocaleString("id-ID")}
+                          </Table.Td>
+                          <Table.Td>
+                            <ActionIcon size="sm" color="red" variant="light">
+                              <HiTrash
+                                style={{ width: "16px", height: "16px" }}
+                              />
+                            </ActionIcon>
+                          </Table.Td>
+                        </Table.Tr>
+                      ))}
+                    </Table.Tbody>
+                  </Table>
+                )}
               </Stack>
             </Stack>
           </Card>

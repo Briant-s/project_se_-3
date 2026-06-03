@@ -16,6 +16,7 @@ import {
   Badge,
   Table,
   ActionIcon,
+  useMantineTheme,
 } from "@mantine/core";
 import { useState, useEffect } from "react";
 import { HiArrowRight, HiArrowLeft, HiCheck, HiTrash } from "react-icons/hi2";
@@ -70,6 +71,7 @@ function ProfileQuiz() {
     umkmUnlockLevel: formData.umkmUnlockLevel,
     businessContactNumber: formData.businessContactNumber,
     businessEmail: formData.businessEmail,
+    hasCollateral: formData.hasCollateral,
   });
 
   // 1. State untuk menyimpan data inputan
@@ -93,6 +95,7 @@ function ProfileQuiz() {
     isProfitable: null,
     businessAgeYears: "" as number | "",
     businessAgeMonths: "" as number | "",
+    hasCollateral: null,
   });
 
   // State untuk assets
@@ -315,7 +318,11 @@ function ProfileQuiz() {
 
   // Fungsi untuk tambah asset
   const handleAddAsset = async () => {
-    if (!assetForm.assetsName || !assetForm.assetsType || assetForm.assetsValue === null) {
+    if (
+      !assetForm.assetsName ||
+      !assetForm.assetsType ||
+      assetForm.assetsValue === null
+    ) {
       alert("Please fill in all asset fields");
       return;
     }
@@ -348,7 +355,8 @@ function ProfileQuiz() {
       alert("Asset added successfully!");
     } catch (error) {
       console.error("Failed to add asset:", error);
-      const errorMsg = error instanceof Error ? error.message : "Failed to add asset";
+      const errorMsg =
+        error instanceof Error ? error.message : "Failed to add asset";
       alert(`Error: ${errorMsg}`);
     } finally {
       setIsAddingAsset(false);
@@ -372,6 +380,15 @@ function ProfileQuiz() {
       alert("Failed to delete asset. Please try again.");
     }
   };
+
+  const theme = useMantineTheme();
+
+  const activeFinancialColor =
+    formData.isProfitable === true
+      ? theme.other.HealthStatus.healthy
+      : formData.isProfitable === false
+        ? theme.other.HealthStatus.not_healthy
+        : theme.primaryColor;
 
   if (isLoadingProfile) {
     return (
@@ -603,6 +620,7 @@ function ProfileQuiz() {
                   </Text>
                   <Group gap="sm" align="flex-start">
                     <SegmentedControl
+                      color={activeFinancialColor}
                       data={[
                         { label: "Profit", value: "true" },
                         { label: "Loss", value: "false" },
@@ -646,7 +664,11 @@ function ProfileQuiz() {
                   <Text size="sm" fw={500}>
                     Business Assets
                   </Text>
-                  <Stack gap="md" p="md" style={{ border: "1px solid #ddd", borderRadius: "8px" }}>
+                  <Stack
+                    gap="md"
+                    p="md"
+                    style={{ border: "1px solid #ddd", borderRadius: "8px" }}
+                  >
                     <SimpleGrid cols={{ base: 1, sm: 2 }}>
                       <TextInput
                         label="Asset Name"
@@ -688,12 +710,16 @@ function ProfileQuiz() {
                       onChange={(val) =>
                         setAssetForm({
                           ...assetForm,
-                          assetsValue: val !== "" ? Number(val) : null
+                          assetsValue: val !== "" ? Number(val) : null,
                           // assetsValue: typeof val === 'number' ? val : null,
                         })
                       }
                     />
-                    <Button onClick={handleAddAsset} variant="light" loading={isAddingAsset}>
+                    <Button
+                      onClick={handleAddAsset}
+                      variant="light"
+                      loading={isAddingAsset}
+                    >
                       Add Asset
                     </Button>
                   </Stack>
@@ -713,15 +739,19 @@ function ProfileQuiz() {
                         {assets.map((asset, index) => (
                           <Table.Tr key={index}>
                             <Table.Td>{asset.assetsName}</Table.Td>
-                            
+
                             <Table.Td>
                               {/* Tambahkan logika dinamis pada properti color */}
-                              <Badge 
-                                size="sm" 
-                                color={asset.assetsType === "Usaha" ? "blue" : "teal"}
+                              <Badge
+                                size="sm"
+                                color={
+                                  asset.assetsType === "Usaha" ? "blue" : "teal"
+                                }
                                 variant="light"
                               >
-                                {asset.assetsType === "Usaha" ? "Business" : "Personal"}
+                                {asset.assetsType === "Usaha"
+                                  ? "Business"
+                                  : "Personal"}
                               </Badge>
                             </Table.Td>
                             {/*<Table.Td>
@@ -732,7 +762,10 @@ function ProfileQuiz() {
                               </Badge>
                             </Table.Td>*/}
                             <Table.Td>
-                              Rp {Number(asset.assetsValue).toLocaleString("id-ID")}
+                              Rp{" "}
+                              {Number(asset.assetsValue).toLocaleString(
+                                "id-ID",
+                              )}
                             </Table.Td>
                             <Table.Td>
                               <ActionIcon
@@ -741,7 +774,9 @@ function ProfileQuiz() {
                                 variant="light"
                                 onClick={() => handleDeleteAsset(index)}
                               >
-                                <HiTrash style={{ width: "16px", height: "16px" }} />
+                                <HiTrash
+                                  style={{ width: "16px", height: "16px" }}
+                                />
                               </ActionIcon>
                             </Table.Td>
                           </Table.Tr>
@@ -750,6 +785,7 @@ function ProfileQuiz() {
                     </Table>
                   )}
                 </Stack>
+
                 <Select
                   label="Existing Loans?"
                   placeholder="Select Status"

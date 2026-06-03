@@ -712,7 +712,6 @@ async def get_all_cutoff(
 async def get_credit_reference():
     try:
         result = supabase.table("Credit").select("*").execute()
-        print("Credit data:", result.data)
         if not result.data:
             raise HTTPException(status_code=404, detail="No Credit Reference Table Found")
         return result.data

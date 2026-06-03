@@ -89,7 +89,7 @@ function Amort_Details() {
             </Group>
           </Stack>
           {/* Health Badge with status and dbr */}
-          <AmortBadge isFeasible={true} dbrPercent={entry.dbr} />
+          <AmortBadge status={healthStatus} dbrPercent={entry.dbr} />
         </Group>
         <Divider my="md" />
         {/* 4 Amort Cards */}

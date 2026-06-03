@@ -12,6 +12,7 @@ import {
   Title,
   Loader,
   useMantineTheme,
+  Paper,
 } from "@mantine/core";
 import { HiOutlineReply, HiPlus } from "react-icons/hi";
 import { BusinessCard } from "../components";
@@ -173,7 +174,11 @@ function Eligibility_Overview() {
                       <Text size="xl">{dashboardCopy.kurCount.label}</Text>
                       <Text c="dimmed">{dashboardCopy.kurCount.tooltip}</Text>
                     </Stack>
-                    <SimpleGrid cols={{ base: 3, sm: 3 }} autoFlow="auto-fill">
+                    <SimpleGrid
+                      cols={{ base: 3, sm: 3 }}
+                      autoFlow="auto-fill"
+                      h="100%"
+                    >
                       {KUR_stats.map((s, i) => (
                         <KURCard key={i} {...s} />
                       ))}
@@ -196,23 +201,12 @@ function Eligibility_Overview() {
                           style={{
                             borderLeft: `8px solid ${item.color}`,
                             background: item.bg,
+                            height: "100%",
                             // boxShadow: "0 1px 10px rgba(0, 0, 0, 0.1)",
                           }}
                         >
-                          <Stack gap="sm">
-                            <Group justify="space-between">
-                              <Text c={item.color}>{item.label}</Text>
-                              <ActionIcon
-                                bg="white"
-                                variant="outline"
-                                color="black"
-                              >
-                                <HiOutlineReply
-                                  color="black"
-                                  style={{ transform: "scaleX(-1)" }}
-                                />
-                              </ActionIcon>
-                            </Group>
+                          <Stack gap="sm" justify="space-between">
+                            <Text c={item.color}>{item.label}</Text>
                             <Text size="2rem" c={item.color}>
                               {item.value}
                             </Text>
@@ -252,7 +246,7 @@ function Eligibility_Overview() {
                       </Button>
                     </Group>
                   </Group>
-                  <Card withBorder>
+                  <Card p={0}>
                     <ScrollArea h={400}>
                       {entries.length === 0 ? (
                         <Text c="dimmed" ta="center" py="xl">
@@ -270,17 +264,6 @@ function Eligibility_Overview() {
                   </Card>
                 </Stack>
               </Card>
-            </SimpleGrid>
-          </Card>
-          <Card withBorder>
-            <Stack gap="0.2rem">
-              <Title>{dashboardCopy.eligibility.title}</Title>
-              <Text c="dimmed">{dashboardCopy.eligibility.tooltip}</Text>
-            </Stack>
-            <SimpleGrid cols={3}>
-              <Card>KUR Super Mikro</Card>
-              <Card>KUR Mikro</Card>
-              <Card>KUR Kecil</Card>
             </SimpleGrid>
           </Card>
         </Stack>
