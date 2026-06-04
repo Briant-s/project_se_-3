@@ -190,7 +190,7 @@ function AmortList({
           px={0}
         >
           <Table.Thead bg="#ebebeb">
-            <Table.Tr>
+            <Table.Tr style={{ height: "44px" }}>
               <Th {...thProps("title")}>Title</Th>
               <Th {...thProps("creditID")}>Credit Type</Th>
               <Th {...thProps("health_status")}>Health</Th>
@@ -201,7 +201,13 @@ function AmortList({
               {!compact && (
                 <Th {...thProps("principalAmount")}>Principal Amount</Th>
               )}
-              <Table.Th>Actions</Table.Th>
+              {/* <Table.Th>Actions</Table.Th> */}
+              <Table.Th style={{ verticalAlign: "middle" }} pl="md">
+                <Text fw={500} fz="xs" ml="md" style={{ whiteSpace: "nowrap" }}>
+                  Actions
+                </Text>
+              </Table.Th>
+              
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>

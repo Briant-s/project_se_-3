@@ -120,10 +120,11 @@ function Amort_Calc() {
               <SimpleGrid cols={{ base: 2 }} autoFlow="auto-fill">
                 <Card withBorder shadow="none">
                   <Stack>
+
                     {KURAmount.map((item) => (
-                      <Group key={item.name} justify="space-between">
-                        <Group>
-                          <ColorSwatch color={item.color} size={10} />
+                      <Group key={item.name} justify="space-between" wrap="nowrap">
+                        <Group gap="xs" wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
+                          <ColorSwatch color={item.color} size={10} style={{ flexShrink: 0 }} />
                           <Text size="sm">{item.name}</Text>
                         </Group>
                         <Text size="sm" fw={700}>

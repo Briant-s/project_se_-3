@@ -11,16 +11,30 @@ interface HeaderProps {
 function Th({ children, reversed, sorted, onSort }: HeaderProps) {
   const Icon = sorted ? (reversed ? HiChevronUp : HiChevronDown) : HiSelector;
   return (
-    <Table.Th>
-      <UnstyledButton w="100%" h="100%" p="sm" onClick={onSort}>
-        <Group justify="space-between">
-          <Text fw={500} fz="sm">
+    <Table.Th p="xs" pl="md" style={{ verticalAlign: "middle" }}>
+      <UnstyledButton onClick={onSort} style={{ 
+          outline: "none", 
+          background: "none",
+          width: "100%",
+          display: "block"
+        }}>
+        <div style={{ 
+          display: "flex", 
+          alignItems: "center", 
+          gap: "4px",
+          width: "max-content",
+          maxWidth: "100%"
+        }}>
+
+        {/* <Group justify="flex-start" gap="xs" style={{ width: 'fit-content' }}> */}
+          <Text fw={500} fz="xs" style={{ whiteSpace: "nowrap" }}>
             {children}
           </Text>
-          <Center>
-            <Icon size={16} />
+          <Center style={{ flexShrink: 0, opacity: sorted ? 1 : 0.4 }}>
+            <Icon size={14} />
           </Center>
-        </Group>
+          </div>
+        {/* </Group> */}
       </UnstyledButton>
     </Table.Th>
   );
