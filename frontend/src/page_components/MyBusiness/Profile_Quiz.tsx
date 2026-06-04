@@ -72,6 +72,7 @@ function ProfileQuiz() {
     businessContactNumber: formData.businessContactNumber,
     businessEmail: formData.businessEmail,
     hasCollateral: formData.hasCollateral,
+    paymentMethod: formData.paymentMethod,
   });
 
   // 1. State untuk menyimpan data inputan
@@ -96,6 +97,7 @@ function ProfileQuiz() {
     businessAgeYears: "" as number | "",
     businessAgeMonths: "" as number | "",
     hasCollateral: null,
+    paymentMethod: null,
   });
 
   // State untuk assets
@@ -155,6 +157,7 @@ function ProfileQuiz() {
               : "",
           businessAgeMonths:
             profile.businessAge != null ? profile.businessAge % 12 : "",
+          paymentMethod: profile.paymentMethod || null
         });
         setProfileExists(true);
 
@@ -212,6 +215,8 @@ function ProfileQuiz() {
         newErrors.totalEmployees = "This field is required";
       if (!formData.storeType)
         newErrors.storeType = "Please select a store type";
+      if (!formData.paymentMethod) 
+        newErrors.paymentMethod = "Please select a payment method";
     }
 
     // Validasi Step 3
@@ -278,6 +283,7 @@ function ProfileQuiz() {
         formData.monthlyAverageIncome,
         formData.monthlyAverageProfitLoss,
         formData.isOtherKredit,
+        formData.paymentMethod,
       ];
       // 2. Hitung berapa banyak field yang sudah terisi
       const filled = fields.filter(
@@ -592,6 +598,20 @@ function ProfileQuiz() {
                   value={formData.storeType}
                   onChange={(val) => updateForm("storeType", val)}
                   error={errors.storeType}
+                />
+
+                <Select
+                   label="Payment Method"
+                  placeholder="Select Payment Method"
+                  withAsterisk
+                  data={[
+                    { value: "Cash", label: "Cash" },
+                    { value: "Transfer Bank", label: "Transfer Bank" },
+                    { value: "Both", label: "Both (Cash & Transfer)" }
+                  ]}
+                  value={formData.paymentMethod}
+                  onChange={(val) => updateForm("paymentMethod", val)}
+                  error={errors.paymentMethod}
                 />
               </Stack>
             </Stepper.Step>

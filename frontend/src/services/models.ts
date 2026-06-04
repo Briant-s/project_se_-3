@@ -54,6 +54,7 @@ export interface BusinessProfile {
   businessContactNumber?: string | null;
   businessEmail?: string | null;
   isProfitable?: boolean;
+  paymentMethod: string | null;
 }
 
 export interface BusinessProfileForm {
@@ -76,6 +77,7 @@ export interface BusinessProfileForm {
   isProfitable: boolean | null;
   businessAgeYears: number | "";
   businessAgeMonths: number | "";
+  paymentMethod: string | null;
 }
 
 export interface Credit {

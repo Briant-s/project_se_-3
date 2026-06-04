@@ -42,6 +42,7 @@ class BusinessProfile(BaseModel):
     businessContactNumber: str | None = None
     businessEmail: str | None = None
     isProfitable: bool | None = None
+    paymentMethod: str | None = None
 
 class Assets(BaseModel):
     assetsID: int | None = None

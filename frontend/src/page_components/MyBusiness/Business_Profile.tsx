@@ -42,6 +42,7 @@ function BusinessProfile() {
       business.monthlyAverageProfitLoss,
       business.businessAssets,
       business.isOtherKredit,
+      business.paymentMethod,
     ];
     const filled = fields.filter(
       (value) => value !== null && value !== undefined && value !== "",
@@ -201,6 +202,10 @@ function BusinessProfile() {
                   <DataItem
                     label="Operating"
                     value={business?.storeType ?? "--"}
+                  />
+                  <DataItem
+                    label="Payment Method"
+                    value={business?.paymentMethod ?? "--"}
                   />
                 </Group>
               </Stack>

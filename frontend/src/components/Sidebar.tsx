@@ -35,6 +35,7 @@ function Sidebar({ mainNav }: Props) {
           business.monthlyAverageProfitLoss,
           business.businessAssets,
           business.isOtherKredit,
+          business.paymentMethod
         ];
 
         // Hitung berapa banyak field yang sudah terisi
