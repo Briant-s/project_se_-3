@@ -106,20 +106,29 @@ function FinancialOverview() {
                   Payment Methods
                 </Text>
                 <Group gap="md">
-                  <Badge
-                    leftSection={<HiOutlineBanknotes size={14} />}
-                    variant="outline"
-                    color="gray"
-                  >
-                    Cash
-                  </Badge>
-                  <Badge
-                    leftSection={<HiOutlineCreditCard size={14} />}
-                    variant="outline"
-                    color="blue"
-                  >
-                    Transfer Bank
-                  </Badge>
+                  {(business?.paymentMethod === "Cash" || business?.paymentMethod === "Both") && (
+                    <Badge
+                      leftSection={<HiOutlineBanknotes size={14} />}
+                      variant="outline"
+                      color="gray"
+                    >
+                      Cash
+                    </Badge>
+                  )}
+                  {(business?.paymentMethod === "Transfer Bank" || business?.paymentMethod === "Both") && (
+                    <Badge
+                      leftSection={<HiOutlineCreditCard size={14} />}
+                      variant="outline"
+                      color="blue"
+                    >
+                      Transfer Bank
+                    </Badge>
+                  )}
+                  {!business?.paymentMethod && (
+                    <Text size="xs" c="dimmed">
+                      No payment method set
+                    </Text>
+                  )}
                 </Group>
               </Stack>
             </Stack>
