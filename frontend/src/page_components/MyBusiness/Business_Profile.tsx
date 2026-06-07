@@ -205,7 +205,11 @@ function BusinessProfile() {
                   />
                   <DataItem
                     label="Payment Method"
-                    value={business?.paymentMethod ?? "--"}
+                    value={
+                      business?.paymentMethod === "Both"
+                        ? "Cash & Transfer Bank"
+                        : business?.paymentMethod ?? "--"
+                    }
                   />
                 </Group>
               </Stack>
