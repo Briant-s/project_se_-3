@@ -9,11 +9,14 @@ import {
   Loader,
   Table,
   ActionIcon,
+  Modal,
+  Button,
 } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { HiExternalLink, HiTrash } from "react-icons/hi";
 import { HiOutlineCreditCard, HiOutlineBanknotes } from "react-icons/hi2";
 import { getBusinessProfile } from "../../services/businessProfileService";
+import { deleteAsset } from "../../services/assetService";
 import type { BusinessProfile } from "../../services/models";
 import { DataItem } from "./component";
 import { BusinessCard } from "../../components";
@@ -24,6 +27,34 @@ import { useAssets } from "../../hooks/useAssets";
 function FinancialOverview() {
   const { business, loading: businessLoading } = useBusinessProfile();
   const { assets, totalAssetsValue, loading: assetsLoading } = useAssets();
+  const [assetsList, setAssetsList] = useState(assets);
+  const [deleteModalOpened, setDeleteModalOpened] = useState(false);
+  const [selectedAssetId, setSelectedAssetId] = useState<number | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    setAssetsList(assets);
+  }, [assets]);
+
+  const handleDeleteAsset = async () => {
+    if (selectedAssetId === null) return;
+    setIsDeleting(true);
+    try {
+      await deleteAsset(String(selectedAssetId));
+      setAssetsList(assetsList.filter(asset => asset.assetsID !== selectedAssetId));
+      setDeleteModalOpened(false);
+      setSelectedAssetId(null);
+    } catch (error) {
+      console.error("Failed to delete asset:", error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const openDeleteModal = (assetId: number) => {
+    setSelectedAssetId(assetId);
+    setDeleteModalOpened(true);
+  };
 
   if (businessLoading || assetsLoading) {
     return (
@@ -163,7 +194,7 @@ function FinancialOverview() {
                       </Table.Tr>
                     </Table.Thead>
                     <Table.Tbody>
-                      {assets.map((asset, index) => (
+                      {assetsList.map((asset, index) => (
                         <Table.Tr key={index}>
                           <Table.Td>{asset.assetsName}</Table.Td>
 
@@ -193,7 +224,12 @@ function FinancialOverview() {
                             {Number(asset.assetsValue).toLocaleString("id-ID")}
                           </Table.Td>
                           <Table.Td>
-                            <ActionIcon size="sm" color="red" variant="light">
+                            <ActionIcon
+                              size="sm"
+                              color="red"
+                              variant="light"
+                              onClick={() => openDeleteModal(asset.assetsID || 0)}
+                            >
                               <HiTrash
                                 style={{ width: "16px", height: "16px" }}
                               />
@@ -209,6 +245,36 @@ function FinancialOverview() {
           </Card>
         </Stack>
       </Container>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        opened={deleteModalOpened}
+        onClose={() => setDeleteModalOpened(false)}
+        title="Delete Asset"
+        centered
+      >
+        <Stack gap="md">
+          <Text>Are you sure you want to delete this asset? This action cannot be undone.</Text>
+          <Group justify="flex-end" gap="sm">
+            <Button
+              variant="light"
+              color="gray"
+              onClick={() => setDeleteModalOpened(false)}
+              disabled={isDeleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="light"
+              color="red"
+              onClick={handleDeleteAsset}
+              loading={isDeleting}
+            >
+              Delete
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
     </>
   );
 }
