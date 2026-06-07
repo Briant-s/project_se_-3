@@ -1,5 +1,6 @@
 import { Card, Group, Avatar, Stack, ActionIcon, Text } from "@mantine/core";
 import { HiExternalLink } from "react-icons/hi";
+import { Link } from "react-router-dom";
 
 interface Props {
   businessName: string | undefined;
@@ -31,7 +32,12 @@ function BusinessCard({ businessName, businessSector, businessType }: Props) {
               </Group>
             </Stack>
           </Group>
-          <ActionIcon variant="subtle" color="gray">
+          <ActionIcon 
+            component={Link}
+            to="/my-business/profile-quiz"
+            variant="subtle" 
+            color="gray"
+          >
             <HiExternalLink size={20} />
           </ActionIcon>
         </Group>
