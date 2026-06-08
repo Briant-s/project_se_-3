@@ -87,7 +87,7 @@ function FinancialOverview() {
               </Group>
 
               {/* Active KUR Loan */}
-              <Stack gap="xs">
+              {/* <Stack gap="xs">
                 <Text size="sm" c="dimmed" fw={500}>
                   Active KUR Loan
                 </Text>
@@ -101,7 +101,7 @@ function FinancialOverview() {
                 </Group>
               </Stack>
 
-              <Divider />
+              <Divider /> */}
 
               {/* Monthly Performance */}
               <Stack gap="xs">
