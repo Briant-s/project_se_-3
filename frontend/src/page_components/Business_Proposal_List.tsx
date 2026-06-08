@@ -11,6 +11,7 @@ import {
   Menu,
   Loader,
 } from "@mantine/core";
+import { openConfirmModal } from "@mantine/modals";
 
 import { useNavigate } from "react-router-dom";
 
@@ -118,25 +119,28 @@ function BusinessProposalList() {
 
 
   const handleDelete = async (id: string) => {
-    // const numericId = Number(id);
-    // if (!Number.isInteger(numericId) || numericId <= 0) {
-    //   setError("Invalid proposal id");
-    //   return;
-    // }
-
-
-
     try {
       await deleteBusinessProposal(id);
-      console.log("Attempting to delete proposal with id:", id);
       setProposals((prev) => prev.filter((p) => p.id !== id));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to delete proposal");
     }
-
   };
 
-
+  const confirmDeleteProposal = (id: string) => {
+    openConfirmModal({
+      title: "Delete Proposal",
+      centered: true,
+      children: (
+        <Text size="sm">
+          Are you sure you want to delete this proposal draft? This action cannot be undone.
+        </Text>
+      ),
+      labels: { confirm: "Delete", cancel: "Cancel" },
+      confirmProps: { color: "red" },
+      onConfirm: () => handleDelete(id),
+    });
+  };
 
   return (
     <Container fluid>
@@ -254,7 +258,7 @@ function BusinessProposalList() {
 
                       <Menu.Item
                         color="red"
-                        onClick={() => proposal.id != null && handleDelete(String(proposal.id))}
+                        onClick={() => proposal.id != null && confirmDeleteProposal(String(proposal.id))}
                         // disabled={!proposal.id}
                       >
                         Delete
