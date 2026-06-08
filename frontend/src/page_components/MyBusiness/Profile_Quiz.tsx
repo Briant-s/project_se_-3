@@ -114,6 +114,17 @@ function ProfileQuiz() {
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   const [profileExists, setProfileExists] = useState(false);
   const [isAddingAsset, setIsAddingAsset] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [notificationStatus, setNotificationStatus] = useState<"success" | "error">("success");
+  const [notificationMessage, setNotificationMessage] = useState<string>("");
+
+  useEffect(() => {
+    if (!notificationOpen) return;
+    const timer = window.setTimeout(() => {
+      setNotificationOpen(false);
+    }, 3000);
+    return () => window.clearTimeout(timer);
+  }, [notificationOpen]);
 
   const prevStep = () =>
     setActive((current) => (current > 0 ? current - 1 : current));
@@ -250,15 +261,19 @@ function ProfileQuiz() {
 
       saveFunction(profileData)
         .then(() => {
-          // window.dispatchEvent(new Event("quiz_updated"));
           window.dispatchEvent(
             new CustomEvent("quiz_updated", { detail: { progress: 100 } }),
           );
+          setNotificationStatus("success");
+          setNotificationMessage("Profile saved successfully.");
+          setNotificationOpen(true);
           setActive((current) => (current < 3 ? current + 1 : current));
         })
         .catch((err) => {
           console.error(err);
-          alert("Failed to save profile to Supabase. Please try again.");
+          setNotificationStatus("error");
+          setNotificationMessage("Failed to save profile to Supabase. Please try again.");
+          setNotificationOpen(true);
         })
         .finally(() => setSaving(false));
     } else {
@@ -300,10 +315,14 @@ function ProfileQuiz() {
         }),
       );
 
-      alert("Progress saved to Supabase");
+      setNotificationStatus("success");
+      setNotificationMessage("Progress saved successfully.");
+      setNotificationOpen(true);
     } catch (error) {
       console.error("Save error:", error);
-      alert("Unable to save progress. Please try again.");
+      setNotificationStatus("error");
+      setNotificationMessage("Unable to save progress. Please try again.");
+      setNotificationOpen(true);
     } finally {
       setSaving(false);
     }
@@ -415,6 +434,34 @@ function ProfileQuiz() {
             Please complete the following details. You can save your progress at
             any step.
           </Text>
+          {notificationOpen && (
+            <div
+              style={{
+                position: "fixed",
+                top: 20,
+                right: 20,
+                zIndex: 2000,
+                minWidth: 260,
+                maxWidth: 340,
+                padding: "14px 16px",
+                borderRadius: 14,
+                backgroundColor:
+                  notificationStatus === "success"
+                    ? "#e6f4ea"
+                    : "#fdecea",
+                color:
+                  notificationStatus === "success"
+                    ? "#1f7a30"
+                    : "#a1231d",
+                boxShadow: "0 12px 30px rgba(0, 0, 0, 0.14)",
+                pointerEvents: "none",
+              }}
+            >
+              <Text size="sm" fw={600}>
+                {notificationMessage}
+              </Text>
+            </div>
+          )}
         </Stack>
 
         <Card withBorder padding="xl" radius="md" shadow="sm">
