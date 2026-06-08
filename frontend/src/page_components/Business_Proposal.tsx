@@ -444,11 +444,14 @@ const handleSubmit = async () => {
                           value={item.name}
                           onChange={(e) => updateMenu(i, "name", e.target.value)}
                         />
-                        <TextInput
+                        <NumberInput
                           label="Price"
                           placeholder="e.g. 25000"
-                          value={item.price}
-                          onChange={(e) => updateMenu(i, "price", e.target.value)}
+                          min={0}
+                          thousandSeparator="."
+                          decimalSeparator=","
+                          value={item.price === "" ? "" : Number(item.price)}
+                          onChange={(v) => updateMenu(i, "price", String(v))}
                         />
                       </SimpleGrid>
                       <Textarea
