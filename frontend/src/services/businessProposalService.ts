@@ -5,7 +5,7 @@ import type {
   AIBusinessProposal,
 } from "./models";
 
-const BASE_URL = "http://localhost:8000";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 async function getAuthHeader() {
   const { data } = await supabase.auth.getSession();
@@ -20,7 +20,9 @@ export async function getBusinessProposals(): Promise<BusinessProposal[]> {
   });
   if (!result.ok) {
     const body = await result.text();
-    throw new Error(`Failed to fetch business proposals: ${result.status} ${body}`);
+    throw new Error(
+      `Failed to fetch business proposals: ${result.status} ${body}`,
+    );
   }
 
   const payload = await result.json();
@@ -39,13 +41,20 @@ export async function getBusinessProposals(): Promise<BusinessProposal[]> {
     }
   }
 
-  throw new Error(`Unexpected business proposal response shape: ${JSON.stringify(payload)}`);
+  throw new Error(
+    `Unexpected business proposal response shape: ${JSON.stringify(payload)}`,
+  );
 }
 
-export async function getBusinessProposal(id: string): Promise<BusinessProposal> {
-  const result = await fetch(`${BASE_URL}/business-proposal/${encodeURIComponent(id)}`, {
-    headers: await getAuthHeader(),
-  });
+export async function getBusinessProposal(
+  id: string,
+): Promise<BusinessProposal> {
+  const result = await fetch(
+    `${BASE_URL}/business-proposal/${encodeURIComponent(id)}`,
+    {
+      headers: await getAuthHeader(),
+    },
+  );
   if (!result.ok) throw new Error("Business proposal not found");
   return result.json();
 }
@@ -70,11 +79,17 @@ export async function updateBusinessProposal(
   id: string,
   payload: BusinessProposalInput,
 ): Promise<BusinessProposal> {
-  const result = await fetch(`${BASE_URL}/business-proposal/${encodeURIComponent(id)}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json", ...(await getAuthHeader()) },
-    body: JSON.stringify(payload),
-  });
+  const result = await fetch(
+    `${BASE_URL}/business-proposal/${encodeURIComponent(id)}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        ...(await getAuthHeader()),
+      },
+      body: JSON.stringify(payload),
+    },
+  );
   if (!result.ok) {
     const errorBody = await result.text();
     console.error("Update proposal error:", errorBody);
@@ -83,13 +98,20 @@ export async function updateBusinessProposal(
   return result.json();
 }
 
-export async function getAIBusinessProposal(id: string): Promise<AIBusinessProposal> {
-  const result = await fetch(`${BASE_URL}/ai-business-proposal/${encodeURIComponent(id)}`, {
-    headers: await getAuthHeader(),
-  });
+export async function getAIBusinessProposal(
+  id: string,
+): Promise<AIBusinessProposal> {
+  const result = await fetch(
+    `${BASE_URL}/ai-business-proposal/${encodeURIComponent(id)}`,
+    {
+      headers: await getAuthHeader(),
+    },
+  );
   if (!result.ok) {
     const errorBody = await result.text();
-    throw new Error(`AI business proposal not found: ${result.status} ${errorBody}`);
+    throw new Error(
+      `AI business proposal not found: ${result.status} ${errorBody}`,
+    );
   }
   return result.json();
 }
