@@ -1,5 +1,4 @@
 import {
-  ActionIcon,
   Box,
   Button,
   Card,
@@ -14,7 +13,6 @@ import {
 import type { AmortEntry } from "../../../services/models";
 import {
   HiSearch,
-  HiFilter,
   HiPencil,
   HiTrash,
   HiOutlineReply,
@@ -136,7 +134,7 @@ function AmortList({
               <Menu.Item
                 color="red"
                 leftSection={<HiTrash />}
-                onClick={() => confirmDelete(entry.amortID!, entry.title)}
+                onClick={() => confirmDelete(entry.amortID!, entry.title ?? "")}
               >
                 Delete
               </Menu.Item>
@@ -207,7 +205,6 @@ function AmortList({
                   Actions
                 </Text>
               </Table.Th>
-              
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>

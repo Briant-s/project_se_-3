@@ -12,7 +12,6 @@ import { useEffect, useState } from "react";
 import type { AmortEntry } from "../../services/models";
 import { getAmortEntry } from "../../services/amortService";
 import { HiOutlineReply } from "react-icons/hi";
-import { LineChart } from "@mantine/charts";
 import { MetricCard } from "./components/MetricCard";
 import { formatRupiah } from "../../utils/globalFormatter";
 import { AmortBadge } from "./components/AmortBadge";
@@ -85,11 +84,11 @@ function Amort_Details() {
             </Text>
             <Group gap="0.5rem">
               <KURBadge type={entry.creditID ?? 0} />
-              <HealthBadge type={entry.health_status} />
+              <HealthBadge type={entry.health_status ?? "healthy"} />
             </Group>
           </Stack>
           {/* Health Badge with status and dbr */}
-          <AmortBadge status={healthStatus} dbrPercent={entry.dbr} />
+          <AmortBadge status={healthStatus} dbrPercent={entry.dbr ?? 0} />
         </Group>
         <Divider my="md" />
         {/* 4 Amort Cards */}
@@ -132,7 +131,7 @@ function Amort_Details() {
 
             <FeasibilityChart
               data={chartDataArray}
-              isFeasible={entry.isFeasible}
+              isFeasible={entry.isFeasible ?? false}
             />
           </Stack>
           <AdvisoryCard

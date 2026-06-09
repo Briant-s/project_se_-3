@@ -1,3 +1,5 @@
+type KurKey = "KUR_SUPER_MIKRO" | "KUR_MIKRO" | "KUR_KECIL";
+type KurPurpose = "KI" | "KMK";
 export interface Asset {
   assetsID?: number;
   businessID?: number;
@@ -23,6 +25,8 @@ export interface AmortEntry {
   isFeasible?: boolean;
   maxSafePrincipal?: number;
   SafeExtendedTenor?: number;
+  loanType: KurKey;
+  loanPurpose: KurPurpose;
 }
 
 export interface AmortFormValues {
@@ -36,6 +40,7 @@ export interface AmortFormValues {
 
 export interface BusinessProfile {
   user_id?: string;
+  businessID?: number;
   businessName?: string;
   ownerName?: string;
   businessAge?: number;

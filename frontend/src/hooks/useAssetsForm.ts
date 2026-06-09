@@ -48,7 +48,10 @@ export function useAssetForm() {
     try {
       const newAsset: Asset = {
         assetsID: 0,
-        businessID: businessIDRef.current,
+        businessID:
+          businessIDRef.current != null
+            ? Number(businessIDRef.current)
+            : undefined,
         assetsName: assetForm.assetsName,
         assetsType: assetForm.assetsType,
         assetsValue: Number(assetForm.assetsValue),

@@ -17,7 +17,7 @@ import { calculateSafeExtendedTenor } from "../utils/amort/safetenor";
 
 export function useAmortActions(
   setEditId: (id: number | null) => void,
-  business: BusinessProfile | undefined,
+  business: BusinessProfile | null,
   creditMap: Record<number, Credit>,
   editId: number | null,
 ) {

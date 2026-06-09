@@ -1,5 +1,4 @@
 import {
-  ActionIcon,
   Badge,
   Button,
   Container,
@@ -7,7 +6,6 @@ import {
   Group,
   Stack,
   Text,
-  Paper,
   SimpleGrid,
   Card,
   ColorSwatch,
@@ -15,28 +13,9 @@ import {
   Loader,
   useMantineTheme,
 } from "@mantine/core";
-import {
-  HiOutlinePlus,
-  HiPencil,
-  HiTrash,
-  HiOutlineReply,
-  HiPlus,
-} from "react-icons/hi";
-import { FaArrowTrendDown } from "react-icons/fa6";
-import { modals } from "@mantine/modals";
-import type { AmortEntry } from "../../services/models";
-import {
-  getAmortEntries,
-  createAmortEntry,
-  updateAmortEntry,
-  deleteAmortEntry,
-} from "../../services/amortService";
+import { HiPlus } from "react-icons/hi";
 import { AmortList, TrendIndicator } from "./components";
-import { useAmortModal, useKURTypeCounts } from "../../hooks";
-
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import AmortForm from "./AmortForm";
+import { useState } from "react";
 import { DonutChart } from "@mantine/charts";
 import { useAmortActions } from "../../hooks/useAmortActions";
 import { useBusinessProfile } from "../../hooks/useBusinessProfile";
@@ -48,11 +27,11 @@ import {
   getFeasibilityColor,
   getSurplusColor,
 } from "../../utils/getColors";
+import { useKURTypeCounts } from "../../hooks";
 
 function Amort_Calc() {
   const theme = useMantineTheme();
   const [editId, setEditId] = useState<number | null>(null);
-  const navigate = useNavigate();
 
   const { business } = useBusinessProfile();
   const { creditMap } = useCreditReferences();
@@ -63,7 +42,7 @@ function Amort_Calc() {
     editId,
   );
 
-  const metrics = useLoanSummaryMetrics(entries, business);
+  const metrics = useLoanSummaryMetrics(entries, business ?? undefined);
 
   const KURTypeCounts = useKURTypeCounts(entries);
 
@@ -120,11 +99,22 @@ function Amort_Calc() {
               <SimpleGrid cols={{ base: 2 }} autoFlow="auto-fill">
                 <Card withBorder shadow="none">
                   <Stack>
-
                     {KURAmount.map((item) => (
-                      <Group key={item.name} justify="space-between" wrap="nowrap">
-                        <Group gap="xs" wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
-                          <ColorSwatch color={item.color} size={10} style={{ flexShrink: 0 }} />
+                      <Group
+                        key={item.name}
+                        justify="space-between"
+                        wrap="nowrap"
+                      >
+                        <Group
+                          gap="xs"
+                          wrap="nowrap"
+                          style={{ flex: 1, minWidth: 0 }}
+                        >
+                          <ColorSwatch
+                            color={item.color}
+                            size={10}
+                            style={{ flexShrink: 0 }}
+                          />
                           <Text size="sm">{item.name}</Text>
                         </Group>
                         <Text size="sm" fw={700}>

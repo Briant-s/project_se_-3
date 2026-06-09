@@ -4,7 +4,7 @@ import { HiOutlineCreditCard } from "react-icons/hi";
 export type KurBadgeType = "healthy" | "warning" | "not_healthy";
 
 interface KurTypeBadgeProps {
-  type: KurBadgeType | string; // Allows the strict types, but accepts string for API fallbacks
+  type?: string | undefined; // Allows the strict types, but accepts string for API fallbacks
 }
 
 function HealthBadge({ type }: KurTypeBadgeProps) {
@@ -21,7 +21,10 @@ function HealthBadge({ type }: KurTypeBadgeProps) {
     },
   };
 
-  const { color, label } = map[type] ?? { color: "gray", label: "Unknown" };
+  const { color, label } = (type ? map[type] : null) ?? {
+    color: "gray",
+    label: "Unknown",
+  };
 
   return (
     <Badge

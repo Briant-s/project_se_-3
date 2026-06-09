@@ -1,11 +1,28 @@
-import { Card, Container, Group, SimpleGrid, Stack, Text, Title, ThemeIcon } from "@mantine/core";
-import { HiIdentification, HiChartPie, HiCalculator, HiClipboardDocumentList, HiHeart, HiArrowRight } from "react-icons/hi2";
+import {
+  Card,
+  Container,
+  Group,
+  SimpleGrid,
+  Stack,
+  Text,
+  Title,
+  ThemeIcon,
+} from "@mantine/core";
+import {
+  HiIdentification,
+  HiChartPie,
+  HiCalculator,
+  HiClipboardDocumentList,
+  HiHeart,
+  HiArrowRight,
+} from "react-icons/hi2";
 import { Link } from "react-router-dom";
 
 const dashboardItems = [
   {
     title: "Business Profile",
-    description: "Update your business profile and information for more accurate credit results.",
+    description:
+      "Update your business profile and information for more accurate credit results.",
     path: "/my-business/business-profile",
     icon: HiIdentification,
     color: "blue",
@@ -19,14 +36,16 @@ const dashboardItems = [
   },
   {
     title: "Loan Calculator",
-    description: "Simulate installments and credit calculations for a clear repayment plan.",
+    description:
+      "Simulate installments and credit calculations for a clear repayment plan.",
     path: "/credit/amort-calc",
     icon: HiCalculator,
     color: "orange",
   },
   {
     title: "Business Proposal",
-    description: "Manage your business proposals and view the list of created proposals.",
+    description:
+      "Manage your business proposals and view the list of created proposals.",
     path: "/business-proposal/list",
     icon: HiClipboardDocumentList,
     color: "cyan",
@@ -40,7 +59,8 @@ const dashboardItems = [
   // },
   {
     title: "Available KUR Types",
-    description: "See KUR recommendations best suited to your business profile and needs.",
+    description:
+      "See KUR recommendations best suited to your business profile and needs.",
     path: "/credit/eligibility-quiz",
     icon: HiHeart,
     color: "red",
@@ -54,7 +74,8 @@ function Dashboard() {
         <Stack style={{ maxWidth: 760, gap: 10 }}>
           <Title order={1}>Dashboard</Title>
           <Text c="dimmed" size="md">
-            Use this dashboard to quickly access important pages and explore the main PoestaKas features.
+            Use this dashboard to quickly access important pages and explore the
+            main PoestaKas features.
           </Text>
         </Stack>
 
@@ -70,9 +91,12 @@ function Dashboard() {
                 radius="md"
                 shadow="sm"
                 p="lg"
-                style={{ textDecoration: "none", transition: "transform 150ms ease, box-shadow 150ms ease" }}
+                style={{
+                  textDecoration: "none",
+                  transition: "transform 150ms ease, box-shadow 150ms ease",
+                }}
               >
-                <Group position="apart" align="flex-start">
+                <Group align="flex-start">
                   <ThemeIcon radius="xl" size="lg" color={item.color}>
                     <Icon size={20} />
                   </ThemeIcon>
@@ -80,7 +104,7 @@ function Dashboard() {
                     <HiArrowRight size={18} />
                   </ThemeIcon>
                 </Group>
-                <Stack mt="md" spacing={6}>
+                <Stack mt="md">
                   <Text size="lg" fw={700}>
                     {item.title}
                   </Text>

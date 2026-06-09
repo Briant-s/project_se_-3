@@ -118,7 +118,11 @@ function RegistrationPage() {
     return validatePassword(password);
   }, [password]);
 
-  const handleSignUp = async (values: { name: string; email: string; password: string }) => {
+  const handleSignUp = async (values: {
+    name: string;
+    email: string;
+    password: string;
+  }) => {
     // Validasi email sebelum submit
     const emailCheck = validateEmailFormat(values.email);
     if (!emailCheck.isValid) {
@@ -156,17 +160,17 @@ function RegistrationPage() {
         navigate("/my-business/profile-quiz");
       } else if (result && result.error) {
         // Extract error message dari Supabase error object
-        const errorMessage =
-          typeof result.error === "string"
-            ? result.error
-            : result.error?.message || "Registration failed";
+        const errorMessage = result.error || "Registration failed";
         setError(errorMessage);
         open();
       }
     } catch (err) {
       // Capture error message dari Supabase
       console.error("Sign up error:", err);
-      const errorMessage = err instanceof Error ? err.message : "An error occurred during registration";
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "An error occurred during registration";
       setError(errorMessage);
       open();
     } finally {
@@ -186,7 +190,10 @@ function RegistrationPage() {
       }
     } catch (err) {
       console.error("Google sign up error:", err);
-      const errorMessage = err instanceof Error ? err.message : "An error occurred during Google sign up";
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "An error occurred during Google sign up";
       setError(errorMessage);
       open();
     } finally {
@@ -234,9 +241,7 @@ function RegistrationPage() {
                       form.setFieldValue("email", e.currentTarget.value);
                     }}
                     error={
-                      email && emailValidation.errors.length > 0
-                        ? true
-                        : false
+                      email && emailValidation.errors.length > 0 ? true : false
                     }
                   />
                   {/* Tampilkan validasi pesan */}
@@ -291,7 +296,14 @@ function RegistrationPage() {
                           : "black"
                       }
                     />
-                    <Text size="xs" c={password && passwordValidation.hasNumber ? "green" : "dimmed"}>
+                    <Text
+                      size="xs"
+                      c={
+                        password && passwordValidation.hasNumber
+                          ? "green"
+                          : "dimmed"
+                      }
+                    >
                       Must contain 1 number
                     </Text>
                   </Group>
@@ -305,7 +317,14 @@ function RegistrationPage() {
                           : "black"
                       }
                     />
-                    <Text size="xs" c={password && passwordValidation.minLength ? "green" : "dimmed"}>
+                    <Text
+                      size="xs"
+                      c={
+                        password && passwordValidation.minLength
+                          ? "green"
+                          : "dimmed"
+                      }
+                    >
                       Min 8 characters
                     </Text>
                   </Group>

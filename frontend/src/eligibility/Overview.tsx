@@ -1,5 +1,4 @@
 import {
-  ActionIcon,
   Button,
   Card,
   Container,
@@ -12,13 +11,9 @@ import {
   Title,
   Loader,
   useMantineTheme,
-  Paper,
 } from "@mantine/core";
-import { HiOutlineReply, HiPlus } from "react-icons/hi";
-import { BusinessCard } from "../components";
-import { useState, useEffect } from "react";
-import type { BusinessProfile } from "../services/models";
-import { getBusinessProfile } from "../services/businessProfileService";
+import { HiPlus } from "react-icons/hi";
+import { useState } from "react";
 import { KURCard } from "./component";
 import { useKURDaysList, useKURHealthCounts, useKURTypeCounts } from "../hooks";
 import { AmortList } from "../page_components/Credit/components";
@@ -49,18 +44,6 @@ function Eligibility_Overview() {
   const daysEntries = useKURDaysList(entries, days);
   // KUR Health Count
   // const KURHealthCount = useMemo()
-
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
 
   // KUR User Stats
   const KUR_stats = [

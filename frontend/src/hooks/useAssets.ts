@@ -26,7 +26,7 @@ export function useAssets() {
   const { hasCollateral, totalAssetsValue } = useMemo(() => {
     if (assets === null) {
       // still fetching — unknown
-      return { hasCollateral: null, totalAssetsValue: null };
+      return { hasCollateral: undefined, totalAssetsValue: undefined };
     }
     if (assets.length === 0) {
       // fetched but empty — user explicitly has no assets = no collateral

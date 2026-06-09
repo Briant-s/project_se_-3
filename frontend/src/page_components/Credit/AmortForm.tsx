@@ -11,14 +11,11 @@ import {
   useMantineTheme,
   Card,
   Badge,
-  ThemeIcon,
   Anchor,
 } from "@mantine/core";
-import classes from "./AmortForm.module.css";
 import { useCreditReferences } from "../../hooks/useCreditReferences";
 import { useBusinessProfile } from "../../hooks/useBusinessProfile";
 import { useAssets } from "../../hooks/useAssets";
-import { formatRupiah } from "../../utils/globalFormatter";
 import { HiCheckCircle, HiXCircle, HiLockClosed } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
 import { modals } from "@mantine/modals";
@@ -29,8 +26,7 @@ interface Props {
   editId: number | null;
 }
 
-const KUR_KEYS = ["KUR_SUPER_MIKRO", "KUR_MIKRO", "KUR_KECIL"] as const;
-type KurKey = (typeof KUR_KEYS)[number];
+type KurKey = "KUR_SUPER_MIKRO" | "KUR_MIKRO" | "KUR_KECIL";
 
 const getCreditKey = (type: string, purpose: string) => {
   if (!type || !purpose) return null;
@@ -39,7 +35,7 @@ const getCreditKey = (type: string, purpose: string) => {
 };
 
 function AmortForm({ onSubmit, initialValues, editId }: Props) {
-  const { creditMapByType, loading } = useCreditReferences();
+  const { creditMapByType } = useCreditReferences();
   const { business } = useBusinessProfile();
   const { hasCollateral } = useAssets();
 
@@ -75,13 +71,23 @@ function AmortForm({ onSubmit, initialValues, editId }: Props) {
   };
 
   const form = useForm<AmortFormValues>({
-    initialValues: initialValues ?? {
-      title: "",
-      tenorMonth: "",
-      principalAmount: "",
-      loanType: "KUR_SUPER_MIKRO",
-      loanPurpose: "KI",
-    },
+    initialValues: initialValues
+      ? {
+          title: initialValues.title ?? "",
+          tenorMonth: initialValues.tenorMonth ?? 0,
+          principalAmount: initialValues.principalAmount ?? 0,
+          loanType: initialValues.loanType ?? "KUR_SUPER_MIKRO",
+          loanPurpose: initialValues.loanPurpose ?? "KI",
+          totalInstallment: initialValues.totalInstallment ?? 0,
+        }
+      : {
+          title: "",
+          tenorMonth: 0,
+          principalAmount: 0,
+          loanType: "KUR_SUPER_MIKRO",
+          loanPurpose: "KI",
+          totalInstallment: 0,
+        },
     validate: {
       principalAmount: (value, values) => {
         const lookupKey = getCreditKey(values.loanType, values.loanPurpose);
@@ -164,6 +170,8 @@ function AmortForm({ onSubmit, initialValues, editId }: Props) {
           tenorMonth: values.tenorMonth,
           principalAmount: values.principalAmount,
           creditID: resolveCreditID[values.loanType][values.loanPurpose],
+          loanType: values.loanType,
+          loanPurpose: values.loanPurpose,
         };
         onSubmit(entry, editId);
       })}

@@ -1,5 +1,4 @@
-import { ActionIcon, Card, Group, Stack, Text } from "@mantine/core";
-import { HiOutlineReply } from "react-icons/hi";
+import { Card, Stack, Text } from "@mantine/core";
 
 interface KURCardProps {
   label: string;

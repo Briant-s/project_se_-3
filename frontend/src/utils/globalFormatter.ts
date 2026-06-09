@@ -1,10 +1,10 @@
-export const formatRupiah = (amount: number) => {
+export const formatRupiah = (amount: number | undefined) => {
   return new Intl.NumberFormat("id-ID", {
     style: "currency",
     currency: "IDR",
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(amount);
+  }).format(amount ?? 0);
   // Output: Rp 8.100.000,00
 };
 

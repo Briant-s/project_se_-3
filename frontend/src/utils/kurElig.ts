@@ -32,7 +32,7 @@ export function getKUREligibility(
       info: credit.needsCollateral
         ? "Collateral asset required"
         : "Not required",
-      met: !credit.needsCollateral || (profile.hasCollateral ?? false),
+      met: !credit.needsCollateral,
     },
   ];
 

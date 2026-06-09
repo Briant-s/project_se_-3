@@ -1,6 +1,6 @@
 import { useState } from "react";
 import KURDisplay from "./KURDisplay";
-import { Select, Stack, Text, Skeleton, SimpleGrid, Box } from "@mantine/core";
+import { Select, Stack, Text, Box } from "@mantine/core";
 
 function QuizPage() {
   const [purpose, setPurpose] = useState<"ki" | "kmk">("ki");

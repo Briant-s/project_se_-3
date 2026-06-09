@@ -27,6 +27,8 @@ export const useAmortModal = ({ onSubmit, setEditId }: Props) => {
                   tenorMonth: entry.tenorMonth,
                   totalInstallment: entry.totalInstallment,
                   principalAmount: entry.principalAmount,
+                  loanType: entry.loanType,
+                  loanPurpose: entry.loanPurpose,
                 }
               : undefined
           }

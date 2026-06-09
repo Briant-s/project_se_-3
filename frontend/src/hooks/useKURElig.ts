@@ -2,10 +2,7 @@
 import { useMemo } from "react";
 import { useCreditReferences } from "./useCreditReferences";
 import { useBusinessProfile } from "./useBusinessProfile";
-import {
-  getKUREligibility,
-  type KUREligibility,
-} from "../utils/kurEligibility";
+import { getKUREligibility, type KUREligibility } from "../utils/kurElig";
 
 export function useKUREligibility(loanPurpose: "ki" | "kmk") {
   const { creditMapByType, loading: creditLoading } = useCreditReferences();

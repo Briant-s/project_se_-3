@@ -4,14 +4,14 @@ import { formatRupiah } from "../../../utils/globalFormatter";
 
 interface AdvisoryProps {
   status: "healthy" | "warning" | "not_healthy";
-  dbrPercent: number;
-  pmt: number;
-  totalInterest: number;
-  avgMonthlyIncome: number;
-  tenorMonth: number;
-  principalAmount: number;
-  maxSafePrincipal: number;
-  safeExtendedTenor: number | null;
+  dbrPercent: number | undefined;
+  pmt: number | undefined;
+  totalInterest: number | undefined;
+  avgMonthlyIncome: number | undefined;
+  tenorMonth: number | undefined;
+  principalAmount: number | undefined;
+  maxSafePrincipal: number | undefined;
+  safeExtendedTenor: number | undefined;
 }
 
 export function AdvisoryCard({
@@ -39,7 +39,7 @@ export function AdvisoryCard({
       accentColor: HealthStatus.warning,
       title: "⚠ Rekomendasi Penyesuaian",
     },
-    risky: {
+    not_healthy: {
       bg: HealthStatus.nh_bg,
       accentColor: HealthStatus.not_healthy, // Maps 'risky' to 'not_healthy'
       title: "✕ Risiko Tinggi — Perlu Penyesuaian Wajib",

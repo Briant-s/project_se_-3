@@ -51,14 +51,8 @@ function ProfileQuiz() {
     businessAge: formData.businessAge !== "" ? formData.businessAge : undefined,
     totalEmployees:
       formData.totalEmployees !== "" ? Number(formData.totalEmployees) : null,
-    monthlyAverageIncome:
-      formData.monthlyAverageIncome !== ""
-        ? formData.monthlyAverageIncome
-        : undefined,
-    monthlyAverageProfitLoss:
-      formData.monthlyAverageProfitLoss !== ""
-        ? formData.monthlyAverageProfitLoss
-        : undefined,
+    monthlyAverageIncome: formData.monthlyAverageIncome ?? undefined,
+    monthlyAverageProfitLoss: formData.monthlyAverageProfitLoss ?? undefined,
     isProfitable: formData.isProfitable ?? undefined,
     // rest pass through directly
     ownerDob: formData.ownerDob,
@@ -71,7 +65,6 @@ function ProfileQuiz() {
     umkmUnlockLevel: formData.umkmUnlockLevel,
     businessContactNumber: formData.businessContactNumber,
     businessEmail: formData.businessEmail,
-    hasCollateral: formData.hasCollateral,
     paymentMethod: formData.paymentMethod,
   });
 
@@ -87,8 +80,8 @@ function ProfileQuiz() {
     businessType: null,
     totalEmployees: "",
     storeType: null,
-    monthlyAverageIncome: "",
-    monthlyAverageProfitLoss: "",
+    monthlyAverageIncome: null,
+    monthlyAverageProfitLoss: null,
     isOtherKredit: null,
     umkmUnlockLevel: null,
     businessContactNumber: "",
@@ -96,7 +89,6 @@ function ProfileQuiz() {
     isProfitable: null,
     businessAgeYears: "" as number | "",
     businessAgeMonths: "" as number | "",
-    hasCollateral: null,
     paymentMethod: null,
   });
 
@@ -115,7 +107,9 @@ function ProfileQuiz() {
   const [profileExists, setProfileExists] = useState(false);
   const [isAddingAsset, setIsAddingAsset] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
-  const [notificationStatus, setNotificationStatus] = useState<"success" | "error">("success");
+  const [notificationStatus, setNotificationStatus] = useState<
+    "success" | "error"
+  >("success");
   const [notificationMessage, setNotificationMessage] = useState<string>("");
 
   useEffect(() => {
@@ -155,8 +149,8 @@ function ProfileQuiz() {
                 ? Number(profile.totalEmployees)
                 : "",
           storeType: profile.storeType || null,
-          monthlyAverageIncome: profile.monthlyAverageIncome ?? "",
-          monthlyAverageProfitLoss: profile.monthlyAverageProfitLoss ?? "",
+          monthlyAverageIncome: profile.monthlyAverageIncome ?? null,
+          monthlyAverageProfitLoss: profile.monthlyAverageProfitLoss ?? null,
           isOtherKredit: profile.isOtherKredit || null,
           umkmUnlockLevel: profile.umkmUnlockLevel || null,
           businessContactNumber: profile.businessContactNumber || "",
@@ -168,7 +162,7 @@ function ProfileQuiz() {
               : "",
           businessAgeMonths:
             profile.businessAge != null ? profile.businessAge % 12 : "",
-          paymentMethod: profile.paymentMethod || null
+          paymentMethod: profile.paymentMethod || null,
         });
         setProfileExists(true);
 
@@ -226,7 +220,7 @@ function ProfileQuiz() {
         newErrors.totalEmployees = "This field is required";
       if (!formData.storeType)
         newErrors.storeType = "Please select a store type";
-      if (!formData.paymentMethod) 
+      if (!formData.paymentMethod)
         newErrors.paymentMethod = "Please select a payment method";
     }
 
@@ -272,7 +266,9 @@ function ProfileQuiz() {
         .catch((err) => {
           console.error(err);
           setNotificationStatus("error");
-          setNotificationMessage("Failed to save profile to Supabase. Please try again.");
+          setNotificationMessage(
+            "Failed to save profile to Supabase. Please try again.",
+          );
           setNotificationOpen(true);
         })
         .finally(() => setSaving(false));
@@ -361,7 +357,7 @@ function ProfileQuiz() {
     try {
       const newAsset: Asset = {
         assetsID: 0,
-        businessID: businessID,
+        businessID: businessID != null ? Number(businessID) : undefined,
         assetsName: assetForm.assetsName,
         assetsType: assetForm.assetsType,
         // assetsValue: assetForm.assetsValue,
@@ -446,13 +442,8 @@ function ProfileQuiz() {
                 padding: "14px 16px",
                 borderRadius: 14,
                 backgroundColor:
-                  notificationStatus === "success"
-                    ? "#e6f4ea"
-                    : "#fdecea",
-                color:
-                  notificationStatus === "success"
-                    ? "#1f7a30"
-                    : "#a1231d",
+                  notificationStatus === "success" ? "#e6f4ea" : "#fdecea",
+                color: notificationStatus === "success" ? "#1f7a30" : "#a1231d",
                 boxShadow: "0 12px 30px rgba(0, 0, 0, 0.14)",
                 pointerEvents: "none",
               }}
@@ -648,13 +639,13 @@ function ProfileQuiz() {
                 />
 
                 <Select
-                   label="Payment Method"
+                  label="Payment Method"
                   placeholder="Select Payment Method"
                   withAsterisk
                   data={[
                     { value: "Cash", label: "Cash" },
                     { value: "Transfer Bank", label: "Transfer Bank" },
-                    { value: "Both", label: "Both (Cash & Transfer)" }
+                    { value: "Both", label: "Both (Cash & Transfer)" },
                   ]}
                   value={formData.paymentMethod}
                   onChange={(val) => updateForm("paymentMethod", val)}
@@ -676,7 +667,7 @@ function ProfileQuiz() {
                   decimalSeparator=","
                   decimalScale={2}
                   hideControls
-                  value={formData.monthlyAverageIncome}
+                  value={formData.monthlyAverageIncome ?? undefined}
                   onChange={(val) => updateForm("monthlyAverageIncome", val)}
                   error={errors.monthlyAverageIncome}
                 />
@@ -713,7 +704,7 @@ function ProfileQuiz() {
                       decimalScale={2}
                       hideControls
                       disabled={formData.isProfitable === null}
-                      value={formData.monthlyAverageProfitLoss}
+                      value={formData.monthlyAverageProfitLoss ?? undefined}
                       onChange={(val) =>
                         updateForm("monthlyAverageProfitLoss", val)
                       }

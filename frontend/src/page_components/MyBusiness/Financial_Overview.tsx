@@ -13,11 +13,11 @@ import {
   Button,
 } from "@mantine/core";
 import { useEffect, useState } from "react";
-import { HiExternalLink, HiTrash } from "react-icons/hi";
+import { HiTrash } from "react-icons/hi";
 import { HiOutlineCreditCard, HiOutlineBanknotes } from "react-icons/hi2";
-import { getBusinessProfile } from "../../services/businessProfileService";
+
 import { deleteAsset } from "../../services/assetService";
-import type { BusinessProfile } from "../../services/models";
+
 import { DataItem } from "./component";
 import { BusinessCard } from "../../components";
 import { formatRupiah } from "../../utils/globalFormatter";
@@ -41,7 +41,9 @@ function FinancialOverview() {
     setIsDeleting(true);
     try {
       await deleteAsset(String(selectedAssetId));
-      setAssetsList(assetsList.filter(asset => asset.assetsID !== selectedAssetId));
+      setAssetsList(
+        assetsList.filter((asset) => asset.assetsID !== selectedAssetId),
+      );
       setDeleteModalOpened(false);
       setSelectedAssetId(null);
     } catch (error) {
@@ -72,9 +74,9 @@ function FinancialOverview() {
       <Container fluid>
         <Stack gap="lg">
           <BusinessCard
-            businessName={business?.businessName}
-            businessSector={business?.businessSector}
-            businessType={business?.businessType}
+            businessName={business?.businessName ?? undefined}
+            businessSector={business?.businessSector ?? undefined}
+            businessType={business?.businessType ?? undefined}
           />
 
           {/* Card 1: Performance & Active Loans - DITAMBAHKAN shadow="sm" */}
@@ -137,7 +139,8 @@ function FinancialOverview() {
                   Payment Methods
                 </Text>
                 <Group gap="md">
-                  {(business?.paymentMethod === "Cash" || business?.paymentMethod === "Both") && (
+                  {(business?.paymentMethod === "Cash" ||
+                    business?.paymentMethod === "Both") && (
                     <Badge
                       leftSection={<HiOutlineBanknotes size={14} />}
                       variant="outline"
@@ -146,7 +149,8 @@ function FinancialOverview() {
                       Cash
                     </Badge>
                   )}
-                  {(business?.paymentMethod === "Transfer Bank" || business?.paymentMethod === "Both") && (
+                  {(business?.paymentMethod === "Transfer Bank" ||
+                    business?.paymentMethod === "Both") && (
                     <Badge
                       leftSection={<HiOutlineCreditCard size={14} />}
                       variant="outline"
@@ -228,7 +232,9 @@ function FinancialOverview() {
                               size="sm"
                               color="red"
                               variant="light"
-                              onClick={() => openDeleteModal(asset.assetsID || 0)}
+                              onClick={() =>
+                                openDeleteModal(asset.assetsID || 0)
+                              }
                             >
                               <HiTrash
                                 style={{ width: "16px", height: "16px" }}
@@ -254,7 +260,10 @@ function FinancialOverview() {
         centered
       >
         <Stack gap="md">
-          <Text>Are you sure you want to delete this asset? This action cannot be undone.</Text>
+          <Text>
+            Are you sure you want to delete this asset? This action cannot be
+            undone.
+          </Text>
           <Group justify="flex-end" gap="sm">
             <Button
               variant="light"

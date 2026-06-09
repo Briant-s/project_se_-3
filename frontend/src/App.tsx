@@ -1,5 +1,5 @@
 // import { Children, useState } from "react";
-import { createTheme, MantineProvider } from "@mantine/core";
+import { MantineProvider } from "@mantine/core";
 import "./App.css";
 // import { Label } from "recharts";
 import { BrowserRouter, Routes, Route } from "react-router-dom";

@@ -12,7 +12,6 @@ import {
 } from "@mantine/core";
 import { HiPencil, HiExternalLink, HiOutlineX } from "react-icons/hi";
 import { useState, useEffect } from "react";
-import { mockBusinessProfile } from "../../mock_user";
 import { getBusinessProfile } from "../../services/businessProfileService";
 import type { BusinessProfile as BusinessProfileData } from "../../services/models";
 import { DataItem } from "./component";
@@ -54,16 +53,16 @@ function BusinessProfile() {
   useEffect(() => {
     const fetchBusiness = async () => {
       setLoading(true);
-      try{
+      try {
         const result = await getBusinessProfile();
         setBusiness(result);
         const completion = calculateFormCompletion(result);
         setFormProgress(completion);
         setFormReminder(completion < 100);
-      } catch (error){
-          console.error(error);
+      } catch (error) {
+        console.error(error);
       } finally {
-          setLoading(false);
+        setLoading(false);
       }
     };
     fetchBusiness();
@@ -112,7 +111,7 @@ function BusinessProfile() {
 
                 <Group gap="xs">
                   <Button
-                    component={Link} 
+                    component={Link}
                     to="/my-business/profile-quiz"
                     variant="white"
                     color="red"
@@ -151,11 +150,12 @@ function BusinessProfile() {
                 <Text fw={700} size="lg">
                   {business?.businessName}
                 </Text>
-                <ActionIcon 
-                component={Link}                 
-                to="/my-business/profile-quiz"
-                variant="subtle" 
-                color="grey">
+                <ActionIcon
+                  component={Link}
+                  to="/my-business/profile-quiz"
+                  variant="subtle"
+                  color="grey"
+                >
                   <HiPencil />
                 </ActionIcon>
               </Group>
@@ -208,7 +208,7 @@ function BusinessProfile() {
                     value={
                       business?.paymentMethod === "Both"
                         ? "Cash & Transfer Bank"
-                        : business?.paymentMethod ?? "--"
+                        : (business?.paymentMethod ?? "--")
                     }
                   />
                 </Group>
@@ -234,7 +234,7 @@ function BusinessProfile() {
                   </Text>
                 </Stack>
                 <Button
-                  component={Link} 
+                  component={Link}
                   to="/my-business/financial-overview"
                   variant="light"
                   rightSection={<HiExternalLink />}
@@ -270,14 +270,16 @@ function BusinessProfile() {
                     </Text>
                   </Stack>
                 </Group>
-              {formProgress < 100 && (
-                <Button 
-                  component={Link}
-                  to="/my-business/profile-quiz"
-                  rightSection={<HiExternalLink />} size="xs">
-                  Continue Quiz
-                </Button>
-              )}
+                {formProgress < 100 && (
+                  <Button
+                    component={Link}
+                    to="/my-business/profile-quiz"
+                    rightSection={<HiExternalLink />}
+                    size="xs"
+                  >
+                    Continue Quiz
+                  </Button>
+                )}
               </Group>
             </Stack>
           </Card>
