@@ -111,11 +111,8 @@ function LoginPage() {
   }, [password]);
 
   const handleSignIn = async (values: { email: string; password: string }) => {
-    console.log("handleSignIn dipanggil dengan values:", values);
-    
     // Validasi email sebelum submit
     const emailCheck = validateEmailFormat(values.email);
-    console.log("Email validation result:", emailCheck);
     if (!emailCheck.isValid) {
       setError("Email tidak valid. Mohon perbaiki format email.");
       open();
@@ -127,7 +124,6 @@ function LoginPage() {
       hasNumber: /\d/.test(values.password),
       minLength: values.password.length >= 8,
     };
-    console.log("Password validation result:", passwordCheck);
     if (!passwordCheck.hasNumber || !passwordCheck.minLength) {
       setError("Password tidak memenuhi persyaratan.");
       open();
@@ -135,11 +131,9 @@ function LoginPage() {
     }
 
     setLoading(true);
-    console.log("Attempting sign in...");
 
     try {
       const result = await signInUser(values.email, values.password);
-      console.log("Sign in result:", result);
       if (result && result.success) {
         navigate("/my-business/business-profile");
       } else if (result && result.error) {
@@ -151,7 +145,8 @@ function LoginPage() {
     } catch (err) {
       // Capture error message dari Supabase
       console.error("Sign in error:", err);
-      const errorMessage = err instanceof Error ? err.message : "An error occurred during login";
+      const errorMessage =
+        err instanceof Error ? err.message : "An error occurred during login";
       setError(errorMessage);
       open();
     } finally {
@@ -160,18 +155,19 @@ function LoginPage() {
   };
 
   const handleGoogleSignIn = async () => {
-    console.log("Google sign in initiated...");
     setLoading(true);
     try {
       const result = await signInWithGoogle();
-      console.log("Google sign in result:", result);
       if (!result.success && result.error) {
         setError(result.error);
         open();
       }
     } catch (err) {
       console.error("Google sign in error:", err);
-      const errorMessage = err instanceof Error ? err.message : "An error occurred during Google sign in";
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "An error occurred during Google sign in";
       setError(errorMessage);
       open();
     } finally {
@@ -210,9 +206,7 @@ function LoginPage() {
               Daftar sekarang
             </Anchor>
           </Text>
-          <form onSubmit={form.onSubmit(handleSignIn, (errors) => {
-            console.log("Form validation errors:", errors);
-          })}>
+          <form onSubmit={form.onSubmit(handleSignIn)}>
             <Stack>
               <Stack gap={4}>
                 <TextInput
@@ -225,9 +219,7 @@ function LoginPage() {
                     form.setFieldValue("email", e.currentTarget.value);
                   }}
                   error={
-                    email && emailValidation.errors.length > 0
-                      ? true
-                      : false
+                    email && emailValidation.errors.length > 0 ? true : false
                   }
                 />
                 {/* Tampilkan validasi pesan */}
@@ -267,7 +259,9 @@ function LoginPage() {
                   form.setFieldValue("password", e.currentTarget.value);
                 }}
               />
-              {password && passwordValidation.hasNumber && passwordValidation.minLength ? (
+              {password &&
+              passwordValidation.hasNumber &&
+              passwordValidation.minLength ? (
                 <Group align="center" gap={8}>
                   <HiCheckCircle color="green" size={16} />
                   <Text size="xs" c="green">
@@ -290,7 +284,14 @@ function LoginPage() {
                             : "black"
                         }
                       />
-                      <Text size="xs" c={password && passwordValidation.hasNumber ? "green" : "dimmed"}>
+                      <Text
+                        size="xs"
+                        c={
+                          password && passwordValidation.hasNumber
+                            ? "green"
+                            : "dimmed"
+                        }
+                      >
                         Must contain 1 number
                       </Text>
                     </Group>
@@ -304,7 +305,14 @@ function LoginPage() {
                             : "black"
                         }
                       />
-                      <Text size="xs" c={password && passwordValidation.minLength ? "green" : "dimmed"}>
+                      <Text
+                        size="xs"
+                        c={
+                          password && passwordValidation.minLength
+                            ? "green"
+                            : "dimmed"
+                        }
+                      >
                         Min 8 characters
                       </Text>
                     </Group>

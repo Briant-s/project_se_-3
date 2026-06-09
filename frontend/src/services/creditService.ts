@@ -14,8 +14,6 @@ export async function getCreditReference(): Promise<Credit[]> {
   const result = await fetch(`${BASE_URL}/credit-reference`, {
     headers: await getAuthHeader(),
   });
-  console.log("Status:", result.status);
-  console.log("Headers:", await getAuthHeader());
   if (!result.ok) throw new Error("Failed to fetch credit references");
   return result.json();
 }

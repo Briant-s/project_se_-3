@@ -39,7 +39,6 @@ function NavLinkGroup({ link, parentPath }: Props) {
         label={item.label}
         leftSection={<item.icon size={16} />}
         onClick={() => {
-          console.log(fullPath);
           navigate(fullPath);
         }}
       />

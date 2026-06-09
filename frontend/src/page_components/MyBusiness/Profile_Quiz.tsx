@@ -364,8 +364,6 @@ function ProfileQuiz() {
         assetsValue: Number(assetForm.assetsValue),
       };
 
-      console.log("Creating asset with data:", newAsset);
-
       const savedAsset = await createAsset(newAsset);
       setAssets([...assets, savedAsset]);
       setAssetForm({

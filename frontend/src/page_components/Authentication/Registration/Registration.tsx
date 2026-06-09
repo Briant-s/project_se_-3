@@ -147,7 +147,6 @@ function RegistrationPage() {
     }
 
     setLoading(true);
-    console.log("Attempting sign up...", values);
 
     try {
       const result = await signUpUser(
@@ -155,7 +154,6 @@ function RegistrationPage() {
         values.email,
         values.password,
       );
-      console.log("Sign up result:", result);
       if (result && result.success) {
         navigate("/my-business/profile-quiz");
       } else if (result && result.error) {
@@ -179,11 +177,9 @@ function RegistrationPage() {
   };
 
   const handleGoogleSignUp = async () => {
-    console.log("Google sign up initiated...");
     setLoading(true);
     try {
       const result = await signInWithGoogle();
-      console.log("Google sign up result:", result);
       if (!result.success && result.error) {
         setError(result.error);
         open();
