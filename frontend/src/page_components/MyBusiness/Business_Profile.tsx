@@ -39,7 +39,7 @@ function BusinessProfile() {
       business.storeType,
       business.monthlyAverageIncome,
       business.monthlyAverageProfitLoss,
-      business.businessAssets,
+      // business.businessAssets,
       business.isOtherKredit,
       business.paymentMethod,
     ];
