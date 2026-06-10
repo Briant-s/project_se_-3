@@ -103,7 +103,7 @@ def filter_nonempty_rows(rows: list[dict]) -> list[dict]:
     return [row for row in rows if row]
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-GEMINI_ENDPOINT = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent"
+GEMINI_ENDPOINT = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent"
 
 # ini versi revisi, agar number list bisa tetap kebawah
 def build_gemini_prompt(proposal: dict, competitors: list[dict], products: list[dict]) -> str:
