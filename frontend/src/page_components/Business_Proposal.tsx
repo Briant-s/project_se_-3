@@ -568,7 +568,7 @@ const handleSubmit = async () => {
         {/* Submit */}
         <Group justify="flex-end" pb="xl">
           <Button color="blue" size="md" onClick={handleSubmit} loading={loading}>
-            {isEditMode ? "Update Proposal" : "Save Draft"}
+            {isEditMode ? "Update Proposal" : "Submit Proposal"}
           </Button>
         </Group>
 
