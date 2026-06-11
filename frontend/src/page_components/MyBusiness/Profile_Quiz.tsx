@@ -188,6 +188,22 @@ function ProfileQuiz() {
     return await saveFunction(payload);
   };
 
+  const clampNonNegativeValue = (value: string | number | null): number | string | null => {
+    if (value === null || value === undefined || value === "") return value;
+    const parsed = typeof value === "number" ? value : Number(value);
+    if (Number.isNaN(parsed)) return "";
+    return Math.max(0, parsed);
+  };
+
+  const clampNonNegativeValueOrNull = (
+    value: string | number | null,
+  ): number | null => {
+    if (value === null || value === undefined || value === "") return null;
+    const parsed = typeof value === "number" ? value : Number(value);
+    if (Number.isNaN(parsed)) return null;
+    return Math.max(0, parsed);
+  };
+
   // 3. Fungsi Validasi sebelum pindah step
   const handleNext = async () => {
     const newErrors: Record<string, string> = {};
@@ -231,8 +247,16 @@ function ProfileQuiz() {
         newErrors.businessSector = "Please select a sector";
       if (!formData.businessType)
         newErrors.businessType = "Please select a type";
-      if (formData.totalEmployees === "")
+      if (formData.totalEmployees === "") {
         newErrors.totalEmployees = "This field is required";
+      } else if (
+        typeof formData.totalEmployees === "number" &&
+        (!Number.isInteger(formData.totalEmployees) ||
+          formData.totalEmployees < 0)
+      ) {
+        newErrors.totalEmployees =
+          "Please enter a whole non-negative number";
+      }
       if (!formData.storeType)
         newErrors.storeType = "Please select a store type";
       if (!formData.paymentMethod)
@@ -563,11 +587,12 @@ function ProfileQuiz() {
                         value={formData.businessAgeYears ?? ""}
                         hideControls
                         onChange={(val) => {
+                          const positiveVal = clampNonNegativeValue(val);
                           setFormData((prev) => ({
                             ...prev,
-                            businessAgeYears: val as number | "",
+                            businessAgeYears: positiveVal as number | "",
                             businessAge:
-                              (Number(val) || 0) * 12 +
+                              (Number(positiveVal) || 0) * 12 +
                               (Number(prev.businessAgeMonths) || 0),
                           }));
                         }}
@@ -581,12 +606,13 @@ function ProfileQuiz() {
                         value={formData.businessAgeMonths ?? ""}
                         hideControls
                         onChange={(val) => {
+                          const positiveVal = clampNonNegativeValue(val);
                           setFormData((prev) => ({
                             ...prev,
-                            businessAgeMonths: val as number | "",
+                            businessAgeMonths: positiveVal as number | "",
                             businessAge:
                               (Number(prev.businessAgeYears) || 0) * 12 +
-                              (Number(val) || 0),
+                              (Number(positiveVal) || 0),
                           }));
                         }}
                       />
@@ -663,9 +689,10 @@ function ProfileQuiz() {
                   label="Employee Count"
                   placeholder="0"
                   min={0}
+                  step={1}
                   withAsterisk
                   value={formData.totalEmployees}
-                  onChange={(val) => updateForm("totalEmployees", val)}
+                  onChange={(val) => updateForm("totalEmployees", val == null ? "" : val)}
                   error={errors.totalEmployees}
                 />
                 <Select
@@ -708,7 +735,12 @@ function ProfileQuiz() {
                   decimalScale={2}
                   hideControls
                   value={formData.monthlyAverageIncome ?? undefined}
-                  onChange={(val) => updateForm("monthlyAverageIncome", val)}
+                  onChange={(val) =>
+                    updateForm(
+                      "monthlyAverageIncome",
+                      clampNonNegativeValueOrNull(val),
+                    )
+                  }
                   error={errors.monthlyAverageIncome}
                 />
                 <Stack gap={4}>
@@ -746,7 +778,10 @@ function ProfileQuiz() {
                       disabled={formData.isProfitable === null}
                       value={formData.monthlyAverageProfitLoss ?? undefined}
                       onChange={(val) =>
-                        updateForm("monthlyAverageProfitLoss", val)
+                        updateForm(
+                          "monthlyAverageProfitLoss",
+                          clampNonNegativeValueOrNull(val),
+                        )
                       }
                       error={errors.monthlyAverageProfitLoss}
                     />
@@ -808,7 +843,7 @@ function ProfileQuiz() {
                       onChange={(val) =>
                         setAssetForm({
                           ...assetForm,
-                          assetsValue: val !== "" ? Number(val) : null,
+                          assetsValue: clampNonNegativeValueOrNull(val),
                           // assetsValue: typeof val === 'number' ? val : null,
                         })
                       }
