@@ -208,6 +208,21 @@ function ProfileQuiz() {
         newErrors.businessLocation = "This field is required";
       if (!formData.businessBankAcc)
         newErrors.businessBankAcc = "Please select a bank";
+      
+      // Format validations for email and phone
+      if (
+        formData.businessContactNumber &&
+        !/^\d+$/.test(String(formData.businessContactNumber))
+      ) {
+        newErrors.businessContactNumber =
+          "Please enter a valid phone number (digits only)";
+      }
+      if (
+        formData.businessEmail &&
+        !/^\S+@\S+\.\S+$/.test(String(formData.businessEmail))
+      ) {
+        newErrors.businessEmail = "Please enter a valid email address";
+      }
     }
 
     // Validasi Step 2
@@ -278,6 +293,28 @@ function ProfileQuiz() {
   };
 
   const handleSaveProgress = async () => {
+    // Validate email and contact before saving
+    const newErrors: Record<string, string> = {};
+    if (!formData.businessContactNumber) {
+      newErrors.businessContactNumber = "This field is required";
+    } else if (!/^\d+$/.test(String(formData.businessContactNumber))) {
+      newErrors.businessContactNumber =
+        "Please enter a valid phone number (digits only)";
+    }
+    if (!formData.businessEmail) {
+      newErrors.businessEmail = "This field is required";
+    } else if (!/^\S+@\S+\.\S+$/.test(String(formData.businessEmail))) {
+      newErrors.businessEmail = "Please enter a valid email address";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      setNotificationStatus("error");
+      setNotificationMessage("Please fix form errors before saving.");
+      setNotificationOpen(true);
+      return;
+    }
+
     setSaving(true);
     try {
       await saveProfileToSupabase();
@@ -490,9 +527,9 @@ function ProfileQuiz() {
                     placeholder="test@gmail.com"
                     withAsterisk
                     value={formData.businessEmail}
-                    onChange={(e) =>
-                      updateForm("businessEmail", e.currentTarget.value)
-                    }
+                      onChange={(e) =>
+                        updateForm("businessEmail", e.currentTarget.value.trim())
+                      }
                     error={errors.businessEmail}
                   />
                   <TextInput
@@ -500,9 +537,14 @@ function ProfileQuiz() {
                     placeholder="Phone Number"
                     withAsterisk
                     value={formData.businessContactNumber}
-                    onChange={(e) =>
-                      updateForm("businessContactNumber", e.currentTarget.value)
-                    }
+                      inputMode="numeric"
+                      pattern="\\d*"
+                      onChange={(e) =>
+                        updateForm(
+                          "businessContactNumber",
+                          e.currentTarget.value.replace(/\D/g, ""),
+                        )
+                      }
                     error={errors.businessContactNumber}
                   />
                 </SimpleGrid>
