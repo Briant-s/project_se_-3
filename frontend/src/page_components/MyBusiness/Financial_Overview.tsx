@@ -12,10 +12,11 @@ import {
   Modal,
   Button,
 } from "@mantine/core";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { HiTrash } from "react-icons/hi";
 import { HiOutlineCreditCard, HiOutlineBanknotes } from "react-icons/hi2";
 
+import type { Asset } from "../../services/models";
 import { deleteAsset } from "../../services/assetService";
 
 import { DataItem } from "./component";
@@ -26,8 +27,8 @@ import { useAssets } from "../../hooks/useAssets";
 
 function FinancialOverview() {
   const { business, loading: businessLoading } = useBusinessProfile();
-  const { assets, totalAssetsValue, loading: assetsLoading } = useAssets();
-  const [assetsList, setAssetsList] = useState(assets);
+  const { assets, loading: assetsLoading } = useAssets();
+  const [assetsList, setAssetsList] = useState<Asset[]>(assets);
   const [deleteModalOpened, setDeleteModalOpened] = useState(false);
   const [selectedAssetId, setSelectedAssetId] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -35,6 +36,12 @@ function FinancialOverview() {
   useEffect(() => {
     setAssetsList(assets);
   }, [assets]);
+
+  const totalAssetsValueToDisplay = useMemo(
+    () =>
+      assetsList.reduce((sum, asset) => sum + (asset.assetsValue ?? 0), 0),
+    [assetsList],
+  );
 
   const handleDeleteAsset = async () => {
     if (selectedAssetId === null) return;
@@ -184,10 +191,10 @@ function FinancialOverview() {
                 <Group justify="space-between" align="flex-start">
                   <DataItem
                     label="Total Assets Value"
-                    value={formatRupiah(totalAssetsValue)}
+                    value={formatRupiah(totalAssetsValueToDisplay)}
                   />
                 </Group>
-                {assets.length > 0 && (
+                {assetsList.length > 0 && (
                   <Table striped highlightOnHover>
                     <Table.Thead>
                       <Table.Tr>
